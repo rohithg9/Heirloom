@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 
 const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -18,79 +18,97 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('heirloom_token'));
   const [loading, setLoading] = useState(true);
 
-  const api = axios.create({
-    baseURL: API_URL,
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
-
-  // Update axios headers when token changes
-  useEffect(() => {
+  // Create api instance with useMemo to recreate when token changes
+  const api = useMemo(() => {
+    const instance = axios.create({
+      baseURL: API_URL,
+    });
+    
+    // Add token to headers if exists
     if (token) {
-      api.defaults.headers.Authorization = `Bearer ${token}`;
-      localStorage.setItem('heirloom_token', token);
-    } else {
-      delete api.defaults.headers.Authorization;
-      localStorage.removeItem('heirloom_token');
+      instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
-  }, [token, api.defaults.headers]);
-
-  const loadUser = useCallback(async () => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-    try {
-      const stored = localStorage.getItem('heirloom_user');
-      if (stored) {
-        setUser(JSON.parse(stored));
-      }
-    } catch (error) {
-      console.error('Error loading user:', error);
-      logout();
-    } finally {
-      setLoading(false);
-    }
+    
+    return instance;
   }, [token]);
 
+  // Load user from localStorage on mount
   useEffect(() => {
+    const loadUser = () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const stored = localStorage.getItem('heirloom_user');
+        if (stored) {
+          setUser(JSON.parse(stored));
+        }
+      } catch (error) {
+        console.error('Error loading user:', error);
+        // Clear invalid data
+        localStorage.removeItem('heirloom_token');
+        localStorage.removeItem('heirloom_user');
+        setToken(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadUser();
-  }, [loadUser]);
+  }, [token]);
 
   const createVault = async (data) => {
-    const response = await api.post('/vaults/create', data);
+    const response = await axios.post(`${API_URL}/vaults/create`, data);
     const { token: newToken, ...userData } = response.data;
+    
+    // Save to localStorage first
+    localStorage.setItem('heirloom_token', newToken);
+    localStorage.setItem('heirloom_user', JSON.stringify(userData));
+    
+    // Then update state
     setToken(newToken);
     setUser(userData);
-    localStorage.setItem('heirloom_user', JSON.stringify(userData));
+    
     return response.data;
   };
 
   const joinVault = async (data) => {
-    const response = await api.post('/vaults/join', data);
+    const response = await axios.post(`${API_URL}/vaults/join`, data);
     const { token: newToken, ...userData } = response.data;
+    
+    localStorage.setItem('heirloom_token', newToken);
+    localStorage.setItem('heirloom_user', JSON.stringify(userData));
+    
     setToken(newToken);
     setUser(userData);
-    localStorage.setItem('heirloom_user', JSON.stringify(userData));
+    
     return response.data;
   };
 
   const login = async (data) => {
-    const response = await api.post('/vaults/login', data);
+    const response = await axios.post(`${API_URL}/vaults/login`, data);
     const { token: newToken, ...userData } = response.data;
+    
+    localStorage.setItem('heirloom_token', newToken);
+    localStorage.setItem('heirloom_user', JSON.stringify(userData));
+    
     setToken(newToken);
     setUser(userData);
-    localStorage.setItem('heirloom_user', JSON.stringify(userData));
+    
     return response.data;
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('heirloom_token');
     localStorage.removeItem('heirloom_user');
-  };
+  }, []);
 
-  const value = {
+  const isAuthenticated = !!token && !!user;
+
+  const value = useMemo(() => ({
     user,
     token,
     loading,
@@ -99,8 +117,8 @@ export const AuthProvider = ({ children }) => {
     joinVault,
     login,
     logout,
-    isAuthenticated: !!token && !!user,
-  };
+    isAuthenticated,
+  }), [user, token, loading, api, logout, isAuthenticated]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
