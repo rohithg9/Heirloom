@@ -190,6 +190,14 @@
     .stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
 }
 
+/* Hide Emergent badge */
+#emergent-badge {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
     width: 8px;
