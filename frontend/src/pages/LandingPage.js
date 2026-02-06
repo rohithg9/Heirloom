@@ -264,7 +264,7 @@ const LandingPage = () => {
           >
             <h2 className="font-serif text-charcoal mb-4">A Digital Heirloom</h2>
             <p className="text-charcoal-light text-xl max-w-2xl mx-auto">
-              More than an app — a sanctuary for your family's most precious memories
+              More than an app — a sanctuary for your family&apos;s most precious memories
             </p>
           </motion.div>
 
