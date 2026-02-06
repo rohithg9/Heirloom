@@ -53,7 +53,56 @@ export const SageAvatar = ({ size = 'md', speaking = false, onClick }) => {
 export const SageBubble = ({ message, onClose, position = 'bottom-right', showVoice = true }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
   const synthRef = React.useRef(window.speechSynthesis);
+
+  // Load voices when available
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = synthRef.current.getVoices();
+      if (voices.length > 0) {
+        setVoicesLoaded(true);
+      }
+    };
+    
+    loadVoices();
+    synthRef.current.addEventListener('voiceschanged', loadVoices);
+    return () => {
+      synthRef.current.removeEventListener('voiceschanged', loadVoices);
+    };
+  }, []);
+
+  // Find the best natural female voice
+  const getBestVoice = useCallback(() => {
+    const voices = synthRef.current.getVoices();
+    // Priority order for natural female voices
+    const preferredVoices = [
+      'Google UK English Female',
+      'Google US English',
+      'Samantha', // macOS
+      'Karen', // macOS Australian
+      'Moira', // macOS Irish
+      'Fiona', // macOS Scottish
+      'Victoria', // macOS
+      'Microsoft Zira', // Windows
+      'Microsoft Aria', // Windows
+    ];
+    
+    for (const preferred of preferredVoices) {
+      const voice = voices.find(v => v.name.includes(preferred));
+      if (voice) return voice;
+    }
+    
+    // Fallback to any English female voice
+    const femaleVoice = voices.find(v => 
+      v.lang.startsWith('en') && 
+      (v.name.toLowerCase().includes('female') || 
+       v.name.includes('Samantha') ||
+       v.name.includes('Karen'))
+    );
+    
+    return femaleVoice || voices.find(v => v.lang.startsWith('en'));
+  }, []);
 
   const speak = useCallback((text) => {
     if (!voiceEnabled || !text) return;
@@ -62,13 +111,13 @@ export const SageBubble = ({ message, onClose, position = 'bottom-right', showVo
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
-    utterance.rate = 0.9;
-    utterance.pitch = 1.1; // Slightly higher for friendly tone
+    utterance.rate = 0.85; // Slower for more natural feel
+    utterance.pitch = 1.05; // Slightly warmer tone
+    utterance.volume = 1;
     
-    const voices = synthRef.current.getVoices();
-    const preferredVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Google'));
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
+    const voice = getBestVoice();
+    if (voice) {
+      utterance.voice = voice;
     }
     
     utterance.onstart = () => setIsSpeaking(true);
@@ -76,7 +125,7 @@ export const SageBubble = ({ message, onClose, position = 'bottom-right', showVo
     utterance.onerror = () => setIsSpeaking(false);
     
     synthRef.current.speak(utterance);
-  }, [voiceEnabled]);
+  }, [voiceEnabled, getBestVoice]);
 
   const stopSpeaking = () => {
     synthRef.current.cancel();
@@ -84,12 +133,12 @@ export const SageBubble = ({ message, onClose, position = 'bottom-right', showVo
   };
 
   useEffect(() => {
-    if (message && voiceEnabled) {
+    if (message && voiceEnabled && voicesLoaded) {
       // Small delay before speaking
       const timer = setTimeout(() => speak(message), 500);
       return () => clearTimeout(timer);
     }
-  }, [message, voiceEnabled, speak]);
+  }, [message, voiceEnabled, voicesLoaded, speak]);
 
   useEffect(() => {
     const synth = synthRef.current;
