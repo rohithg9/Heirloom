@@ -4,13 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Heart, Users, BookOpen, ArrowLeft, ArrowRight, Play, Pause,
   Volume2, VolumeX, Download, ChevronRight, MapPin, Calendar,
-  Sparkles, Home, X, Clock, User, Quote
+  Sparkles, Home, X, Clock, User, Quote, Loader2
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { SageAvatar, SageBubble, SageFloatingButton } from '../components/SageCompanion';
 import { 
   DEMO_FAMILY, DEMO_MEMBERS, DEMO_MEMORIES, SAGE_NARRATIONS, DEMO_STATS, SAGE_COMPANION 
 } from '../data/demoFamily';
+import { downloadDemoLifeBook } from '../utils/pdfExport';
+import { Toaster, toast } from 'sonner';
 
 const DemoPage = () => {
   const navigate = useNavigate();
