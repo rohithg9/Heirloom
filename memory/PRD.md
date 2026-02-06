@@ -46,6 +46,24 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 
 ### What's Been Implemented
 
+**Date: Feb 6, 2026 (Update 4) - UI/UX Fixes**
+
+#### Issues Fixed:
+1. **Mobile Layout Chaos** - Fixed overlapping text and images in cinematic memory viewer
+   - Added semi-transparent card for narrative text for better readability
+   - Reorganized bottom controls with proper spacing
+   - Made timeline thumbnails horizontally scrollable and centered
+   - Fixed Sage bubble positioning to not overlap content
+
+2. **Sage Avatar Redesign** - Replaced ugly owl SVG with elegant emerald sparkles icon
+   - Clean, minimal design that matches app branding
+   - Proper sizing for all breakpoints (sm, md, lg, xl)
+
+3. **Voice Quality Improvements** - Optimized browser TTS settings
+   - Better voice selection algorithm (prefers Google UK English Female, Samantha, Karen)
+   - Slower rate (0.85) and warmer pitch (1.05) for more natural feel
+   - Proper voice loading with voiceschanged event listener
+
 **Date: Feb 6, 2026 (Update 3) - Demo Experience**
 
 #### New Features Added:
