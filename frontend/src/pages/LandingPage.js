@@ -371,6 +371,41 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Meet Sage Section - Demo CTA */}
+      <section className="py-24 px-6 bg-gradient-to-b from-ivory to-amber-50/30">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex justify-center mb-6">
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 2.5, repeat: Infinity }}
+              >
+                <SageAvatar size="xl" />
+              </motion.div>
+            </div>
+            <h2 className="font-serif text-charcoal mb-4">Meet Sage, Your Memory Guide</h2>
+            <p className="text-charcoal-light text-xl max-w-2xl mx-auto mb-8">
+              Sage guides families through the journey of preserving memories. 
+              See how it works with a real demo family — three generations of stories, 
+              waiting to inspire your own.
+            </p>
+            <Button 
+              className="btn-primary text-xl px-12 py-6"
+              onClick={() => navigate('/demo')}
+              data-testid="meet-sage-demo-btn"
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Explore the Demo Experience
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-24 px-6 bg-ivory-200/50">
         <motion.div 
