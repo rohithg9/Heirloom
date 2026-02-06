@@ -44,6 +44,7 @@ const AppRoutes = () => {
       {/* Public Routes */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/demo" element={<DemoPage />} />
       
       {/* Protected Routes */}
       <Route path="/dashboard" element={
