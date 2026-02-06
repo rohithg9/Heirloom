@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, Form
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,10 +7,13 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone
-
+import jwt
+import bcrypt
+import base64
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -19,52 +23,766 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
-app = FastAPI()
+# JWT Configuration
+JWT_SECRET = os.environ.get('JWT_SECRET', 'heirloom_default_secret')
+JWT_ALGORITHM = "HS256"
+
+# Emergent LLM Key
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
+
+# Create the main app
+app = FastAPI(title="Heirloom API", description="Family Memory Preservation Platform")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Security
+security = HTTPBearer(auto_error=False)
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# ==================== MODELS ====================
+
+class FamilyVaultCreate(BaseModel):
+    family_name: str
+    family_code: str
+    created_by_name: str
+    created_by_email: str
+    password: str
+
+class FamilyVaultJoin(BaseModel):
+    family_name: str
+    family_code: str
+    member_name: str
+    member_email: str
+    password: str
+
+class FamilyVaultLogin(BaseModel):
+    family_name: str
+    family_code: str
+    email: str
+    password: str
+
+class FamilyVault(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    family_name: str
+    family_code_hash: str
+    created_at: str
+    updated_at: str
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class FamilyMember(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    vault_id: str
+    name: str
+    email: str
+    password_hash: str
+    role: str = "member"  # admin, member, viewer
+    birth_year: Optional[int] = None
+    birth_place: Optional[str] = None
+    photo_url: Optional[str] = None
+    bio: Optional[str] = None
+    life_stages: List[str] = Field(default_factory=lambda: ["childhood", "youth", "adulthood", "later_life"])
+    created_at: str
+    updated_at: str
 
-# Add your routes to the router instead of directly to app
+class FamilyRelationship(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    vault_id: str
+    from_member_id: str
+    to_member_id: str
+    relationship_type: str  # parent, child, spouse, sibling
+    created_at: str
+
+class MemoryCardCreate(BaseModel):
+    title: str
+    narrative: str
+    time_period: Optional[str] = None
+    life_stage: Optional[str] = None
+    people_involved: List[str] = Field(default_factory=list)
+    place: Optional[str] = None
+    emotional_tone: Optional[str] = None
+    emotional_intensity: Optional[float] = None
+    sensory_cues: Dict[str, str] = Field(default_factory=dict)
+    occasion: Optional[str] = None
+    highlights: List[str] = Field(default_factory=list)
+    privacy_level: str = "family"  # private, family, custom
+    confidence: str = "clear"  # clear, fuzzy
+
+class MemoryCard(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    vault_id: str
+    author_id: str
+    title: str
+    narrative: str
+    audio_url: Optional[str] = None
+    transcript: Optional[str] = None
+    time_period: Optional[str] = None
+    life_stage: Optional[str] = None
+    people_involved: List[str] = Field(default_factory=list)
+    place: Optional[str] = None
+    emotional_tone: Optional[str] = None
+    emotional_intensity: Optional[float] = None
+    sensory_cues: Dict[str, str] = Field(default_factory=dict)
+    occasion: Optional[str] = None
+    highlights: List[str] = Field(default_factory=list)
+    privacy_level: str = "family"
+    confidence: str = "clear"
+    created_at: str
+    updated_at: str
+
+class AIInterviewMessage(BaseModel):
+    message: str
+    session_id: Optional[str] = None
+
+class AIInterviewResponse(BaseModel):
+    response: str
+    session_id: str
+    extracted_memory: Optional[Dict[str, Any]] = None
+    suggested_followup: Optional[str] = None
+
+class MemberUpdate(BaseModel):
+    name: Optional[str] = None
+    birth_year: Optional[int] = None
+    birth_place: Optional[str] = None
+    photo_url: Optional[str] = None
+    bio: Optional[str] = None
+
+class RelationshipCreate(BaseModel):
+    from_member_id: str
+    to_member_id: str
+    relationship_type: str
+
+# ==================== HELPERS ====================
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+def verify_password(password: str, hashed: str) -> bool:
+    return bcrypt.checkpw(password.encode(), hashed.encode())
+
+def create_token(data: dict) -> str:
+    return jwt.encode(data, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+def decode_token(token: str) -> dict:
+    try:
+        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    payload = decode_token(credentials.credentials)
+    member = await db.members.find_one({"id": payload.get("member_id")}, {"_id": 0})
+    if not member:
+        raise HTTPException(status_code=401, detail="User not found")
+    return member
+
+# ==================== AUTH ENDPOINTS ====================
+
+@api_router.post("/vaults/create")
+async def create_vault(data: FamilyVaultCreate):
+    """Create a new family vault"""
+    # Check if vault already exists
+    existing = await db.vaults.find_one({
+        "family_name": data.family_name.lower()
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="A vault with this family name already exists")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Create vault
+    vault = FamilyVault(
+        family_name=data.family_name.lower(),
+        family_code_hash=hash_password(data.family_code),
+        created_at=now,
+        updated_at=now
+    )
+    vault_dict = vault.model_dump()
+    await db.vaults.insert_one(vault_dict)
+    
+    # Create admin member
+    member = FamilyMember(
+        vault_id=vault.id,
+        name=data.created_by_name,
+        email=data.created_by_email.lower(),
+        password_hash=hash_password(data.password),
+        role="admin",
+        created_at=now,
+        updated_at=now
+    )
+    member_dict = member.model_dump()
+    await db.members.insert_one(member_dict)
+    
+    # Generate token
+    token = create_token({
+        "vault_id": vault.id,
+        "member_id": member.id,
+        "role": member.role
+    })
+    
+    return {
+        "token": token,
+        "vault_id": vault.id,
+        "member_id": member.id,
+        "family_name": data.family_name,
+        "member_name": data.created_by_name,
+        "role": "admin"
+    }
+
+@api_router.post("/vaults/join")
+async def join_vault(data: FamilyVaultJoin):
+    """Join an existing family vault"""
+    vault = await db.vaults.find_one({"family_name": data.family_name.lower()}, {"_id": 0})
+    if not vault:
+        raise HTTPException(status_code=404, detail="Family vault not found")
+    
+    if not verify_password(data.family_code, vault["family_code_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid family code")
+    
+    # Check if email already exists in vault
+    existing_member = await db.members.find_one({
+        "vault_id": vault["id"],
+        "email": data.member_email.lower()
+    })
+    if existing_member:
+        raise HTTPException(status_code=400, detail="Email already registered in this vault")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Create member
+    member = FamilyMember(
+        vault_id=vault["id"],
+        name=data.member_name,
+        email=data.member_email.lower(),
+        password_hash=hash_password(data.password),
+        role="member",
+        created_at=now,
+        updated_at=now
+    )
+    member_dict = member.model_dump()
+    await db.members.insert_one(member_dict)
+    
+    token = create_token({
+        "vault_id": vault["id"],
+        "member_id": member.id,
+        "role": member.role
+    })
+    
+    return {
+        "token": token,
+        "vault_id": vault["id"],
+        "member_id": member.id,
+        "family_name": data.family_name,
+        "member_name": data.member_name,
+        "role": "member"
+    }
+
+@api_router.post("/vaults/login")
+async def login_vault(data: FamilyVaultLogin):
+    """Login to family vault"""
+    vault = await db.vaults.find_one({"family_name": data.family_name.lower()}, {"_id": 0})
+    if not vault:
+        raise HTTPException(status_code=404, detail="Family vault not found")
+    
+    if not verify_password(data.family_code, vault["family_code_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid family code")
+    
+    member = await db.members.find_one({
+        "vault_id": vault["id"],
+        "email": data.email.lower()
+    }, {"_id": 0})
+    
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found in this vault")
+    
+    if not verify_password(data.password, member["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    
+    token = create_token({
+        "vault_id": vault["id"],
+        "member_id": member["id"],
+        "role": member["role"]
+    })
+    
+    return {
+        "token": token,
+        "vault_id": vault["id"],
+        "member_id": member["id"],
+        "family_name": data.family_name,
+        "member_name": member["name"],
+        "role": member["role"]
+    }
+
+# ==================== MEMBER ENDPOINTS ====================
+
+@api_router.get("/members")
+async def get_members(user: dict = Depends(get_current_user)):
+    """Get all members in the vault"""
+    members = await db.members.find(
+        {"vault_id": user["vault_id"]},
+        {"_id": 0, "password_hash": 0}
+    ).to_list(100)
+    return members
+
+@api_router.get("/members/{member_id}")
+async def get_member(member_id: str, user: dict = Depends(get_current_user)):
+    """Get a specific member"""
+    member = await db.members.find_one(
+        {"id": member_id, "vault_id": user["vault_id"]},
+        {"_id": 0, "password_hash": 0}
+    )
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    return member
+
+@api_router.put("/members/{member_id}")
+async def update_member(member_id: str, data: MemberUpdate, user: dict = Depends(get_current_user)):
+    """Update member profile"""
+    if member_id != user["id"] and user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Can only update your own profile")
+    
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.members.update_one(
+        {"id": member_id, "vault_id": user["vault_id"]},
+        {"$set": update_data}
+    )
+    
+    return {"message": "Profile updated"}
+
+@api_router.get("/members/me")
+async def get_current_member(user: dict = Depends(get_current_user)):
+    """Get current logged in member"""
+    member = await db.members.find_one(
+        {"id": user["id"]},
+        {"_id": 0, "password_hash": 0}
+    )
+    return member
+
+# ==================== RELATIONSHIP ENDPOINTS ====================
+
+@api_router.post("/relationships")
+async def create_relationship(data: RelationshipCreate, user: dict = Depends(get_current_user)):
+    """Create a family relationship"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    relationship = FamilyRelationship(
+        vault_id=user["vault_id"],
+        from_member_id=data.from_member_id,
+        to_member_id=data.to_member_id,
+        relationship_type=data.relationship_type,
+        created_at=now
+    )
+    
+    await db.relationships.insert_one(relationship.model_dump())
+    return {"id": relationship.id, "message": "Relationship created"}
+
+@api_router.get("/relationships")
+async def get_relationships(user: dict = Depends(get_current_user)):
+    """Get all relationships in the vault"""
+    relationships = await db.relationships.find(
+        {"vault_id": user["vault_id"]},
+        {"_id": 0}
+    ).to_list(500)
+    return relationships
+
+@api_router.delete("/relationships/{relationship_id}")
+async def delete_relationship(relationship_id: str, user: dict = Depends(get_current_user)):
+    """Delete a relationship"""
+    result = await db.relationships.delete_one({
+        "id": relationship_id,
+        "vault_id": user["vault_id"]
+    })
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Relationship not found")
+    return {"message": "Relationship deleted"}
+
+# ==================== MEMORY ENDPOINTS ====================
+
+@api_router.post("/memories")
+async def create_memory(data: MemoryCardCreate, user: dict = Depends(get_current_user)):
+    """Create a new memory card"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    memory = MemoryCard(
+        vault_id=user["vault_id"],
+        author_id=user["id"],
+        title=data.title,
+        narrative=data.narrative,
+        time_period=data.time_period,
+        life_stage=data.life_stage,
+        people_involved=data.people_involved,
+        place=data.place,
+        emotional_tone=data.emotional_tone,
+        emotional_intensity=data.emotional_intensity,
+        sensory_cues=data.sensory_cues,
+        occasion=data.occasion,
+        highlights=data.highlights,
+        privacy_level=data.privacy_level,
+        confidence=data.confidence,
+        created_at=now,
+        updated_at=now
+    )
+    
+    await db.memories.insert_one(memory.model_dump())
+    return {"id": memory.id, "message": "Memory created"}
+
+@api_router.get("/memories")
+async def get_memories(
+    author_id: Optional[str] = None,
+    life_stage: Optional[str] = None,
+    privacy_level: Optional[str] = None,
+    user: dict = Depends(get_current_user)
+):
+    """Get memories from the vault"""
+    query = {"vault_id": user["vault_id"]}
+    
+    if author_id:
+        query["author_id"] = author_id
+    if life_stage:
+        query["life_stage"] = life_stage
+    
+    # Filter by privacy
+    if privacy_level:
+        query["privacy_level"] = privacy_level
+    else:
+        # Show family memories and own private memories
+        query["$or"] = [
+            {"privacy_level": "family"},
+            {"privacy_level": "private", "author_id": user["id"]}
+        ]
+    
+    memories = await db.memories.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return memories
+
+@api_router.get("/memories/{memory_id}")
+async def get_memory(memory_id: str, user: dict = Depends(get_current_user)):
+    """Get a specific memory"""
+    memory = await db.memories.find_one(
+        {"id": memory_id, "vault_id": user["vault_id"]},
+        {"_id": 0}
+    )
+    if not memory:
+        raise HTTPException(status_code=404, detail="Memory not found")
+    
+    # Check privacy
+    if memory["privacy_level"] == "private" and memory["author_id"] != user["id"]:
+        raise HTTPException(status_code=403, detail="This memory is private")
+    
+    return memory
+
+@api_router.put("/memories/{memory_id}")
+async def update_memory(memory_id: str, data: MemoryCardCreate, user: dict = Depends(get_current_user)):
+    """Update a memory card"""
+    memory = await db.memories.find_one({"id": memory_id, "vault_id": user["vault_id"]})
+    if not memory:
+        raise HTTPException(status_code=404, detail="Memory not found")
+    
+    if memory["author_id"] != user["id"] and user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Can only edit your own memories")
+    
+    update_data = data.model_dump()
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.memories.update_one(
+        {"id": memory_id},
+        {"$set": update_data}
+    )
+    return {"message": "Memory updated"}
+
+@api_router.delete("/memories/{memory_id}")
+async def delete_memory(memory_id: str, user: dict = Depends(get_current_user)):
+    """Delete a memory card"""
+    memory = await db.memories.find_one({"id": memory_id, "vault_id": user["vault_id"]})
+    if not memory:
+        raise HTTPException(status_code=404, detail="Memory not found")
+    
+    if memory["author_id"] != user["id"] and user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Can only delete your own memories")
+    
+    await db.memories.delete_one({"id": memory_id})
+    return {"message": "Memory deleted"}
+
+# ==================== AI INTERVIEW ENDPOINTS ====================
+
+AI_SYSTEM_PROMPT = """You are a gentle, warm AI companion for Heirloom, a family memory preservation platform. Your role is to help elderly users record their life stories through calm, unhurried conversations.
+
+PERSONALITY RULES:
+- Speak slowly and simply
+- Be warm, curious, and never clinical
+- Accept uncertainty gracefully ("I don't remember" is perfectly fine)
+- Never rush or interrogate
+- Ask permission before sensitive topics
+- Use culturally adaptive language (respectful of Indian family values, globally neutral)
+
+INTERVIEW APPROACH:
+1. Start with open, gentle questions about their day or a happy memory
+2. Listen actively and ask sensory follow-ups (What did it smell like? What sounds do you remember?)
+3. Help anchor memories in time (approximate year, life stage, occasion)
+4. Identify people involved and their relationships
+5. Capture emotional tones gently
+
+RESPONSE FORMAT:
+After each response, if you detect a memory being shared, extract it in this JSON format at the end of your response:
+[MEMORY_EXTRACT]
+{
+  "title": "A meaningful title",
+  "narrative": "The story in natural language",
+  "time_period": "approximate time or year",
+  "life_stage": "childhood/youth/adulthood/later_life",
+  "people_involved": ["names of people mentioned"],
+  "place": "location if mentioned",
+  "emotional_tone": "joy/nostalgia/love/sadness/pride/gratitude",
+  "sensory_cues": {"taste": "", "smell": "", "sound": "", "sight": ""},
+  "occasion": "type of occasion if any",
+  "highlights": ["1-2 quotable lines"]
+}
+[/MEMORY_EXTRACT]
+
+Only include the memory extract when a complete, meaningful memory has been shared. Otherwise, just respond conversationally and ask gentle follow-up questions."""
+
+@api_router.post("/ai/interview", response_model=AIInterviewResponse)
+async def ai_interview(data: AIInterviewMessage, user: dict = Depends(get_current_user)):
+    """Conduct AI-assisted interview for memory capture"""
+    session_id = data.session_id or str(uuid.uuid4())
+    
+    try:
+        # Get conversation history
+        history = await db.ai_sessions.find_one(
+            {"session_id": session_id, "member_id": user["id"]},
+            {"_id": 0}
+        )
+        
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=session_id,
+            system_message=AI_SYSTEM_PROMPT
+        ).with_model("gemini", "gemini-3-flash-preview")
+        
+        # Build conversation context
+        if history and history.get("messages"):
+            for msg in history["messages"][-10:]:  # Keep last 10 messages for context
+                if msg["role"] == "user":
+                    await chat.send_message(UserMessage(text=msg["content"]))
+        
+        # Send current message
+        user_msg = UserMessage(text=data.message)
+        response = await chat.send_message(user_msg)
+        
+        # Store conversation
+        now = datetime.now(timezone.utc).isoformat()
+        if not history:
+            await db.ai_sessions.insert_one({
+                "session_id": session_id,
+                "member_id": user["id"],
+                "vault_id": user["vault_id"],
+                "messages": [
+                    {"role": "user", "content": data.message, "timestamp": now},
+                    {"role": "assistant", "content": response, "timestamp": now}
+                ],
+                "created_at": now
+            })
+        else:
+            await db.ai_sessions.update_one(
+                {"session_id": session_id},
+                {"$push": {"messages": {
+                    "$each": [
+                        {"role": "user", "content": data.message, "timestamp": now},
+                        {"role": "assistant", "content": response, "timestamp": now}
+                    ]
+                }}}
+            )
+        
+        # Extract memory if present
+        extracted_memory = None
+        if "[MEMORY_EXTRACT]" in response:
+            import json
+            try:
+                start = response.index("[MEMORY_EXTRACT]") + len("[MEMORY_EXTRACT]")
+                end = response.index("[/MEMORY_EXTRACT]")
+                memory_json = response[start:end].strip()
+                extracted_memory = json.loads(memory_json)
+                # Clean response for display
+                response = response[:response.index("[MEMORY_EXTRACT]")].strip()
+            except Exception as e:
+                logger.error(f"Error extracting memory: {e}")
+        
+        return AIInterviewResponse(
+            response=response,
+            session_id=session_id,
+            extracted_memory=extracted_memory,
+            suggested_followup=None
+        )
+        
+    except Exception as e:
+        logger.error(f"AI Interview error: {e}")
+        return AIInterviewResponse(
+            response="I'm here to listen. Please take your time and share what's on your mind.",
+            session_id=session_id,
+            extracted_memory=None
+        )
+
+@api_router.get("/ai/sessions")
+async def get_ai_sessions(user: dict = Depends(get_current_user)):
+    """Get user's AI interview sessions"""
+    sessions = await db.ai_sessions.find(
+        {"member_id": user["id"]},
+        {"_id": 0, "session_id": 1, "created_at": 1}
+    ).sort("created_at", -1).to_list(50)
+    return sessions
+
+@api_router.get("/ai/sessions/{session_id}")
+async def get_ai_session(session_id: str, user: dict = Depends(get_current_user)):
+    """Get a specific AI session"""
+    session = await db.ai_sessions.find_one(
+        {"session_id": session_id, "member_id": user["id"]},
+        {"_id": 0}
+    )
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return session
+
+# ==================== STATS ENDPOINTS ====================
+
+@api_router.get("/stats")
+async def get_vault_stats(user: dict = Depends(get_current_user)):
+    """Get vault statistics"""
+    vault_id = user["vault_id"]
+    
+    members_count = await db.members.count_documents({"vault_id": vault_id})
+    memories_count = await db.memories.count_documents({"vault_id": vault_id})
+    relationships_count = await db.relationships.count_documents({"vault_id": vault_id})
+    
+    # Get memories by life stage
+    pipeline = [
+        {"$match": {"vault_id": vault_id}},
+        {"$group": {"_id": "$life_stage", "count": {"$sum": 1}}}
+    ]
+    life_stages = await db.memories.aggregate(pipeline).to_list(10)
+    
+    return {
+        "members_count": members_count,
+        "memories_count": memories_count,
+        "relationships_count": relationships_count,
+        "memories_by_stage": {s["_id"]: s["count"] for s in life_stages if s["_id"]}
+    }
+
+# ==================== EXPORT ENDPOINTS ====================
+
+@api_router.get("/export/life-book/{member_id}")
+async def export_life_book(member_id: str, user: dict = Depends(get_current_user)):
+    """Export a member's life story as structured data for PDF generation"""
+    member = await db.members.find_one(
+        {"id": member_id, "vault_id": user["vault_id"]},
+        {"_id": 0, "password_hash": 0}
+    )
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    
+    # Get all family-visible memories for this member
+    query = {
+        "vault_id": user["vault_id"],
+        "author_id": member_id,
+        "$or": [
+            {"privacy_level": "family"},
+            {"privacy_level": "private", "author_id": user["id"]}
+        ]
+    }
+    memories = await db.memories.find(query, {"_id": 0}).sort("created_at", 1).to_list(500)
+    
+    # Organize by life stage
+    life_book = {
+        "member": member,
+        "chapters": {
+            "childhood": [],
+            "youth": [],
+            "adulthood": [],
+            "later_life": [],
+            "other": []
+        },
+        "generated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    for memory in memories:
+        stage = memory.get("life_stage", "other") or "other"
+        if stage in life_book["chapters"]:
+            life_book["chapters"][stage].append(memory)
+        else:
+            life_book["chapters"]["other"].append(memory)
+    
+    return life_book
+
+@api_router.get("/export/theme-book")
+async def export_theme_book(
+    theme: str,  # food, love, travel, lessons, family
+    user: dict = Depends(get_current_user)
+):
+    """Export memories by theme"""
+    vault_id = user["vault_id"]
+    
+    # Theme-based keyword matching
+    theme_keywords = {
+        "food": ["taste", "cook", "eat", "meal", "recipe", "kitchen", "dinner", "lunch", "breakfast"],
+        "love": ["love", "wedding", "marriage", "romance", "heart", "first met"],
+        "travel": ["travel", "trip", "journey", "visit", "vacation", "holiday"],
+        "lessons": ["learn", "lesson", "taught", "wisdom", "advice", "experience"],
+        "family": ["family", "father", "mother", "brother", "sister", "child", "grandparent"]
+    }
+    
+    keywords = theme_keywords.get(theme, [])
+    if not keywords:
+        raise HTTPException(status_code=400, detail="Invalid theme")
+    
+    # Search memories containing theme keywords
+    regex_pattern = "|".join(keywords)
+    memories = await db.memories.find({
+        "vault_id": vault_id,
+        "narrative": {"$regex": regex_pattern, "$options": "i"},
+        "$or": [
+            {"privacy_level": "family"},
+            {"privacy_level": "private", "author_id": user["id"]}
+        ]
+    }, {"_id": 0}).to_list(200)
+    
+    # Get authors info
+    author_ids = list(set(m["author_id"] for m in memories))
+    authors = await db.members.find(
+        {"id": {"$in": author_ids}},
+        {"_id": 0, "id": 1, "name": 1, "photo_url": 1}
+    ).to_list(100)
+    authors_map = {a["id"]: a for a in authors}
+    
+    return {
+        "theme": theme,
+        "title": f"Stories of {theme.title()}",
+        "memories": memories,
+        "authors": authors_map,
+        "generated_at": datetime.now(timezone.utc).isoformat()
+    }
+
+# ==================== HEALTH CHECK ====================
+
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Heirloom API - Family Memory Preservation Platform"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
-
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+@api_router.get("/health")
+async def health_check():
+    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 # Include the router in the main app
 app.include_router(api_router)
@@ -76,13 +794,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
