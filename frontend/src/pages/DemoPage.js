@@ -537,7 +537,7 @@ const DemoPage = () => {
                         transition={{ delay: 0.3 }}
                         className="text-xl text-ivory/90 leading-relaxed mb-8"
                       >
-                        "{selectedMemory.narrative}"
+                        &ldquo;{selectedMemory.narrative}&rdquo;
                       </motion.p>
 
                       {/* Highlights */}
