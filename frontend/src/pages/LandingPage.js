@@ -168,8 +168,19 @@ const LandingPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
+              {/* Demo button FIRST with attractive background */}
               <Button 
-                className="btn-primary text-xl px-10 py-5 group"
+                className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-lg md:text-xl px-8 py-5 rounded-xl shadow-lg"
+                onClick={() => navigate('/demo')}
+                data-testid="explore-demo-btn"
+              >
+                <Play className="w-5 h-5 mr-2" />
+                Try the Demo Experience
+              </Button>
+              
+              {/* Create vault button second */}
+              <Button 
+                className="w-full sm:w-auto btn-primary text-lg md:text-xl px-8 py-5 group"
                 onClick={() => navigate('/auth?mode=create')}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
@@ -182,15 +193,6 @@ const LandingPage = () => {
                 >
                   <ArrowRight className="w-5 h-5 ml-2 inline" />
                 </motion.span>
-              </Button>
-              <Button 
-                variant="outline"
-                className="btn-secondary text-xl"
-                onClick={() => navigate('/demo')}
-                data-testid="explore-demo-btn"
-              >
-                <Play className="w-5 h-5 mr-2" />
-                Explore Demo Family
               </Button>
             </motion.div>
           </motion.div>
