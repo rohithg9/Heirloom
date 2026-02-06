@@ -36,48 +36,11 @@ const DemoPage = () => {
   const [autoplayTimer, setAutoplayTimer] = useState(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfProgress, setPdfProgress] = useState('');
-  const [voicesLoaded, setVoicesLoaded] = useState(false);
-  const [isSageNarrating, setIsSageNarrating] = useState(false);
-  const [isPlayingOriginalVoice, setIsPlayingOriginalVoice] = useState(false);
-  const [narratorMode, setNarratorMode] = useState('sage'); // 'sage' or 'original'
+  const [narratorMode, setNarratorMode] = useState('original'); // 'sage' or 'original'
 
-  const synthRef = useRef(window.speechSynthesis);
-
-  // Load voices
-  useEffect(() => {
-    const loadVoices = () => {
-      const voices = synthRef.current.getVoices();
-      if (voices.length > 0) {
-        setVoicesLoaded(true);
-      }
-    };
-    loadVoices();
-    synthRef.current.addEventListener('voiceschanged', loadVoices);
-    return () => {
-      synthRef.current.removeEventListener('voiceschanged', loadVoices);
-    };
-  }, []);
-
-  // Get gender-appropriate voice
-  const getVoiceForGender = useCallback((gender) => {
-    const voices = synthRef.current.getVoices();
-    
-    // Female voice preferences
-    const femaleVoices = [
-      'Google UK English Female',
-      'Samantha', // macOS
-      'Karen', // macOS
-      'Victoria', // macOS
-      'Microsoft Zira', // Windows
-      'Google US English',
-    ];
-    
-    // Male voice preferences
-    const maleVoices = [
-      'Google UK English Male',
-      'Daniel', // macOS
-      'Alex', // macOS
-      'Fred', // macOS
+  // Combined playing state from TTS hook
+  const isVoicePlaying = ttsPlaying;
+  const isVoiceLoading = ttsLoading;
       'Microsoft David', // Windows
       'Google US English',
     ];
