@@ -305,8 +305,6 @@ export const SageWelcomeModal = ({ isOpen, onClose, onExploreDemo }) => {
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => speak(), 800);
-        utterance.onstart = () => setIsSpeaking(true);
-        utterance.onend = () => setIsSpeaking(false);
       return () => {
         clearTimeout(timer);
         if (audioRef.current) {
