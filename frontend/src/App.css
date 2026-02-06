@@ -1,34 +1,189 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Heirloom - Family Memory Preservation Platform */
+/* Custom App Styles */
+
+/* Base styling handled by index.css */
+
+/* Additional animation classes */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+.pulse-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: pulse-ring 1.5s ease-out infinite;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+/* Timeline connector line */
+.timeline-line {
+  position: relative;
 }
 
-.App-link {
-    color: #61dafb;
+.timeline-line::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 16px;
+  bottom: -24px;
+  width: 2px;
+  background: linear-gradient(to bottom, #E5E0D6, transparent);
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+/* Memory card hover glow */
+.memory-glow {
+  position: relative;
+}
+
+.memory-glow::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #2E5C55, #D4A373);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+.memory-glow:hover::after {
+  opacity: 0.1;
+}
+
+/* Voice recording ripple effect */
+.voice-ripple {
+  position: relative;
+}
+
+.voice-ripple::before,
+.voice-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+.voice-ripple::after {
+  animation-delay: 1s;
+}
+
+/* Smooth page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Text selection */
+::selection {
+  background-color: rgba(46, 92, 85, 0.2);
+  color: #2C2420;
+}
+
+/* Focus visible outline */
+:focus-visible {
+  outline: 2px solid #2E5C55;
+  outline-offset: 2px;
+}
+
+/* Scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F0EBE0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(140, 133, 128, 0.4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(140, 133, 128, 0.6);
+}
+
+/* Print styles for PDF export preview */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+}
+
+/* Large touch targets for elderly users */
+@media (pointer: coarse) {
+  button, 
+  a, 
+  [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  input,
+  textarea,
+  select {
+    min-height: 48px;
+    font-size: 16px; /* Prevents iOS zoom */
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .card-paper {
+    border-width: 2px;
+    border-color: #2C2420;
+  }
+  
+  .btn-primary {
+    border: 2px solid #2C2420;
+  }
 }
