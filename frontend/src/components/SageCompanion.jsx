@@ -329,32 +329,32 @@ export const SageWelcomeModal = ({ isOpen, onClose, onExploreDemo }) => {
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.9, y: 20 }}
-          className="bg-ivory rounded-3xl shadow-2xl max-w-md w-full overflow-hidden"
+          className="bg-ivory rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden"
           onClick={(e) => e.stopPropagation()}
           data-testid="sage-welcome-modal"
         >
           {/* Sage header */}
-          <div className="bg-gradient-to-br from-amber-100 to-amber-200 p-8 text-center">
+          <div className="bg-gradient-to-br from-emerald/20 to-emerald/10 p-6 text-center">
             <motion.div
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="inline-block"
             >
-              <SageAvatar size="xl" speaking={isSpeaking} />
+              <SageAvatar size="lg" speaking={isSpeaking} />
             </motion.div>
-            <h2 className="font-serif text-2xl text-charcoal mt-4">Meet Sage</h2>
-            <p className="text-charcoal-muted">Your Family Memory Guide</p>
+            <h2 className="font-serif text-xl text-charcoal mt-3">Meet Sage</h2>
+            <p className="text-charcoal-muted text-sm">Your Family Memory Guide</p>
           </div>
           
           {/* Message */}
-          <div className="p-6 text-center">
-            <p className="text-charcoal text-lg leading-relaxed mb-6">
+          <div className="p-5 text-center">
+            <p className="text-charcoal text-sm leading-relaxed mb-5">
               {welcomeMessage}
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col gap-2">
               <Button
-                className="flex-1 btn-primary py-6 text-lg"
+                className="w-full btn-primary py-4 text-base"
                 onClick={onExploreDemo}
                 data-testid="explore-demo-btn"
               >
