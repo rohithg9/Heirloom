@@ -33,6 +33,9 @@ const DemoPage = () => {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfProgress, setPdfProgress] = useState('');
   const [voicesLoaded, setVoicesLoaded] = useState(false);
+  const [isSageNarrating, setIsSageNarrating] = useState(false);
+  const [isPlayingOriginalVoice, setIsPlayingOriginalVoice] = useState(false);
+  const [narratorMode, setNarratorMode] = useState('sage'); // 'sage' or 'original'
 
   const synthRef = useRef(window.speechSynthesis);
 
