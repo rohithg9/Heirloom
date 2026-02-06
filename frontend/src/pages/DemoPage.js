@@ -116,7 +116,7 @@ const DemoPage = () => {
   };
 
   const navigateMemory = (direction) => {
-    stopSpeech();
+    stopTTS();
     const newIndex = direction === 'next' 
       ? (currentMemoryIndex + 1) % DEMO_MEMORIES.length
       : (currentMemoryIndex - 1 + DEMO_MEMORIES.length) % DEMO_MEMORIES.length;
@@ -124,16 +124,6 @@ const DemoPage = () => {
     const memory = DEMO_MEMORIES[newIndex];
     setCurrentMemoryIndex(newIndex);
     setSelectedMemory(memory);
-  };
-
-  // Play memory with selected narrator mode
-  const playMemory = (memory) => {
-    const member = DEMO_MEMBERS.find(m => m.id === memory.author_id);
-    if (narratorMode === 'sage') {
-      narrateAsSage(memory, member);
-    } else {
-      speakAsOriginalVoice(memory.narrative, member);
-    }
   };
 
   const getMemberMemories = (memberId) => {
