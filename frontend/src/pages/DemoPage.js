@@ -28,6 +28,8 @@ const DemoPage = () => {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [autoplayTimer, setAutoplayTimer] = useState(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState('');
 
   const synthRef = useRef(window.speechSynthesis);
 
