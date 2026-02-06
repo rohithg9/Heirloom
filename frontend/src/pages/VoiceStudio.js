@@ -595,14 +595,39 @@ const VoiceStudio = () => {
               exit={{ opacity: 0 }}
               className="flex-1 flex flex-col items-center justify-center"
             >
-              <div className="text-center mb-8">
-                <h2 className="font-serif text-3xl text-charcoal mb-2">
+              {/* Sage Avatar while listening */}
+              <motion.div
+                animate={{ scale: isRecording ? [1, 1.05, 1] : 1 }}
+                transition={{ duration: 1.5, repeat: isRecording ? Infinity : 0 }}
+                className="mb-6"
+              >
+                <SageAvatar size="lg" speaking={isRecording} />
+              </motion.div>
+              
+              <div className="text-center mb-6">
+                <h2 className="font-serif text-2xl md:text-3xl text-charcoal mb-2">
                   {isRecording ? "I'm listening..." : "Review your words"}
                 </h2>
                 <p className="text-charcoal-muted">
                   {isRecording ? "Speak naturally. Take your time." : "Edit if needed, then send."}
                 </p>
               </div>
+
+              {/* Recording duration & status */}
+              {isAudioRecording && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center gap-3 mb-4 px-4 py-2 bg-red-50 rounded-full border border-red-200"
+                >
+                  <motion.div
+                    className="w-3 h-3 rounded-full bg-red-500"
+                    animate={{ opacity: [1, 0.5, 1] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
+                  <span className="text-red-600 font-medium">Recording {formatDuration(recordingDuration)}</span>
+                </motion.div>
+              )}
 
               {/* Recording button */}
               <motion.div
@@ -617,20 +642,32 @@ const VoiceStudio = () => {
                 )}
               </motion.div>
               
-              <p className="text-charcoal-muted mt-4">
+              <p className="text-charcoal-muted mt-4 text-sm">
                 {isRecording ? 'Tap to finish' : 'Tap to record more'}
               </p>
+
+              {/* Audio playback if available */}
+              {audioUrl && !isRecording && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 p-3 bg-emerald/10 rounded-xl flex items-center gap-3"
+                >
+                  <audio src={audioUrl} controls className="h-10" />
+                  <span className="text-sm text-charcoal-muted">Your voice recording</span>
+                </motion.div>
+              )}
 
               {/* Editable transcript */}
               {editableTranscript && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-8 w-full max-w-xl"
+                  className="mt-6 w-full max-w-xl"
                 >
-                  <div className="card-paper p-6">
+                  <div className="card-paper p-4 md:p-6">
                     <div className="flex items-center justify-between mb-3">
-                      <Label className="text-charcoal-muted">Your words (you can edit)</Label>
+                      <Label className="text-charcoal-muted text-sm">Your words (you can edit)</Label>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -649,8 +686,8 @@ const VoiceStudio = () => {
                         data-testid="transcript-textarea"
                       />
                     ) : (
-                      <p className="text-charcoal text-xl leading-relaxed">
-                        "{editableTranscript}"
+                      <p className="text-charcoal text-lg md:text-xl leading-relaxed">
+                        &ldquo;{editableTranscript}&rdquo;
                       </p>
                     )}
                     
