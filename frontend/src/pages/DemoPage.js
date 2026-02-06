@@ -551,7 +551,7 @@ const DemoPage = () => {
                           {selectedMemory.highlights.map((highlight, i) => (
                             <div key={i} className="flex items-start gap-2 text-amber-400">
                               <Quote className="w-4 h-4 mt-1 flex-shrink-0" />
-                              <span className="italic">"{highlight}"</span>
+                              <span className="italic">&ldquo;{highlight}&rdquo;</span>
                             </div>
                           ))}
                         </motion.div>
