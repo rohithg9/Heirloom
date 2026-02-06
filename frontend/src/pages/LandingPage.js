@@ -432,10 +432,10 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="py-8 px-6 bg-charcoal text-ivory/60">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-emerald" />
+          <button onClick={() => navigate('/')} className="flex items-center gap-2">
+            <img src="/images/heirloom-logo.png" alt="Heirloom" className="h-8 w-auto" />
             <span className="font-serif text-lg text-ivory">Heirloom</span>
-          </div>
+          </button>
           <p className="text-sm">
             Preserving family stories across generations
           </p>
