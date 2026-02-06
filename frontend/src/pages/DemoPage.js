@@ -107,36 +107,11 @@ const DemoPage = () => {
     
     speakAsSage(fullNarration);
   }, [voiceEnabled, speakAsSage]);
-    
-    // Transform narrative to third person
-    const thirdPersonNarrative = transformToThirdPerson(memory.narrative, member.name, gender);
-    
-    // Create closing
-    const closing = createStoryClosing(memory, member);
-    
-    // Full narration
-    const fullNarration = `${intro} ${thirdPersonNarrative} ${closing}`;
-    
-    const utterance = new SpeechSynthesisUtterance(fullNarration);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.8; // Slower, more storytelling pace
-    utterance.pitch = 1.05;
-    
-    // Sage always uses a warm female voice
-    const voice = getVoiceForGender('female');
-    if (voice) utterance.voice = voice;
-    
-    utterance.onstart = () => setIsSageNarrating(true);
-    utterance.onend = () => setIsSageNarrating(false);
-    utterance.onerror = () => setIsSageNarrating(false);
-    
-    synthRef.current.speak(utterance);
-  }, [voiceEnabled, voicesLoaded, getVoiceForGender, stopSpeech]);
 
   const handleMemorySelect = (memory, index) => {
     setSelectedMemory(memory);
     setCurrentMemoryIndex(index);
-    stopSpeech();
+    stopTTS();
     // Don't auto-play, let user choose mode
   };
 
