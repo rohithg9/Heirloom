@@ -943,6 +943,71 @@ async def delete_audio(audio_id: str, user: dict = Depends(get_current_user)):
     
     return {"message": "Audio deleted"}
 
+# ==================== ELEVENLABS TTS ENDPOINTS ====================
+
+class TTSRequest(BaseModel):
+    text: str
+    voice_type: str = "sage"  # sage, female_warm, female_young, male_warm, male_young
+    stability: float = 0.5
+    similarity_boost: float = 0.75
+    style: float = 0.3
+
+@api_router.post("/tts/generate")
+async def generate_tts(request: TTSRequest):
+    """Generate text-to-speech audio using ElevenLabs"""
+    if not eleven_client:
+        raise HTTPException(status_code=503, detail="ElevenLabs not configured")
+    
+    try:
+        # Select appropriate voice
+        voice_id = VOICE_IDS.get(request.voice_type, VOICE_IDS["sage"])
+        
+        # Generate audio using ElevenLabs
+        voice_settings = VoiceSettings(
+            stability=request.stability,
+            similarity_boost=request.similarity_boost,
+            style=request.style,
+            use_speaker_boost=True
+        )
+        
+        audio_generator = eleven_client.text_to_speech.convert(
+            text=request.text,
+            voice_id=voice_id,
+            model_id="eleven_multilingual_v2",
+            voice_settings=voice_settings
+        )
+        
+        # Collect audio data
+        audio_data = b""
+        for chunk in audio_generator:
+            audio_data += chunk
+        
+        # Return audio as base64
+        audio_b64 = base64.b64encode(audio_data).decode()
+        
+        return {
+            "audio_data": audio_b64,
+            "content_type": "audio/mpeg",
+            "voice_type": request.voice_type
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating TTS: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating TTS: {str(e)}")
+
+@api_router.get("/tts/voices")
+async def get_available_voices():
+    """Get list of available voice types"""
+    return {
+        "voices": [
+            {"id": "sage", "name": "Sage", "description": "Warm, friendly female narrator for Heirloom"},
+            {"id": "female_warm", "name": "Sarah", "description": "Soft, warm female voice"},
+            {"id": "female_young", "name": "Rachel", "description": "Clear, engaging young female voice"},
+            {"id": "male_warm", "name": "Arnold", "description": "Deep, warm male voice"},
+            {"id": "male_young", "name": "Adam", "description": "Clear, friendly young male voice"}
+        ]
+    }
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
