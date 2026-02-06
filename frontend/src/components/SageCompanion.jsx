@@ -251,63 +251,60 @@ export const SageFloatingButton = ({ onClick, hasMessage = false }) => {
   );
 };
 
-// Sage Welcome Modal (for landing page)
+// Sage Welcome Modal (for landing page) - with ElevenLabs voice
 export const SageWelcomeModal = ({ isOpen, onClose, onExploreDemo }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voicesLoaded, setVoicesLoaded] = useState(false);
-  const synthRef = React.useRef(window.speechSynthesis);
+  const [isLoading, setIsLoading] = useState(false);
+  const audioRef = useRef(null);
 
   const welcomeMessage = "Hello! I'm Sage, your family memory guide. I help families preserve their most precious stories across generations. Would you like to explore a demo family and see the magic of Heirloom?";
 
-  // Load voices
-  useEffect(() => {
-    const loadVoices = () => {
-      const voices = synthRef.current.getVoices();
-      if (voices.length > 0) {
-        setVoicesLoaded(true);
-      }
-    };
+  // Speak using ElevenLabs
+  const speak = useCallback(async () => {
+    setIsLoading(true);
     
-    loadVoices();
-    synthRef.current.addEventListener('voiceschanged', loadVoices);
-    return () => {
-      synthRef.current.removeEventListener('voiceschanged', loadVoices);
-    };
+    try {
+      const response = await fetch(`${API_URL}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: welcomeMessage,
+          voice_type: 'sage',
+          stability: 0.6,
+          similarity_boost: 0.8,
+          style: 0.4
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate speech');
+      }
+      
+      const data = await response.json();
+      const audioBlob = base64ToBlob(data.audio_data, data.content_type);
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      
+      audio.onended = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+      
+      setIsLoading(false);
+      setIsSpeaking(true);
+      await audio.play();
+      
+    } catch (error) {
+      console.error('TTS Error:', error);
+      setIsLoading(false);
+    }
   }, []);
 
-  // Find best voice
-  const getBestVoice = () => {
-    const voices = synthRef.current.getVoices();
-    const preferredVoices = [
-      'Google UK English Female',
-      'Google US English',
-      'Samantha',
-      'Karen',
-      'Victoria',
-      'Microsoft Zira',
-    ];
-    
-    for (const preferred of preferredVoices) {
-      const voice = voices.find(v => v.name.includes(preferred));
-      if (voice) return voice;
-    }
-    
-    return voices.find(v => v.lang.startsWith('en'));
-  };
-
   useEffect(() => {
-    if (isOpen && voicesLoaded) {
-      const timer = setTimeout(() => {
-        const utterance = new SpeechSynthesisUtterance(welcomeMessage);
-        utterance.lang = 'en-US';
-        utterance.rate = 0.85;
-        utterance.pitch = 1.05;
-        
-        const voice = getBestVoice();
-        if (voice) {
-          utterance.voice = voice;
-        }
-        
+    if (isOpen) {
+      const timer = setTimeout(() => speak(), 800);
         utterance.onstart = () => setIsSpeaking(true);
         utterance.onend = () => setIsSpeaking(false);
         
