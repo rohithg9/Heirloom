@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, Form
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -16,15 +16,19 @@ import jwt
 import bcrypt
 import base64
 import shutil
+import io
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+from elevenlabs import ElevenLabs, VoiceSettings
 
 ROOT_DIR = Path(__file__).parent
 UPLOADS_DIR = ROOT_DIR / "uploads"
 AUDIO_DIR = UPLOADS_DIR / "audio"
+TTS_CACHE_DIR = UPLOADS_DIR / "tts_cache"
 
 # Ensure directories exist
 UPLOADS_DIR.mkdir(exist_ok=True)
 AUDIO_DIR.mkdir(exist_ok=True)
+TTS_CACHE_DIR.mkdir(exist_ok=True)
 
 load_dotenv(ROOT_DIR / '.env')
 
