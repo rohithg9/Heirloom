@@ -46,6 +46,24 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 
 ### What's Been Implemented
 
+**Date: Feb 6, 2026 (Update 7) - UI Simplification & Layout Fixes**
+
+#### Changes Made:
+1. **Landing Page Button Reorder**
+   - "Try the Demo Experience" now FIRST with attractive amber/orange gradient
+   - "Create Your Family Vault" second (green)
+   - Buttons stack nicely on mobile
+
+2. **Simplified Voice Playback UI**
+   - BIG amber play button in center (easy to tap)
+   - "Hear [Name]'s Voice" label
+   - "Original Voice" is now the DEFAULT
+   - Sage narration is subtle secondary option ("or let Sage narrate")
+   - Clean, uncluttered design
+
+3. **Voice Badge on Memory Cards**
+   - Amber "🎙️ Voice" badge shows each memory has voice recording
+
 **Date: Feb 6, 2026 (Update 6) - Third-Person Narration & Voice Demo**
 
 #### New Features:
