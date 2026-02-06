@@ -303,8 +303,8 @@ const VoiceStudio = () => {
   };
 
   const startNewConversation = () => {
-    // Start with AI greeting
-    const greeting = "Hello! I'm so glad you're here to share your story. I'd love to hear about your life. Tell me about an interesting memory — maybe from your childhood, your school days, or a special moment with family. Take your time, I'm here to listen.";
+    // Start with Sage greeting
+    const greeting = "Hello! I'm Sage, your memory guide. I'm so glad you're here to share your story. I'd love to hear about your life. Tell me about an interesting memory — maybe from your childhood, your school days, or a special moment with family. Take your time, I'm here to listen.";
     
     setMode('interview');
     setAiMessages([{ role: 'assistant', content: greeting }]);
