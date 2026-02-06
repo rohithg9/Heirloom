@@ -103,8 +103,9 @@ export const SageBubble = ({ message, onClose, position = 'bottom-right', showVo
   }, [message, voiceEnabled, speak]);
 
   useEffect(() => {
+    const synth = synthRef.current;
     return () => {
-      synthRef.current.cancel();
+      synth.cancel();
     };
   }, []);
 
