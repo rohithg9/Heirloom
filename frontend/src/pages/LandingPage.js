@@ -157,7 +157,7 @@ const LandingPage = () => {
             className="max-w-4xl"
           >
             <h1 className="font-serif text-charcoal mb-6">
-              Preserve Your Family's<br/>
+              Preserve Your Family&apos;s<br/>
               Living Legacy
             </h1>
             <p className="text-xl md:text-2xl text-charcoal-light max-w-2xl mx-auto mb-10 leading-relaxed">
