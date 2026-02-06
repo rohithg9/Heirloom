@@ -313,7 +313,7 @@ const DemoPage = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-32 pb-24 min-h-screen">
+      <main className="pt-28 pb-24 min-h-screen">
         <AnimatePresence mode="wait">
           {/* INTRO VIEW */}
           {currentView === 'intro' && (
@@ -322,10 +322,10 @@ const DemoPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="max-w-6xl mx-auto px-6"
+              className="max-w-6xl mx-auto px-4 md:px-6"
             >
               {/* Hero */}
-              <div className="text-center mb-16">
+              <div className="text-center mb-12 md:mb-16">
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
