@@ -122,8 +122,31 @@ const DemoPage = () => {
     return emojis[emotion] || '📖';
   };
 
+  const handleDownloadPdf = async () => {
+    setIsGeneratingPdf(true);
+    setPdfProgress('Starting...');
+    
+    try {
+      const success = await downloadDemoLifeBook((progress) => {
+        setPdfProgress(progress);
+      });
+      
+      if (success) {
+        toast.success('Life Book downloaded! Check your downloads folder.');
+      } else {
+        toast.error('Failed to generate PDF. Please try again.');
+      }
+    } catch (error) {
+      toast.error('An error occurred while generating the PDF.');
+    } finally {
+      setIsGeneratingPdf(false);
+      setPdfProgress('');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-charcoal text-ivory overflow-hidden">
+      <Toaster position="top-center" richColors />
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-40 bg-charcoal/90 backdrop-blur-sm border-b border-ivory/10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
