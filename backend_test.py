@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class HeirloomAPITester:
-    def __init__(self, base_url="https://heirloomhub.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://legacy-voices-1.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.token = None
         self.vault_id = None
