@@ -9,7 +9,9 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const [showSageWelcome, setShowSageWelcome] = useState(false);
-  const [hasSeenSage, setHasSeenSage] = useState(false);
+  const [hasSeenSage, setHasSeenSage] = useState(() => {
+    return localStorage.getItem('heirloom_seen_sage') === 'true';
+  });
 
   // Show Sage welcome after a short delay for first-time visitors
   useEffect(() => {
@@ -19,8 +21,6 @@ const LandingPage = () => {
         setShowSageWelcome(true);
       }, 3000);
       return () => clearTimeout(timer);
-    } else {
-      setHasSeenSage(true);
     }
   }, []);
 
