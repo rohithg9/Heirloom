@@ -140,15 +140,16 @@ export const SageBubble = ({ message, onClose, position = 'bottom-right', showVo
   useEffect(() => {
     if (message && voiceEnabled) {
       // Small delay before speaking
-      const timer = setTimeout(() => speak(message), 500);
+      const timer = setTimeout(() => speak(message), 800);
       return () => clearTimeout(timer);
     }
-  }, [message, voiceEnabled, voicesLoaded, speak]);
+  }, [message, voiceEnabled, speak]);
 
   useEffect(() => {
-    const synth = synthRef.current;
     return () => {
-      synth.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
     };
   }, []);
 
@@ -171,10 +172,12 @@ export const SageBubble = ({ message, onClose, position = 'bottom-right', showVo
         {/* Header */}
         <div className="bg-gradient-to-r from-emerald/10 to-emerald/5 px-3 py-2 flex items-center justify-between border-b border-emerald/10">
           <div className="flex items-center gap-2">
-            <SageAvatar size="sm" speaking={isSpeaking} />
+            <SageAvatar size="sm" speaking={isSpeaking || isLoading} />
             <div>
               <span className="font-serif text-charcoal font-medium text-sm">Sage</span>
-              <span className="text-xs text-charcoal-muted block">Memory Guide</span>
+              <span className="text-xs text-charcoal-muted block">
+                {isLoading ? 'Preparing...' : 'Memory Guide'}
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-1">
