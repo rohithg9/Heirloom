@@ -1,12 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Users, Home, ArrowRight, Heart, Mic, BookOpen } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Users, Home, ArrowRight, Heart, Mic, BookOpen, Play, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { SageAvatar, SageWelcomeModal } from '../components/SageCompanion';
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
+  const [showSageWelcome, setShowSageWelcome] = useState(false);
+  const [hasSeenSage, setHasSeenSage] = useState(false);
+
+  // Show Sage welcome after a short delay for first-time visitors
+  useEffect(() => {
+    const seen = localStorage.getItem('heirloom_seen_sage');
+    if (!seen) {
+      const timer = setTimeout(() => {
+        setShowSageWelcome(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setHasSeenSage(true);
+    }
+  }, []);
+
+  const handleExploreDemo = () => {
+    localStorage.setItem('heirloom_seen_sage', 'true');
+    setShowSageWelcome(false);
+    setHasSeenSage(true);
+    navigate('/demo');
+  };
+
+  const handleCloseSageWelcome = () => {
+    localStorage.setItem('heirloom_seen_sage', 'true');
+    setShowSageWelcome(false);
+    setHasSeenSage(true);
+  };
 
   const features = [
     {
