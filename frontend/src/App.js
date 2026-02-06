@@ -14,6 +14,7 @@ import MemoriesPage from './pages/MemoriesPage';
 import MemoryDetail from './pages/MemoryDetail';
 import ExportPage from './pages/ExportPage';
 import SettingsPage from './pages/SettingsPage';
+import DemoPage from './pages/DemoPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
