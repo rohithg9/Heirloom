@@ -1,15 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   ArrowLeft, User, Shield, Bell, Download, Trash2,
-  ChevronRight, LogOut, Heart
+  ChevronRight, LogOut, Heart, Volume2, VolumeX, Globe
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { Switch } from '../components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Label } from '../components/ui/label';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/alert-dialog';
 import { Toaster, toast } from 'sonner';
+
+// Language options
+const LANGUAGES = [
+  { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
+  { code: 'en-GB', name: 'English (UK)', flag: '🇬🇧' },
+  { code: 'en-IN', name: 'English (India)', flag: '🇮🇳' },
+  { code: 'hi-IN', name: 'Hindi', flag: '🇮🇳' },
+  { code: 'es-ES', name: 'Spanish', flag: '🇪🇸' },
+  { code: 'fr-FR', name: 'French', flag: '🇫🇷' },
+  { code: 'de-DE', name: 'German', flag: '🇩🇪' },
+  { code: 'it-IT', name: 'Italian', flag: '🇮🇹' },
+  { code: 'pt-BR', name: 'Portuguese', flag: '🇧🇷' },
+  { code: 'zh-CN', name: 'Chinese (Mandarin)', flag: '🇨🇳' },
+  { code: 'ja-JP', name: 'Japanese', flag: '🇯🇵' },
+  { code: 'ko-KR', name: 'Korean', flag: '🇰🇷' },
+  { code: 'ar-SA', name: 'Arabic', flag: '🇸🇦' },
+  { code: 'ru-RU', name: 'Russian', flag: '🇷🇺' },
+  { code: 'bn-IN', name: 'Bengali', flag: '🇮🇳' },
+  { code: 'ta-IN', name: 'Tamil', flag: '🇮🇳' },
+  { code: 'te-IN', name: 'Telugu', flag: '🇮🇳' },
+  { code: 'mr-IN', name: 'Marathi', flag: '🇮🇳' },
+  { code: 'gu-IN', name: 'Gujarati', flag: '🇮🇳' },
+  { code: 'pa-IN', name: 'Punjabi', flag: '🇮🇳' },
+];
 
 const SettingsPage = () => {
   const navigate = useNavigate();
@@ -20,65 +46,29 @@ const SettingsPage = () => {
     publicProfile: false,
     aiSuggestions: true,
   });
+  
+  // Language and voice settings from localStorage
+  const [language, setLanguage] = useState(localStorage.getItem('heirloom_language') || 'en-US');
+  const [voiceEnabled, setVoiceEnabled] = useState(localStorage.getItem('heirloom_voice') !== 'false');
+
+  // Save language when changed
+  const handleLanguageChange = (newLang) => {
+    setLanguage(newLang);
+    localStorage.setItem('heirloom_language', newLang);
+    toast.success(`Language changed to ${LANGUAGES.find(l => l.code === newLang)?.name}`);
+  };
+
+  // Save voice setting when changed
+  const handleVoiceToggle = (enabled) => {
+    setVoiceEnabled(enabled);
+    localStorage.setItem('heirloom_voice', enabled.toString());
+    toast.success(`AI voice ${enabled ? 'enabled' : 'disabled'}`);
+  };
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
-
-  const settingsSections = [
-    {
-      title: 'Account',
-      items: [
-        {
-          icon: <User className="w-5 h-5" />,
-          label: 'Edit Profile',
-          description: 'Update your name, bio, and photo',
-          action: () => navigate(`/profile/${user?.member_id}`),
-        },
-        {
-          icon: <Shield className="w-5 h-5" />,
-          label: 'Privacy Settings',
-          description: 'Control who can see your stories',
-          toggle: true,
-          toggleKey: 'publicProfile',
-          toggleLabel: 'Public profile',
-        },
-      ],
-    },
-    {
-      title: 'Preferences',
-      items: [
-        {
-          icon: <Bell className="w-5 h-5" />,
-          label: 'Notifications',
-          description: 'Get notified about new family stories',
-          toggle: true,
-          toggleKey: 'notifications',
-        },
-        {
-          icon: <Heart className="w-5 h-5" />,
-          label: 'AI Suggestions',
-          description: 'Get personalized story prompts',
-          toggle: true,
-          toggleKey: 'aiSuggestions',
-        },
-      ],
-    },
-    {
-      title: 'Data',
-      items: [
-        {
-          icon: <Download className="w-5 h-5" />,
-          label: 'Export All Data',
-          description: 'Download your stories and family data',
-          action: () => {
-            toast.info('Data export feature coming soon');
-          },
-        },
-      ],
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-ivory">
@@ -121,56 +111,199 @@ const SettingsPage = () => {
           </div>
         </motion.div>
 
-        {/* Settings Sections */}
-        {settingsSections.map((section, sectionIndex) => (
-          <motion.div
-            key={section.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: sectionIndex * 0.1 }}
-          >
-            <h3 className="font-medium text-charcoal-muted mb-3">{section.title}</h3>
-            <div className="card-paper divide-y divide-ivory-300">
-              {section.items.map((item, itemIndex) => (
-                <div
-                  key={itemIndex}
-                  className={`p-4 flex items-center justify-between ${item.action ? 'cursor-pointer hover:bg-ivory-200/50 transition-colors' : ''}`}
-                  onClick={item.action}
-                  data-testid={`setting-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-ivory-200 flex items-center justify-center text-charcoal-muted">
-                      {item.icon}
-                    </div>
-                    <div>
-                      <p className="text-charcoal font-medium">{item.label}</p>
-                      <p className="text-sm text-charcoal-muted">{item.description}</p>
-                    </div>
+        {/* Language & Voice Settings */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <h3 className="font-medium text-charcoal-muted mb-3">Language & Voice</h3>
+          <div className="card-paper divide-y divide-ivory-300">
+            {/* Language Selection */}
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-ivory-200 flex items-center justify-center text-charcoal-muted">
+                    <Globe className="w-5 h-5" />
                   </div>
-                  
-                  {item.toggle ? (
-                    <Switch
-                      checked={settings[item.toggleKey]}
-                      onCheckedChange={(checked) => {
-                        setSettings(prev => ({ ...prev, [item.toggleKey]: checked }));
-                        toast.success(`${item.label} ${checked ? 'enabled' : 'disabled'}`);
-                      }}
-                      data-testid={`toggle-${item.toggleKey}`}
-                    />
-                  ) : (
-                    <ChevronRight className="w-5 h-5 text-charcoal-muted" />
-                  )}
+                  <div>
+                    <p className="text-charcoal font-medium">Story Language</p>
+                    <p className="text-sm text-charcoal-muted">Language for voice recognition & AI</p>
+                  </div>
                 </div>
-              ))}
+                <Select value={language} onValueChange={handleLanguageChange}>
+                  <SelectTrigger className="w-48 input-heirloom" data-testid="language-setting">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGES.map(lang => (
+                      <SelectItem key={lang.code} value={lang.code}>
+                        <span className="mr-2">{lang.flag}</span>
+                        {lang.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </motion.div>
-        ))}
+            
+            {/* Voice Toggle */}
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-ivory-200 flex items-center justify-center text-charcoal-muted">
+                    {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                  </div>
+                  <div>
+                    <p className="text-charcoal font-medium">AI Voice Responses</p>
+                    <p className="text-sm text-charcoal-muted">Let AI speak responses aloud</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={voiceEnabled}
+                  onCheckedChange={handleVoiceToggle}
+                  data-testid="voice-setting-toggle"
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
-        {/* Danger Zone */}
+        {/* Account Settings */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h3 className="font-medium text-charcoal-muted mb-3">Account</h3>
+          <div className="card-paper divide-y divide-ivory-300">
+            <button
+              onClick={() => navigate(`/profile/${user?.member_id}`)}
+              className="p-4 flex items-center justify-between w-full hover:bg-ivory-200/50 transition-colors"
+              data-testid="edit-profile-setting"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-ivory-200 flex items-center justify-center text-charcoal-muted">
+                  <User className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <p className="text-charcoal font-medium">Edit Profile</p>
+                  <p className="text-sm text-charcoal-muted">Update your name, bio, and photo</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-charcoal-muted" />
+            </button>
+            
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-ivory-200 flex items-center justify-center text-charcoal-muted">
+                    <Shield className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-charcoal font-medium">Privacy Settings</p>
+                    <p className="text-sm text-charcoal-muted">Control who sees your stories</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={settings.publicProfile}
+                  onCheckedChange={(checked) => {
+                    setSettings(prev => ({ ...prev, publicProfile: checked }));
+                    toast.success(`Profile ${checked ? 'public' : 'private'}`);
+                  }}
+                  data-testid="privacy-toggle"
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Preferences */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <h3 className="font-medium text-charcoal-muted mb-3">Preferences</h3>
+          <div className="card-paper divide-y divide-ivory-300">
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-ivory-200 flex items-center justify-center text-charcoal-muted">
+                    <Bell className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-charcoal font-medium">Notifications</p>
+                    <p className="text-sm text-charcoal-muted">Get notified about new stories</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={settings.notifications}
+                  onCheckedChange={(checked) => {
+                    setSettings(prev => ({ ...prev, notifications: checked }));
+                    toast.success(`Notifications ${checked ? 'enabled' : 'disabled'}`);
+                  }}
+                  data-testid="notifications-toggle"
+                />
+              </div>
+            </div>
+            
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-ivory-200 flex items-center justify-center text-charcoal-muted">
+                    <Heart className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-charcoal font-medium">AI Suggestions</p>
+                    <p className="text-sm text-charcoal-muted">Get personalized story prompts</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={settings.aiSuggestions}
+                  onCheckedChange={(checked) => {
+                    setSettings(prev => ({ ...prev, aiSuggestions: checked }));
+                    toast.success(`AI suggestions ${checked ? 'enabled' : 'disabled'}`);
+                  }}
+                  data-testid="ai-suggestions-toggle"
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Data */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
+        >
+          <h3 className="font-medium text-charcoal-muted mb-3">Data</h3>
+          <div className="card-paper divide-y divide-ivory-300">
+            <button
+              onClick={() => toast.info('Data export feature coming soon')}
+              className="p-4 flex items-center justify-between w-full hover:bg-ivory-200/50 transition-colors"
+              data-testid="export-data-setting"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-ivory-200 flex items-center justify-center text-charcoal-muted">
+                  <Download className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <p className="text-charcoal font-medium">Export All Data</p>
+                  <p className="text-sm text-charcoal-muted">Download your stories and family data</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-charcoal-muted" />
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Account Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
         >
           <h3 className="font-medium text-charcoal-muted mb-3">Account Actions</h3>
           <div className="card-paper divide-y divide-ivory-300">
