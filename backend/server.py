@@ -44,6 +44,25 @@ JWT_ALGORITHM = "HS256"
 # Emergent LLM Key
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 
+# ElevenLabs Configuration
+ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', '')
+eleven_client = ElevenLabs(api_key=ELEVENLABS_API_KEY) if ELEVENLABS_API_KEY else None
+
+# ElevenLabs Voice IDs - Natural, warm voices
+VOICE_IDS = {
+    # Sage - warm, friendly female narrator
+    "sage": "EXAVITQu4vr4xnSDxMaL",  # Sarah - soft, warm
+    # Female storyteller voices
+    "female_warm": "EXAVITQu4vr4xnSDxMaL",  # Sarah
+    "female_young": "21m00Tcm4TlvDq8ikWAM",  # Rachel - clear, engaging
+    # Male storyteller voices  
+    "male_warm": "VR6AewLTigWG4xSOukaG",  # Arnold - deep, warm
+    "male_young": "pNInz6obpgDQGcFmaJgB",  # Adam - clear, friendly
+    # Default fallbacks
+    "default_female": "EXAVITQu4vr4xnSDxMaL",
+    "default_male": "VR6AewLTigWG4xSOukaG"
+}
+
 # Create the main app
 app = FastAPI(title="Heirloom API", description="Family Memory Preservation Platform")
 
