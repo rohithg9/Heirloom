@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Volume2, VolumeX, MessageCircle, Sparkles } from 'lucide-react';
+import { X, Volume2, VolumeX, MessageCircle, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Sage Avatar Component - Using the cute cloud character
 export const SageAvatar = ({ size = 'md', speaking = false, onClick }) => {
@@ -46,12 +48,27 @@ export const SageAvatar = ({ size = 'md', speaking = false, onClick }) => {
   );
 };
 
-// Sage Chat Bubble
+// Helper to convert base64 to blob
+function base64ToBlob(base64, contentType = 'audio/mpeg') {
+  const byteCharacters = atob(base64);
+  const byteArrays = [];
+  for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+    const slice = byteCharacters.slice(offset, offset + 512);
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+    byteArrays.push(new Uint8Array(byteNumbers));
+  }
+  return new Blob(byteArrays, { type: contentType });
+}
+
+// Sage Chat Bubble with ElevenLabs voice
 export const SageBubble = ({ message, onClose, position = 'bottom-right', showVoice = true }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
-  const [voicesLoaded, setVoicesLoaded] = useState(false);
-  const synthRef = React.useRef(window.speechSynthesis);
+  const audioRef = useRef(null);
 
   // Load voices when available
   useEffect(() => {
