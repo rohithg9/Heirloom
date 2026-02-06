@@ -505,7 +505,7 @@ const VoiceStudio = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-6 py-8">
+      <main className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 md:px-6 py-6">
         <AnimatePresence mode="wait">
           {/* Welcome Screen */}
           {mode === 'welcome' && (
@@ -516,24 +516,41 @@ const VoiceStudio = () => {
               exit={{ opacity: 0, y: -20 }}
               className="flex-1 flex flex-col items-center justify-center text-center"
             >
-              <h1 className="font-serif text-4xl text-charcoal mb-4">
+              {/* Sage Avatar */}
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 2.5, repeat: Infinity }}
+                className="mb-6"
+              >
+                <SageAvatar size="xl" />
+              </motion.div>
+              
+              <h1 className="font-serif text-3xl md:text-4xl text-charcoal mb-4">
                 Share Your Story
               </h1>
-              <p className="text-charcoal-muted text-xl mb-8 max-w-md">
-                I'll listen and help preserve your precious memories. 
+              <p className="text-charcoal-muted text-lg md:text-xl mb-6 max-w-md">
+                I&apos;m Sage, and I&apos;ll listen and help preserve your precious memories. 
                 {voiceEnabled ? " I'll speak too, like a friend." : ""}
               </p>
               
+              {/* Voice Recording Info */}
+              <div className="mb-6 p-4 bg-emerald/10 rounded-xl max-w-md">
+                <p className="text-sm text-charcoal flex items-center gap-2">
+                  <Mic className="w-4 h-4 text-emerald" />
+                  <span>Your voice will be recorded and preserved with your story</span>
+                </p>
+              </div>
+              
               {/* Language reminder */}
-              <div className="mb-8 flex items-center gap-2 text-charcoal-muted">
-                <Globe className="w-5 h-5" />
+              <div className="mb-6 flex items-center gap-2 text-charcoal-muted text-sm">
+                <Globe className="w-4 h-4" />
                 <span>Speaking in: {LANGUAGES.find(l => l.code === language)?.name}</span>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <motion.button
                   onClick={startNewConversation}
-                  className="btn-primary text-xl px-8 py-5 flex items-center gap-3"
+                  className="btn-primary text-lg md:text-xl px-6 md:px-8 py-4 md:py-5 flex items-center gap-3"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   data-testid="start-conversation-btn"
