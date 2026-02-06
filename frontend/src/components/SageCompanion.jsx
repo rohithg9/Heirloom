@@ -3,45 +3,79 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Volume2, VolumeX, MessageCircle, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 
-// Sage Avatar Component - Elegant minimal design
+// Sage Avatar Component - Friendly face design
 export const SageAvatar = ({ size = 'md', speaking = false, onClick }) => {
   const sizeClasses = {
     sm: 'w-10 h-10',
-    md: 'w-14 h-14',
-    lg: 'w-16 h-16',
-    xl: 'w-20 h-20'
+    md: 'w-12 h-12',
+    lg: 'w-14 h-14',
+    xl: 'w-16 h-16'
   };
 
-  const iconSizes = {
-    sm: 'w-5 h-5',
-    md: 'w-7 h-7',
-    lg: 'w-8 h-8',
-    xl: 'w-10 h-10'
+  const faceSizes = {
+    sm: { face: 20, eye: 2, smile: 6 },
+    md: { face: 24, eye: 2.5, smile: 7 },
+    lg: { face: 28, eye: 3, smile: 8 },
+    xl: { face: 32, eye: 3.5, smile: 9 }
   };
+
+  const s = faceSizes[size];
 
   return (
     <motion.button
       onClick={onClick}
-      className={`relative ${sizeClasses[size]} rounded-full bg-gradient-to-br from-emerald to-emerald-dark shadow-lg flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform border-2 border-emerald/30`}
+      className={`relative ${sizeClasses[size]} rounded-full bg-gradient-to-br from-amber-400 to-amber-500 shadow-lg flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform border-2 border-amber-300/50`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       data-testid="sage-avatar"
     >
-      {/* Sage Icon - Sparkles representing wisdom/AI */}
-      <Sparkles className={`${iconSizes[size]} text-white`} />
+      {/* Friendly face SVG */}
+      <svg viewBox="0 0 40 40" className="w-full h-full p-1">
+        {/* Face background */}
+        <circle cx="20" cy="20" r="18" fill="#FEF3C7" />
+        
+        {/* Rosy cheeks */}
+        <circle cx="10" cy="22" r="3" fill="#FECACA" opacity="0.6" />
+        <circle cx="30" cy="22" r="3" fill="#FECACA" opacity="0.6" />
+        
+        {/* Eyes - happy closed crescents when speaking, open dots otherwise */}
+        {speaking ? (
+          <>
+            <path d="M12 18 Q15 15 18 18" stroke="#374151" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <path d="M22 18 Q25 15 28 18" stroke="#374151" strokeWidth="2" fill="none" strokeLinecap="round" />
+          </>
+        ) : (
+          <>
+            <circle cx="14" cy="17" r="2.5" fill="#374151" />
+            <circle cx="26" cy="17" r="2.5" fill="#374151" />
+            {/* Eye sparkle */}
+            <circle cx="13" cy="16" r="1" fill="white" />
+            <circle cx="25" cy="16" r="1" fill="white" />
+          </>
+        )}
+        
+        {/* Warm smile */}
+        <path 
+          d="M13 25 Q20 31 27 25" 
+          stroke="#374151" 
+          strokeWidth="2" 
+          fill="none" 
+          strokeLinecap="round" 
+        />
+      </svg>
       
       {/* Speaking animation rings */}
       {speaking && (
         <>
           <motion.div
-            className="absolute inset-0 rounded-full border-2 border-white/40"
-            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
-            transition={{ duration: 1.2, repeat: Infinity }}
+            className="absolute inset-0 rounded-full border-2 border-amber-300"
+            animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ duration: 1, repeat: Infinity }}
           />
           <motion.div
-            className="absolute inset-0 rounded-full border-2 border-white/30"
-            animate={{ scale: [1, 1.6, 1], opacity: [0.4, 0, 0.4] }}
-            transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}
+            className="absolute inset-0 rounded-full border-2 border-amber-300"
+            animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
+            transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
           />
         </>
       )}
