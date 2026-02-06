@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Volume2, VolumeX, MessageCircle, Sparkles, Mic } from 'lucide-react';
+import { X, Volume2, VolumeX, MessageCircle, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 
 // Sage Avatar Component - Elegant minimal design
