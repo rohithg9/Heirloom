@@ -46,6 +46,33 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 
 ### What's Been Implemented
 
+**Date: Feb 6, 2026 (Update 5) - Voice Recording & Branding**
+
+#### New Features:
+1. **Custom Logo** - Beautiful golden tree with heart icon as brand identity
+   - Clickable to homepage from anywhere in the app
+   - Used in header, footer, and demo pages
+
+2. **Sage Cloud Avatar** - Adorable cloud character with rosy cheeks
+   - Custom image asset at `/public/images/sage-avatar.png`
+   - Animated speaking rings when AI is talking
+
+3. **Voice Recording Feature** - Preserve actual user voices
+   - Records user's voice while they speak (Web Audio API)
+   - Stores audio locally on server (`/backend/uploads/audio/`)
+   - Links audio to memories in database
+   - Playback available after recording
+
+4. **Gender-Based Voice Selection** - TTS matches storyteller's gender
+   - Detects author gender from member data
+   - Uses male voice for male storytellers, female for female
+
+5. **Backend Audio API Endpoints**:
+   - `POST /api/audio/upload` - Upload audio recording
+   - `GET /api/audio/{id}` - Stream audio file
+   - `GET /api/audio` - List recordings
+   - `DELETE /api/audio/{id}` - Delete recording
+
 **Date: Feb 6, 2026 (Update 4) - UI/UX Fixes**
 
 #### Issues Fixed:
