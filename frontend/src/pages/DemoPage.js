@@ -149,40 +149,78 @@ const DemoPage = () => {
     }
   }, [isPlaying, currentMemoryIndex, currentView]);
 
-  // Speak with gender-appropriate voice
-  const speak = useCallback((text, authorId = null) => {
-    if (!voiceEnabled || !text || !voicesLoaded) return;
+  // Stop all speech
+  const stopSpeech = useCallback(() => {
     synthRef.current.cancel();
+    setIsSageNarrating(false);
+    setIsPlayingOriginalVoice(false);
+  }, []);
+
+  // Speak with gender-appropriate voice (for original voice simulation)
+  const speakAsOriginalVoice = useCallback((text, member) => {
+    if (!voiceEnabled || !text || !voicesLoaded) return;
+    stopSpeech();
     
+    const gender = getMemberGender(member);
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
-    utterance.rate = 0.85;
-    utterance.pitch = 1;
+    utterance.rate = 0.9; // Slightly faster for original voice
+    utterance.pitch = gender === 'male' ? 0.9 : 1.1;
     
-    // Get gender-appropriate voice if author specified
-    if (authorId) {
-      const gender = getMemberGender(authorId);
-      const voice = getVoiceForGender(gender);
-      if (voice) utterance.voice = voice;
-    } else {
-      // Default to female voice for Sage
-      const voice = getVoiceForGender('female');
-      if (voice) utterance.voice = voice;
-    }
+    const voice = getVoiceForGender(gender);
+    if (voice) utterance.voice = voice;
+    
+    utterance.onstart = () => setIsPlayingOriginalVoice(true);
+    utterance.onend = () => setIsPlayingOriginalVoice(false);
+    utterance.onerror = () => setIsPlayingOriginalVoice(false);
     
     synthRef.current.speak(utterance);
-  }, [voiceEnabled, voicesLoaded, getVoiceForGender]);
+  }, [voiceEnabled, voicesLoaded, getVoiceForGender, stopSpeech]);
+
+  // Sage narrates story in third person
+  const narrateAsSage = useCallback((memory, member) => {
+    if (!voiceEnabled || !memory || !voicesLoaded) return;
+    stopSpeech();
+    
+    const gender = getMemberGender(member);
+    
+    // Create introduction
+    const intro = createStoryIntro(memory, member);
+    
+    // Transform narrative to third person
+    const thirdPersonNarrative = transformToThirdPerson(memory.narrative, member.name, gender);
+    
+    // Create closing
+    const closing = createStoryClosing(memory, member);
+    
+    // Full narration
+    const fullNarration = `${intro} ${thirdPersonNarrative} ${closing}`;
+    
+    const utterance = new SpeechSynthesisUtterance(fullNarration);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8; // Slower, more storytelling pace
+    utterance.pitch = 1.05;
+    
+    // Sage always uses a warm female voice
+    const voice = getVoiceForGender('female');
+    if (voice) utterance.voice = voice;
+    
+    utterance.onstart = () => setIsSageNarrating(true);
+    utterance.onend = () => setIsSageNarrating(false);
+    utterance.onerror = () => setIsSageNarrating(false);
+    
+    synthRef.current.speak(utterance);
+  }, [voiceEnabled, voicesLoaded, getVoiceForGender, stopSpeech]);
 
   const handleMemorySelect = (memory, index) => {
     setSelectedMemory(memory);
     setCurrentMemoryIndex(index);
-    if (voiceEnabled) {
-      // Use author's gender for voice
-      speak(memory.narrative, memory.author_id);
-    }
+    stopSpeech();
+    // Don't auto-play, let user choose mode
   };
 
   const navigateMemory = (direction) => {
+    stopSpeech();
     const newIndex = direction === 'next' 
       ? (currentMemoryIndex + 1) % DEMO_MEMORIES.length
       : (currentMemoryIndex - 1 + DEMO_MEMORIES.length) % DEMO_MEMORIES.length;
@@ -190,9 +228,15 @@ const DemoPage = () => {
     const memory = DEMO_MEMORIES[newIndex];
     setCurrentMemoryIndex(newIndex);
     setSelectedMemory(memory);
-    if (voiceEnabled) {
-      // Use author's gender for voice
-      speak(memory.narrative, memory.author_id);
+  };
+
+  // Play memory with selected narrator mode
+  const playMemory = (memory) => {
+    const member = DEMO_MEMBERS.find(m => m.id === memory.author_id);
+    if (narratorMode === 'sage') {
+      narrateAsSage(memory, member);
+    } else {
+      speakAsOriginalVoice(memory.narrative, member);
     }
   };
 
