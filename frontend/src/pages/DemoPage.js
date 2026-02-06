@@ -31,8 +31,90 @@ const DemoPage = () => {
   const [autoplayTimer, setAutoplayTimer] = useState(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfProgress, setPdfProgress] = useState('');
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
 
   const synthRef = useRef(window.speechSynthesis);
+
+  // Load voices
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = synthRef.current.getVoices();
+      if (voices.length > 0) {
+        setVoicesLoaded(true);
+      }
+    };
+    loadVoices();
+    synthRef.current.addEventListener('voiceschanged', loadVoices);
+    return () => {
+      synthRef.current.removeEventListener('voiceschanged', loadVoices);
+    };
+  }, []);
+
+  // Get gender-appropriate voice
+  const getVoiceForGender = useCallback((gender) => {
+    const voices = synthRef.current.getVoices();
+    
+    // Female voice preferences
+    const femaleVoices = [
+      'Google UK English Female',
+      'Samantha', // macOS
+      'Karen', // macOS
+      'Victoria', // macOS
+      'Microsoft Zira', // Windows
+      'Google US English',
+    ];
+    
+    // Male voice preferences
+    const maleVoices = [
+      'Google UK English Male',
+      'Daniel', // macOS
+      'Alex', // macOS
+      'Fred', // macOS
+      'Microsoft David', // Windows
+      'Google US English',
+    ];
+    
+    const preferredList = gender === 'male' ? maleVoices : femaleVoices;
+    
+    for (const preferred of preferredList) {
+      const voice = voices.find(v => v.name.includes(preferred));
+      if (voice) return voice;
+    }
+    
+    // Fallback - try to find any voice matching gender
+    const genderKeyword = gender === 'male' ? 'male' : 'female';
+    const genderVoice = voices.find(v => 
+      v.name.toLowerCase().includes(genderKeyword) && v.lang.startsWith('en')
+    );
+    
+    return genderVoice || voices.find(v => v.lang.startsWith('en'));
+  }, []);
+
+  // Determine gender from member data
+  const getMemberGender = (memberId) => {
+    const member = DEMO_MEMBERS.find(m => m.id === memberId);
+    if (!member) return 'female';
+    
+    // Check role/relationship for gender hints
+    const femaleRoles = ['mother', 'grandmother', 'daughter', 'granddaughter', 'matriarch', 'wife', 'sister', 'aunt', 'nani', 'nana'];
+    const maleRoles = ['father', 'grandfather', 'son', 'grandson', 'patriarch', 'husband', 'brother', 'uncle', 'nana', 'papa'];
+    
+    const roleAndRelationship = `${member.role} ${member.relationship || ''}`.toLowerCase();
+    
+    if (maleRoles.some(r => roleAndRelationship.includes(r))) {
+      // Special case: "Nana" in Indian context is grandmother, but "Nana" as nickname could be male
+      if (member.nickname === 'Nana' && member.role === 'Patriarch') return 'male';
+      if (member.nickname === 'Nani') return 'female';
+      return 'male';
+    }
+    if (femaleRoles.some(r => roleAndRelationship.includes(r))) return 'female';
+    
+    // Default based on name patterns (basic heuristic)
+    const name = member.name.toLowerCase();
+    if (name.includes('james') || name.includes('rajan') || name.includes('arjun')) return 'male';
+    
+    return 'female';
+  };
 
   // Sage narration for each view
   useEffect(() => {
@@ -63,8 +145,9 @@ const DemoPage = () => {
     }
   }, [isPlaying, currentMemoryIndex, currentView]);
 
-  const speak = (text) => {
-    if (!voiceEnabled || !text) return;
+  // Speak with gender-appropriate voice
+  const speak = useCallback((text, authorId = null) => {
+    if (!voiceEnabled || !text || !voicesLoaded) return;
     synthRef.current.cancel();
     
     const utterance = new SpeechSynthesisUtterance(text);
@@ -72,8 +155,19 @@ const DemoPage = () => {
     utterance.rate = 0.85;
     utterance.pitch = 1;
     
+    // Get gender-appropriate voice if author specified
+    if (authorId) {
+      const gender = getMemberGender(authorId);
+      const voice = getVoiceForGender(gender);
+      if (voice) utterance.voice = voice;
+    } else {
+      // Default to female voice for Sage
+      const voice = getVoiceForGender('female');
+      if (voice) utterance.voice = voice;
+    }
+    
     synthRef.current.speak(utterance);
-  };
+  }, [voiceEnabled, voicesLoaded, getVoiceForGender, getMemberGender]);
 
   const handleMemorySelect = (memory, index) => {
     setSelectedMemory(memory);
