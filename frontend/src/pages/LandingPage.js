@@ -123,6 +123,15 @@ const LandingPage = () => {
           >
             <Button 
               variant="ghost" 
+              className="btn-ghost hidden sm:flex items-center gap-2"
+              onClick={() => navigate('/demo')}
+              data-testid="demo-btn"
+            >
+              <Play className="w-4 h-4" />
+              Demo
+            </Button>
+            <Button 
+              variant="ghost" 
               className="btn-ghost"
               onClick={() => navigate('/auth')}
               data-testid="login-btn"
