@@ -807,6 +807,119 @@ async def export_theme_book(
         "generated_at": datetime.now(timezone.utc).isoformat()
     }
 
+# ==================== AUDIO RECORDING ENDPOINTS ====================
+
+@api_router.post("/audio/upload")
+async def upload_audio(
+    file: UploadFile = File(...),
+    memory_id: Optional[str] = Form(None),
+    title: Optional[str] = Form(None),
+    user: dict = Depends(get_current_user)
+):
+    """Upload an audio recording"""
+    if not file.content_type.startswith('audio/'):
+        raise HTTPException(status_code=400, detail="File must be an audio file")
+    
+    # Generate unique filename
+    file_ext = file.filename.split('.')[-1] if '.' in file.filename else 'webm'
+    audio_id = str(uuid.uuid4())
+    filename = f"{audio_id}.{file_ext}"
+    file_path = AUDIO_DIR / filename
+    
+    # Save file
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except Exception as e:
+        logger.error(f"Failed to save audio file: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save audio file")
+    
+    # Store metadata in database
+    now = datetime.now(timezone.utc).isoformat()
+    audio_record = {
+        "id": audio_id,
+        "vault_id": user["vault_id"],
+        "member_id": user["id"],
+        "memory_id": memory_id,
+        "title": title or f"Recording {now[:10]}",
+        "filename": filename,
+        "file_path": str(file_path),
+        "content_type": file.content_type,
+        "size_bytes": file_path.stat().st_size,
+        "created_at": now
+    }
+    
+    await db.audio_recordings.insert_one(audio_record)
+    
+    # If associated with a memory, update the memory
+    if memory_id:
+        await db.memories.update_one(
+            {"id": memory_id, "vault_id": user["vault_id"]},
+            {"$set": {"audio_url": f"/api/audio/{audio_id}", "has_audio": True}}
+        )
+    
+    return {
+        "id": audio_id,
+        "url": f"/api/audio/{audio_id}",
+        "message": "Audio uploaded successfully"
+    }
+
+@api_router.get("/audio/{audio_id}")
+async def get_audio(audio_id: str):
+    """Stream an audio recording"""
+    record = await db.audio_recordings.find_one({"id": audio_id}, {"_id": 0})
+    if not record:
+        raise HTTPException(status_code=404, detail="Audio not found")
+    
+    file_path = Path(record["file_path"])
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Audio file not found")
+    
+    return FileResponse(
+        file_path,
+        media_type=record.get("content_type", "audio/webm"),
+        filename=record.get("filename", f"{audio_id}.webm")
+    )
+
+@api_router.get("/audio")
+async def list_audio(user: dict = Depends(get_current_user)):
+    """List all audio recordings for the vault"""
+    recordings = await db.audio_recordings.find(
+        {"vault_id": user["vault_id"]},
+        {"_id": 0, "file_path": 0}
+    ).sort("created_at", -1).to_list(100)
+    return recordings
+
+@api_router.delete("/audio/{audio_id}")
+async def delete_audio(audio_id: str, user: dict = Depends(get_current_user)):
+    """Delete an audio recording"""
+    record = await db.audio_recordings.find_one({
+        "id": audio_id,
+        "vault_id": user["vault_id"]
+    })
+    if not record:
+        raise HTTPException(status_code=404, detail="Audio not found")
+    
+    # Delete file
+    try:
+        file_path = Path(record["file_path"])
+        if file_path.exists():
+            file_path.unlink()
+    except Exception as e:
+        logger.warning(f"Failed to delete audio file: {e}")
+    
+    # Delete database record
+    await db.audio_recordings.delete_one({"id": audio_id})
+    
+    # Remove from memory if associated
+    if record.get("memory_id"):
+        await db.memories.update_one(
+            {"id": record["memory_id"]},
+            {"$unset": {"audio_url": "", "has_audio": ""}}
+        )
+    
+    return {"message": "Audio deleted"}
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
