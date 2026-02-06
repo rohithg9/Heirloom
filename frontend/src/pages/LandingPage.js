@@ -33,9 +33,9 @@ const LandingPage = () => {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1726731819337-d337f181bd85?crop=entropy&cs=srgb&fm=jpg&q=85"
+            src="https://images.unsplash.com/photo-1766973305814-9d29ed206faa?crop=entropy&cs=srgb&fm=jpg&q=85"
             alt="Family gathering"
-            className="w-full h-full object-cover img-heirloom opacity-40"
+            className="w-full h-full object-cover img-heirloom opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-ivory/80 via-ivory/60 to-ivory" />
         </div>
@@ -86,7 +86,7 @@ const LandingPage = () => {
           >
             <h1 className="font-serif text-charcoal mb-6">
               Preserve Your Family's
-              <span className="block text-emerald">Living Legacy</span>
+              <span className="block">Living Legacy</span>
             </h1>
             <p className="text-xl md:text-2xl text-charcoal-light max-w-2xl mx-auto mb-10 leading-relaxed">
               Every family has stories worth preserving. Create a private sanctuary where 
@@ -175,6 +175,78 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Family Stories Gallery */}
+      <section className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="font-serif text-charcoal mb-4">Stories Across Generations</h2>
+            <p className="text-charcoal-light text-xl max-w-2xl mx-auto">
+              From cherished childhood memories to wisdom shared across generations
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Storytelling Image */}
+            <motion.div
+              className="relative rounded-2xl overflow-hidden shadow-deep aspect-[4/3]"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1758612897150-210b2a72b275?crop=entropy&cs=srgb&fm=jpg&q=85"
+                alt="Grandfather reading to grandchild"
+                className="w-full h-full object-cover img-heirloom"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-charcoal/60 to-transparent p-4">
+                <p className="text-ivory font-serif text-lg">Passing Down Stories</p>
+              </div>
+            </motion.div>
+
+            {/* Family Gathering */}
+            <motion.div
+              className="relative rounded-2xl overflow-hidden shadow-deep aspect-[4/3]"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1767858704335-16a3ab4fb831?crop=entropy&cs=srgb&fm=jpg&q=85"
+                alt="Family gathering"
+                className="w-full h-full object-cover img-heirloom"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-charcoal/60 to-transparent p-4">
+                <p className="text-ivory font-serif text-lg">Family Gatherings</p>
+              </div>
+            </motion.div>
+
+            {/* Reading Together */}
+            <motion.div
+              className="relative rounded-2xl overflow-hidden shadow-deep aspect-[4/3]"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1714646793075-6dbfc604e664?crop=entropy&cs=srgb&fm=jpg&q=85"
+                alt="Grandmother reading with grandchild"
+                className="w-full h-full object-cover img-heirloom"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-charcoal/60 to-transparent p-4">
+                <p className="text-ivory font-serif text-lg">Treasured Moments</p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Quote Section */}
       <section className="py-24 px-6 bg-emerald text-ivory">
         <motion.div 
@@ -202,8 +274,8 @@ const LandingPage = () => {
             >
               <div className="relative">
                 <img 
-                  src="https://images.unsplash.com/photo-1662971640032-ed60396966a0?crop=entropy&cs=srgb&fm=jpg&q=85"
-                  alt="Elder storytelling"
+                  src="https://images.unsplash.com/photo-1752084794888-0b27a762b6fd?crop=entropy&cs=srgb&fm=jpg&q=85"
+                  alt="Happy elderly woman smiling"
                   className="rounded-2xl shadow-deep img-heirloom"
                 />
                 <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-full bg-amber flex items-center justify-center">
@@ -220,7 +292,7 @@ const LandingPage = () => {
             >
               <h2 className="font-serif text-charcoal">
                 Designed for<br/>
-                <span className="text-emerald">Every Generation</span>
+                Every Generation
               </h2>
               <p className="text-charcoal-light text-xl leading-relaxed">
                 Our voice-first approach means grandparents can share stories naturally, 
