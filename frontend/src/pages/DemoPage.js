@@ -653,10 +653,87 @@ const DemoPage = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
-                      className="bg-charcoal/60 backdrop-blur-sm rounded-xl p-4 md:p-6 mb-6 border border-ivory/10"
+                      className="bg-charcoal/60 backdrop-blur-sm rounded-xl p-4 md:p-6 mb-4 border border-ivory/10"
                     >
                       <p className="text-base md:text-xl text-ivory leading-relaxed">
                         &ldquo;{selectedMemory.narrative}&rdquo;
+                      </p>
+                    </motion.div>
+
+                    {/* Voice Recording / Playback Section */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.35 }}
+                      className="mb-6"
+                    >
+                      {/* Voice Mode Toggle */}
+                      <div className="flex flex-wrap items-center gap-3 mb-3">
+                        <span className="text-xs text-ivory/50 uppercase tracking-wide">Listen:</span>
+                        <button
+                          onClick={() => setNarratorMode('original')}
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-all ${
+                            narratorMode === 'original' 
+                              ? 'bg-amber-500 text-white' 
+                              : 'bg-ivory/10 text-ivory/70 hover:bg-ivory/20'
+                          }`}
+                        >
+                          <Mic className="w-3.5 h-3.5" />
+                          Original Voice
+                        </button>
+                        <button
+                          onClick={() => setNarratorMode('sage')}
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-all ${
+                            narratorMode === 'sage' 
+                              ? 'bg-emerald text-white' 
+                              : 'bg-ivory/10 text-ivory/70 hover:bg-ivory/20'
+                          }`}
+                        >
+                          <SageAvatar size="sm" />
+                          <span className="ml-1">Sage Narrates</span>
+                        </button>
+                      </div>
+
+                      {/* Play/Stop Button */}
+                      <div className="flex items-center gap-3">
+                        {(isSageNarrating || isPlayingOriginalVoice) ? (
+                          <Button
+                            onClick={stopSpeech}
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                            data-testid="stop-voice-btn"
+                          >
+                            <StopCircle className="w-5 h-5 mr-2" />
+                            Stop
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() => playMemory(selectedMemory)}
+                            className={narratorMode === 'sage' ? 'btn-primary' : 'bg-amber-500 hover:bg-amber-600 text-white'}
+                            data-testid="play-voice-btn"
+                          >
+                            <PlayCircle className="w-5 h-5 mr-2" />
+                            {narratorMode === 'sage' ? 'Hear Sage Tell This Story' : `Hear ${selectedMemory.author_name.split(' ')[0]}'s Voice`}
+                          </Button>
+                        )}
+                        
+                        {/* Status indicator */}
+                        {(isSageNarrating || isPlayingOriginalVoice) && (
+                          <div className="flex items-center gap-2 text-ivory/70 text-sm">
+                            <motion.div
+                              className="w-2 h-2 rounded-full bg-emerald"
+                              animate={{ opacity: [1, 0.4, 1] }}
+                              transition={{ duration: 1, repeat: Infinity }}
+                            />
+                            {isSageNarrating ? 'Sage is narrating...' : 'Playing original voice...'}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Demo notice */}
+                      <p className="text-xs text-ivory/40 mt-2">
+                        {narratorMode === 'original' 
+                          ? '🎙️ Demo: This simulates how your recorded voice would sound' 
+                          : '✨ Sage transforms the story into third-person narration'}
                       </p>
                     </motion.div>
 
