@@ -220,7 +220,7 @@ const LandingPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="font-serif text-ivory mb-4">Life's Best Moments</h2>
+            <h2 className="font-serif text-ivory mb-4">Life&apos;s Best Moments</h2>
             <p className="text-ivory/70 text-xl max-w-2xl mx-auto">
               From your wedding day to family dinners, every memory tells your story
             </p>
