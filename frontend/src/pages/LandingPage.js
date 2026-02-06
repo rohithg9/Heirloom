@@ -105,16 +105,12 @@ const LandingPage = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="relative z-10 flex items-center justify-between px-8 py-6 max-w-7xl mx-auto w-full">
+        <nav className="relative z-10 flex items-center justify-between px-4 md:px-8 py-4 md:py-6 max-w-7xl mx-auto w-full">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3"
           >
-            <div className="w-12 h-12 rounded-full bg-emerald flex items-center justify-center">
-              <Heart className="w-6 h-6 text-ivory" />
-            </div>
-            <span className="font-serif text-2xl text-charcoal">Heirloom</span>
+            <HeirloomLogo size="md" />
           </motion.div>
           
           <motion.div 
