@@ -382,7 +382,8 @@ const VoiceStudio = () => {
     if (!extractedMemory) return;
 
     try {
-      await api.post('/memories', {
+      // First save the memory
+      const response = await api.post('/memories', {
         title: extractedMemory.title || 'Untitled Memory',
         narrative: extractedMemory.narrative || '',
         time_period: extractedMemory.time_period,
@@ -397,9 +398,17 @@ const VoiceStudio = () => {
         confidence: 'clear',
       });
       
+      // If we have an audio recording, upload it and attach to the memory
+      if (audioBlob) {
+        const memoryId = response.data.id;
+        await uploadAudioRecording(memoryId);
+      }
+      
       toast.success('Memory saved to your family vault!');
       setExtractedMemory(null);
       setShowSaveDialog(false);
+      setAudioBlob(null);
+      setAudioUrl(null);
     } catch (error) {
       toast.error('Failed to save memory. Please try again.');
     }
