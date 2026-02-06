@@ -94,32 +94,6 @@ const DemoPage = () => {
     return genderVoice || voices.find(v => v.lang.startsWith('en'));
   }, []);
 
-  // Determine gender from member data
-  const getMemberGender = (memberId) => {
-    const member = DEMO_MEMBERS.find(m => m.id === memberId);
-    if (!member) return 'female';
-    
-    // Check role/relationship for gender hints
-    const femaleRoles = ['mother', 'grandmother', 'daughter', 'granddaughter', 'matriarch', 'wife', 'sister', 'aunt', 'nani', 'nana'];
-    const maleRoles = ['father', 'grandfather', 'son', 'grandson', 'patriarch', 'husband', 'brother', 'uncle', 'nana', 'papa'];
-    
-    const roleAndRelationship = `${member.role} ${member.relationship || ''}`.toLowerCase();
-    
-    if (maleRoles.some(r => roleAndRelationship.includes(r))) {
-      // Special case: "Nana" in Indian context is grandmother, but "Nana" as nickname could be male
-      if (member.nickname === 'Nana' && member.role === 'Patriarch') return 'male';
-      if (member.nickname === 'Nani') return 'female';
-      return 'male';
-    }
-    if (femaleRoles.some(r => roleAndRelationship.includes(r))) return 'female';
-    
-    // Default based on name patterns (basic heuristic)
-    const name = member.name.toLowerCase();
-    if (name.includes('james') || name.includes('rajan') || name.includes('arjun')) return 'male';
-    
-    return 'female';
-  };
-
   // Sage narration for each view
   useEffect(() => {
     const narrations = {
