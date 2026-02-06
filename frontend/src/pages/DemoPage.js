@@ -167,13 +167,14 @@ const DemoPage = () => {
     }
     
     synthRef.current.speak(utterance);
-  }, [voiceEnabled, voicesLoaded, getVoiceForGender, getMemberGender]);
+  }, [voiceEnabled, voicesLoaded, getVoiceForGender]);
 
   const handleMemorySelect = (memory, index) => {
     setSelectedMemory(memory);
     setCurrentMemoryIndex(index);
     if (voiceEnabled) {
-      speak(memory.narrative);
+      // Use author's gender for voice
+      speak(memory.narrative, memory.author_id);
     }
   };
 
@@ -182,10 +183,12 @@ const DemoPage = () => {
       ? (currentMemoryIndex + 1) % DEMO_MEMORIES.length
       : (currentMemoryIndex - 1 + DEMO_MEMORIES.length) % DEMO_MEMORIES.length;
     
+    const memory = DEMO_MEMORIES[newIndex];
     setCurrentMemoryIndex(newIndex);
-    setSelectedMemory(DEMO_MEMORIES[newIndex]);
+    setSelectedMemory(memory);
     if (voiceEnabled) {
-      speak(DEMO_MEMORIES[newIndex].narrative);
+      // Use author's gender for voice
+      speak(memory.narrative, memory.author_id);
     }
   };
 
