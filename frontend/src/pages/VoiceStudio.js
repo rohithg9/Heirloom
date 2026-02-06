@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mic, MicOff, ArrowLeft, Send, Loader2, Save, 
   Sparkles, Clock, MapPin, Heart, X, Edit2, Check,
-  Volume2, VolumeX, Globe, Pause, Play, History
+  Volume2, VolumeX, Globe, Pause, Play, History, Download
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
@@ -14,6 +14,7 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
 import { Toaster, toast } from 'sonner';
+import { SageAvatar } from '../components/SageCompanion';
 
 // Language options
 const LANGUAGES = [
