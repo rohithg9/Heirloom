@@ -54,7 +54,7 @@ const LandingPage = () => {
       description: "Moments frozen in time"
     },
     {
-      image: "https://images.unsplash.com/photo-1694926517471-c13d6eba267b?crop=entropy&cs=srgb&fm=jpg&q=85",
+      image: "https://images.unsplash.com/photo-1576470188704-277a8734ad62?crop=entropy&cs=srgb&fm=jpg&q=85",
       title: "Cultural Heritage",
       description: "Traditions passed down"
     }
