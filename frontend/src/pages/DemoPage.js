@@ -755,7 +755,7 @@ const DemoPage = () => {
 
               {/* Book Contents Preview */}
               <div className="bg-ivory/5 rounded-2xl p-6 mb-8">
-                <h4 className="font-serif text-xl text-ivory mb-4">What's Inside</h4>
+                <h4 className="font-serif text-xl text-ivory mb-4">What&apos;s Inside</h4>
                 <div className="grid grid-cols-2 gap-4">
                   {['Childhood', 'Youth', 'Adulthood', 'Later Life'].map((stage) => {
                     const count = DEMO_MEMORIES.filter(m => m.life_stage === stage.toLowerCase().replace(' ', '_')).length;
