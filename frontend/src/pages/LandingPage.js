@@ -49,14 +49,14 @@ const LandingPage = () => {
       description: "Meals that brought us together"
     },
     {
-      image: "https://images.unsplash.com/photo-1766366622533-7f12737f6af8?crop=entropy&cs=srgb&fm=jpg&q=85",
-      title: "Treasured Photographs",
-      description: "Moments frozen in time"
+      image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?crop=entropy&cs=srgb&fm=jpg&q=85",
+      title: "Friendships",
+      description: "Bonds that last forever"
     },
     {
-      image: "https://images.unsplash.com/photo-1576470188704-277a8734ad62?crop=entropy&cs=srgb&fm=jpg&q=85",
-      title: "Cultural Heritage",
-      description: "Traditions passed down"
+      image: "https://images.unsplash.com/photo-1511895426328-dc8714191300?crop=entropy&cs=srgb&fm=jpg&q=85",
+      title: "Home Memories",
+      description: "Where life happened"
     }
   ];
 
