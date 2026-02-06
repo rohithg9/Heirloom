@@ -1,58 +1,47 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Volume2, VolumeX, MessageCircle, Sparkles } from 'lucide-react';
+import { X, Volume2, VolumeX, MessageCircle, Sparkles, Mic } from 'lucide-react';
 import { Button } from './ui/button';
 
-// Sage Avatar Component
+// Sage Avatar Component - Elegant minimal design
 export const SageAvatar = ({ size = 'md', speaking = false, onClick }) => {
   const sizeClasses = {
     sm: 'w-10 h-10',
     md: 'w-14 h-14',
-    lg: 'w-20 h-20',
-    xl: 'w-28 h-28'
+    lg: 'w-16 h-16',
+    xl: 'w-20 h-20'
+  };
+
+  const iconSizes = {
+    sm: 'w-5 h-5',
+    md: 'w-7 h-7',
+    lg: 'w-8 h-8',
+    xl: 'w-10 h-10'
   };
 
   return (
     <motion.button
       onClick={onClick}
-      className={`relative ${sizeClasses[size]} rounded-full bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-300 shadow-lg flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform`}
+      className={`relative ${sizeClasses[size]} rounded-full bg-gradient-to-br from-emerald to-emerald-dark shadow-lg flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform border-2 border-emerald/30`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       data-testid="sage-avatar"
     >
-      {/* Sage Icon - Friendly owl-like character */}
-      <svg viewBox="0 0 100 100" className={`${size === 'sm' ? 'w-6 h-6' : size === 'md' ? 'w-9 h-9' : size === 'lg' ? 'w-14 h-14' : 'w-20 h-20'}`}>
-        {/* Face */}
-        <circle cx="50" cy="50" r="40" fill="#8B7355" />
-        {/* Eyes */}
-        <circle cx="35" cy="42" r="12" fill="#FFF8E7" />
-        <circle cx="65" cy="42" r="12" fill="#FFF8E7" />
-        <circle cx="35" cy="42" r="6" fill="#2D1B0E" />
-        <circle cx="65" cy="42" r="6" fill="#2D1B0E" />
-        {/* Eye sparkle */}
-        <circle cx="33" cy="40" r="2" fill="white" />
-        <circle cx="63" cy="40" r="2" fill="white" />
-        {/* Beak/nose */}
-        <path d="M45 55 L50 65 L55 55 Z" fill="#DEB887" />
-        {/* Smile */}
-        <path d="M38 70 Q50 78 62 70" stroke="#2D1B0E" strokeWidth="2" fill="none" strokeLinecap="round" />
-        {/* Eyebrows - warm expression */}
-        <path d="M25 32 Q35 28 45 32" stroke="#5D4E3C" strokeWidth="2" fill="none" strokeLinecap="round" />
-        <path d="M55 32 Q65 28 75 32" stroke="#5D4E3C" strokeWidth="2" fill="none" strokeLinecap="round" />
-      </svg>
+      {/* Sage Icon - Sparkles representing wisdom/AI */}
+      <Sparkles className={`${iconSizes[size]} text-white`} />
       
       {/* Speaking animation rings */}
       {speaking && (
         <>
           <motion.div
-            className="absolute inset-0 rounded-full border-2 border-amber-400"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+            className="absolute inset-0 rounded-full border-2 border-white/40"
+            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ duration: 1.2, repeat: Infinity }}
           />
           <motion.div
-            className="absolute inset-0 rounded-full border-2 border-amber-400"
-            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
-            transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+            className="absolute inset-0 rounded-full border-2 border-white/30"
+            animate={{ scale: [1, 1.6, 1], opacity: [0.4, 0, 0.4] }}
+            transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}
           />
         </>
       )}
