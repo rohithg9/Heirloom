@@ -1,0 +1,158 @@
+{
+  "identity": {
+    "name": "Heirloom",
+    "mission": "Privately preserve life stories and memories across generations.",
+    "tone": "Calm, Slow, Respectful, Nostalgic, Warm, Intimate, Legacy",
+    "aesthetic": "Apple Photos meets hardcover memoir meets quiet museum",
+    "target_audience": "Elders (55-85) [Primary], Family members [Secondary]"
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Playfair Display, serif",
+      "weights": ["400", "600", "700"],
+      "usage": "All section titles, story titles, and emotional statements. MUST use tight tracking (-0.02em).",
+      "sizes": {
+        "h1": "text-5xl md:text-7xl leading-[1.1]",
+        "h2": "text-4xl md:text-5xl leading-tight",
+        "h3": "text-2xl md:text-3xl leading-snug"
+      }
+    },
+    "body": {
+      "font_family": "Manrope, sans-serif",
+      "weights": ["400", "500"],
+      "usage": "UI elements, navigation, buttons, and long-form reading.",
+      "sizes": {
+        "base": "text-lg md:text-xl leading-relaxed (Elders need larger text)",
+        "small": "text-base leading-normal",
+        "large": "text-2xl leading-relaxed"
+      }
+    },
+    "special": {
+      "handwriting": "Caveat, cursive",
+      "usage": "Personal notes, annotations on memory cards."
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": {
+        "primary": "#F9F7F2",
+        "secondary": "#F0EBE0",
+        "paper": "#FDFBF7"
+      },
+      "text": {
+        "primary": "#2C2420",
+        "secondary": "#5D5550",
+        "muted": "#8C8580"
+      },
+      "brand": {
+        "primary": "#2E5C55",
+        "secondary": "#D4A373",
+        "accent": "#A55F5F"
+      },
+      "status": {
+        "success": "#2E5C55",
+        "error": "#A55F5F",
+        "warning": "#D4A373"
+      }
+    },
+    "rules": [
+      "NEVER use pure black (#000000). Use Deep Charcoal (#2C2420).",
+      "NEVER use pure white (#FFFFFF) for backgrounds. Use Warm Ivory (#F9F7F2).",
+      "Primary CTA buttons must be Muted Emerald (#2E5C55).",
+      "Use 'Paper' color (#FDFBF7) for cards to simulate physical stock."
+    ]
+  },
+  "layout": {
+    "grid_system": "The 'Bento' Grid Protocol (Mode A for Memories, Mode B for Tree)",
+    "spacing": "Generous. Use p-8 to p-12 for containers. Elders need touch targets of at least 48px.",
+    "containers": {
+      "card": "rounded-xl border border-[#E5E0D6] bg-[#FDFBF7] shadow-sm hover:shadow-md transition-all duration-300",
+      "section": "py-20 md:py-32 px-6 md:px-12 max-w-7xl mx-auto"
+    },
+    "z_index": {
+      "modal": 50,
+      "dropdown": 40,
+      "sticky_nav": 30,
+      "decorative": 0
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#2E5C55] text-[#F9F7F2] hover:bg-[#244A44] rounded-full px-8 py-4 text-lg font-medium shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5",
+      "secondary": "bg-[#F0EBE0] text-[#2C2420] hover:bg-[#E5E0D6] rounded-full px-8 py-4 text-lg font-medium",
+      "ghost": "text-[#2E5C55] hover:bg-[#F0EBE0]/50 rounded-full px-6 py-3 text-lg"
+    },
+    "inputs": {
+      "style": "bg-white/50 border border-[#E5E0D6] rounded-lg px-6 py-4 text-xl focus:ring-2 focus:ring-[#2E5C55]/20 focus:border-[#2E5C55] transition-all placeholder:text-[#8C8580]",
+      "labels": "text-[#5D5550] font-medium mb-2 block text-lg"
+    },
+    "cards": {
+      "memory": "aspect-[3/4] bg-[#FDFBF7] p-6 rounded-xl shadow-[0_4px_20px_rgba(44,36,32,0.05)] border border-[#E5E0D6] relative overflow-hidden group cursor-pointer",
+      "profile": "bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-[#E5E0D6] shadow-sm"
+    },
+    "voice_interface": {
+      "mic_button": "w-24 h-24 rounded-full bg-[#A55F5F] text-white flex items-center justify-center shadow-xl animate-pulse-slow hover:scale-105 transition-transform"
+    }
+  },
+  "visual_enhancers": {
+    "textures": {
+      "paper_overlay": "url('https://images.unsplash.com/photo-1727195077380-1c0f7e7a3456?crop=entropy&cs=srgb&fm=jpg&q=85') opacity-5 mix-blend-multiply pointer-events-none fixed inset-0 z-50",
+      "grain": "Use a subtle SVG noise filter on backgrounds to reduce digital flatness."
+    },
+    "shadows": {
+      "soft": "0 4px 20px -2px rgba(44, 36, 32, 0.08)",
+      "deep": "0 20px 40px -4px rgba(44, 36, 32, 0.12)"
+    },
+    "borders": {
+      "organic": "border border-[#E5E0D6] rounded-[2rem_1rem_2rem_1rem]"
+    }
+  },
+  "motion": {
+    "philosophy": "Slow, Gentle, Organic. No sudden flashes.",
+    "transitions": "transition-all duration-500 ease-out",
+    "scroll": "Use 'lenis' for smooth momentum scrolling.",
+    "micro_interactions": "Buttons should gently lift. Cards should breathe (scale 1.01) on hover."
+  },
+  "media": {
+    "image_urls": {
+      "hero_family": "https://images.unsplash.com/photo-1726731819337-d337f181bd85?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "texture_paper": "https://images.unsplash.com/photo-1727195077380-1c0f7e7a3456?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "portrait_grandpa": "https://images.unsplash.com/photo-1662971640032-ed60396966a0?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "portrait_grandma": "https://images.unsplash.com/photo-1758686254593-7c4cd55b2621?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "portrait_young_man": "https://images.unsplash.com/photo-1595956935400-eced8114c8ea?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "portrait_young_woman": "https://images.unsplash.com/photo-1758686254563-5c5ab338c8b9?crop=entropy&cs=srgb&fm=jpg&q=85"
+    },
+    "rules": "Images must have a 'sepia' or 'warm' filter applied via CSS (filter: sepia(0.2) contrast(0.95) brightness(1.05)) to match the heirloom aesthetic."
+  },
+  "accessibility": {
+    "contrast": "Ensure text is #2C2420 on #F9F7F2 (Ratio > 10:1).",
+    "touch_targets": "Minimum 48x48px for all interactive elements.",
+    "voice_feedback": "Visual ripples or glow when voice is active.",
+    "font_sizing": "Allow users to scale text up to 200% without breaking layout."
+  },
+  "tech_stack": {
+    "framework": "React",
+    "styling": "Tailwind CSS",
+    "components": "Shadcn UI (Customized)",
+    "icons": "Lucide React (Stroke width 1.5px for elegance)",
+    "animation": "Framer Motion",
+    "3d": "React Three Fiber (for the Family Tree - optional, or use D3 for 2D organic tree)"
+  },
+  "instructions_to_main_agent": [
+    "1. INSTALL FONTS: Add 'Playfair Display' and 'Manrope' from Google Fonts immediately.",
+    "2. SETUP THEME: Configure tailwind.config.js with the 'Warm Ivory' palette defined above.",
+    "3. GLOBAL STYLES: Add the paper texture overlay to the body in index.css.",
+    "4. COMPONENT OVERRIDES: Customize all Shadcn components to remove sharp edges (use rounded-xl or rounded-full) and change borders to #E5E0D6.",
+    "5. LANDING PAGE: Build a cinematic landing page using the 'hero_family' image with a slow parallax effect.",
+    "6. FAMILY TREE: Create a 'Living Tree' component. If 3D is too complex, use a beautiful D3 force-directed graph with custom SVG nodes (photos in circles).",
+    "7. VOICE STUDIO: Create a dedicated page for recording with a massive, pulsing microphone button.",
+    "8. ACCESSIBILITY: Test every page at 125% zoom. Ensure no text overlaps."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI slop' - no generic gradients or centered layouts.",
+    "Use 2-3x more spacing than typical designs.",
+    "Every interaction needs micro-animations.",
+    "Use 'sonner' for toasts.",
+    "All interactive elements MUST include data-testid."
+  ]
+}
