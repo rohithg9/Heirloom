@@ -307,17 +307,14 @@ export const SageWelcomeModal = ({ isOpen, onClose, onExploreDemo }) => {
       const timer = setTimeout(() => speak(), 800);
         utterance.onstart = () => setIsSpeaking(true);
         utterance.onend = () => setIsSpeaking(false);
-        
-        const synth = synthRef.current;
-        synth.speak(utterance);
-      }, 800);
-      
       return () => {
         clearTimeout(timer);
-        synthRef.current.cancel();
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
       };
     }
-  }, [isOpen, voicesLoaded, welcomeMessage]);
+  }, [isOpen, speak]);
 
   if (!isOpen) return null;
 
@@ -345,10 +342,12 @@ export const SageWelcomeModal = ({ isOpen, onClose, onExploreDemo }) => {
               transition={{ duration: 2, repeat: Infinity }}
               className="inline-block"
             >
-              <SageAvatar size="lg" speaking={isSpeaking} />
+              <SageAvatar size="lg" speaking={isSpeaking || isLoading} />
             </motion.div>
             <h2 className="font-serif text-xl text-charcoal mt-3">Meet Sage</h2>
-            <p className="text-charcoal-muted text-sm">Your Family Memory Guide</p>
+            <p className="text-charcoal-muted text-sm">
+              {isLoading ? 'Preparing to speak...' : 'Your Family Memory Guide'}
+            </p>
           </div>
           
           {/* Message */}
