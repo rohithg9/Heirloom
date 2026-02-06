@@ -70,84 +70,75 @@ export const SageBubble = ({ message, onClose, position = 'bottom-right', showVo
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const audioRef = useRef(null);
 
-  // Load voices when available
-  useEffect(() => {
-    const loadVoices = () => {
-      const voices = synthRef.current.getVoices();
-      if (voices.length > 0) {
-        setVoicesLoaded(true);
-      }
-    };
-    
-    loadVoices();
-    synthRef.current.addEventListener('voiceschanged', loadVoices);
-    return () => {
-      synthRef.current.removeEventListener('voiceschanged', loadVoices);
-    };
-  }, []);
-
-  // Find the best natural female voice
-  const getBestVoice = useCallback(() => {
-    const voices = synthRef.current.getVoices();
-    // Priority order for natural female voices
-    const preferredVoices = [
-      'Google UK English Female',
-      'Google US English',
-      'Samantha', // macOS
-      'Karen', // macOS Australian
-      'Moira', // macOS Irish
-      'Fiona', // macOS Scottish
-      'Victoria', // macOS
-      'Microsoft Zira', // Windows
-      'Microsoft Aria', // Windows
-    ];
-    
-    for (const preferred of preferredVoices) {
-      const voice = voices.find(v => v.name.includes(preferred));
-      if (voice) return voice;
-    }
-    
-    // Fallback to any English female voice
-    const femaleVoice = voices.find(v => 
-      v.lang.startsWith('en') && 
-      (v.name.toLowerCase().includes('female') || 
-       v.name.includes('Samantha') ||
-       v.name.includes('Karen'))
-    );
-    
-    return femaleVoice || voices.find(v => v.lang.startsWith('en'));
-  }, []);
-
-  const speak = useCallback((text) => {
+  // Speak using ElevenLabs
+  const speak = useCallback(async (text) => {
     if (!voiceEnabled || !text) return;
     
-    synthRef.current.cancel();
-    
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.85; // Slower for more natural feel
-    utterance.pitch = 1.05; // Slightly warmer tone
-    utterance.volume = 1;
-    
-    const voice = getBestVoice();
-    if (voice) {
-      utterance.voice = voice;
+    // Stop any current audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
     }
     
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    setIsLoading(true);
     
-    synthRef.current.speak(utterance);
-  }, [voiceEnabled, getBestVoice]);
+    try {
+      const response = await fetch(`${API_URL}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text,
+          voice_type: 'sage',
+          stability: 0.6,
+          similarity_boost: 0.8,
+          style: 0.4
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate speech');
+      }
+      
+      const data = await response.json();
+      const audioBlob = base64ToBlob(data.audio_data, data.content_type);
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      
+      audio.onended = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+        audioRef.current = null;
+      };
+      
+      audio.onerror = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+        audioRef.current = null;
+      };
+      
+      setIsLoading(false);
+      setIsSpeaking(true);
+      await audio.play();
+      
+    } catch (error) {
+      console.error('TTS Error:', error);
+      setIsLoading(false);
+      setIsSpeaking(false);
+    }
+  }, [voiceEnabled]);
 
   const stopSpeaking = () => {
-    synthRef.current.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
     setIsSpeaking(false);
   };
 
   useEffect(() => {
-    if (message && voiceEnabled && voicesLoaded) {
+    if (message && voiceEnabled) {
       // Small delay before speaking
       const timer = setTimeout(() => speak(message), 500);
       return () => clearTimeout(timer);
