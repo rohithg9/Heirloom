@@ -46,6 +46,30 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 
 ### What's Been Implemented
 
+**Date: Feb 6, 2026 (Update 6) - Third-Person Narration & Voice Demo**
+
+#### New Features:
+1. **Sage Third-Person Narration** 
+   - Transforms "I was twenty-two..." to "Kamala was twenty-two..."
+   - Creates story introductions: "Let me share Kamala's story filled with pride..."
+   - Adds reflective closings after each story
+   - Uses storytelling pace (slower, more dramatic)
+
+2. **Voice Mode Toggle in Demo**
+   - "Original Voice" - Simulates user's recorded voice (gender-appropriate)
+   - "Sage Narrates" - Sage tells story in third person like a storyteller
+   - Play/Stop buttons with status indicators
+
+3. **Voice Recording Indicators**
+   - Amber "🎙️ Voice" badge on each memory card
+   - Shows users that voice recordings are part of each story
+
+4. **Utility Functions** (`/utils/narrativeUtils.js`)
+   - `transformToThirdPerson()` - Converts first to third person
+   - `createStoryIntro()` - Generates contextual introductions
+   - `createStoryClosing()` - Creates emotional reflections
+   - `getMemberGender()` - Detects gender for voice selection
+
 **Date: Feb 6, 2026 (Update 5) - Voice Recording & Branding**
 
 #### New Features:
