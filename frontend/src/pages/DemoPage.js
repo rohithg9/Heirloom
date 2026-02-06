@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -14,12 +14,16 @@ import {
 } from '../data/demoFamily';
 import { downloadDemoLifeBook } from '../utils/pdfExport';
 import { transformToThirdPerson, createStoryIntro, createStoryClosing, getMemberGender } from '../utils/narrativeUtils';
+import { useElevenLabsTTS } from '../hooks/useElevenLabsTTS';
 import { Toaster, toast } from 'sonner';
 
 const DemoPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialView = searchParams.get('view') || 'intro';
+  
+  // ElevenLabs TTS hook
+  const { speak, speakAsSage, speakAsFemale, speakAsMale, stop: stopTTS, isLoading: ttsLoading, isPlaying: ttsPlaying } = useElevenLabsTTS();
   
   const [currentView, setCurrentView] = useState(initialView); // intro, family, memories, memory-detail, export
   const [selectedMember, setSelectedMember] = useState(null);
