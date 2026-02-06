@@ -209,13 +209,103 @@ const VoiceStudio = () => {
     setIsSpeaking(false);
   };
 
+  // Start actual audio recording (to save user's voice)
+  const startAudioRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      audioChunksRef.current = [];
+      
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+      
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        setAudioBlob(blob);
+        setAudioUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach(track => track.stop());
+      };
+      
+      mediaRecorderRef.current.start(1000); // Collect data every second
+      setIsAudioRecording(true);
+      setRecordingDuration(0);
+      
+      // Start duration timer
+      recordingIntervalRef.current = setInterval(() => {
+        setRecordingDuration(prev => prev + 1);
+      }, 1000);
+      
+    } catch (error) {
+      console.error('Failed to start audio recording:', error);
+      toast.error('Could not access microphone. Please check permissions.');
+    }
+  };
+
+  const stopAudioRecording = () => {
+    if (mediaRecorderRef.current && isAudioRecording) {
+      mediaRecorderRef.current.stop();
+      setIsAudioRecording(false);
+      if (recordingIntervalRef.current) {
+        clearInterval(recordingIntervalRef.current);
+      }
+    }
+  };
+
+  // Upload audio recording to server
+  const uploadAudioRecording = async (memoryId = null) => {
+    if (!audioBlob) return null;
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', audioBlob, 'recording.webm');
+      if (memoryId) formData.append('memory_id', memoryId);
+      formData.append('title', extractedMemory?.title || 'Voice Recording');
+      
+      const response = await api.post('/audio/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      toast.success('Voice recording saved! Your voice is now preserved with this memory.');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to upload audio:', error);
+      toast.error('Failed to save voice recording');
+      return null;
+    }
+  };
+
+  const formatDuration = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Cleanup audio URL on unmount
+  useEffect(() => {
+    return () => {
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl);
+      }
+      if (recordingIntervalRef.current) {
+        clearInterval(recordingIntervalRef.current);
+      }
+    };
+  }, [audioUrl]);
+
   const startRecording = () => {
     setIsRecording(true);
     setMode('recording');
     setTranscript('');
     setEditableTranscript('');
+    setAudioBlob(null);
+    setAudioUrl(null);
     try {
       recognitionRef.current?.start();
+      // Also start audio recording to capture actual voice
+      startAudioRecording();
     } catch (e) {
       console.error('Failed to start recording:', e);
     }
@@ -225,6 +315,8 @@ const VoiceStudio = () => {
     setIsRecording(false);
     try {
       recognitionRef.current?.stop();
+      // Also stop audio recording
+      stopAudioRecording();
     } catch (e) {
       console.error('Failed to stop recording:', e);
     }
