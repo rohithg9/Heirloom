@@ -159,17 +159,17 @@ export const SageBubble = ({ message, onClose, position = 'bottom-right', showVo
       initial={{ opacity: 0, y: 20, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.9 }}
-      className={`fixed ${positionClasses[position]} z-50 max-w-sm`}
+      className={`fixed ${positionClasses[position]} z-50 max-w-xs md:max-w-sm`}
       data-testid="sage-bubble"
     >
-      <div className="bg-white rounded-2xl shadow-2xl border border-amber-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-xl border border-emerald/20 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-amber-50 to-amber-100 px-4 py-3 flex items-center justify-between border-b border-amber-200">
+        <div className="bg-gradient-to-r from-emerald/10 to-emerald/5 px-3 py-2 flex items-center justify-between border-b border-emerald/10">
           <div className="flex items-center gap-2">
             <SageAvatar size="sm" speaking={isSpeaking} />
             <div>
-              <span className="font-serif text-charcoal font-medium">Sage</span>
-              <span className="text-xs text-charcoal-muted block">Your Memory Guide</span>
+              <span className="font-serif text-charcoal font-medium text-sm">Sage</span>
+              <span className="text-xs text-charcoal-muted block">Memory Guide</span>
             </div>
           </div>
           <div className="flex items-center gap-1">
