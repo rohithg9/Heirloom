@@ -46,6 +46,30 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 
 ### What's Been Implemented
 
+**Date: Feb 6, 2026 (Update 8) - ElevenLabs Natural Voice Integration**
+
+#### New Features:
+1. **ElevenLabs TTS Integration** - Human-like voices with emotion throughout the app
+   - Sage voice: Sarah (soft, warm female)
+   - Female characters: Rachel (young), Sarah (warm)
+   - Male characters: Adam (young), Arnold (deep, warm)
+
+2. **Backend TTS Endpoint**
+   - `POST /api/tts/generate` - Generates audio from text
+   - `GET /api/tts/voices` - Lists available voices
+   - Caches audio for performance
+
+3. **Frontend TTS Hook** (`/hooks/useElevenLabsTTS.js`)
+   - `speakAsSage(text)` - Sage's warm narrator voice
+   - `speakAsFemale(text, young)` - Female character voice
+   - `speakAsMale(text, young)` - Male character voice
+   - Stop, loading, and playing states
+
+4. **Updated Components**
+   - SageBubble now uses ElevenLabs
+   - SageWelcomeModal uses ElevenLabs for greeting
+   - DemoPage uses gender-appropriate voices for stories
+
 **Date: Feb 6, 2026 (Update 7) - UI Simplification & Layout Fixes**
 
 #### Changes Made:
