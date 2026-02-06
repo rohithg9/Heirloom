@@ -572,7 +572,7 @@ const DemoPage = () => {
                       </p>
                     </motion.div>
 
-                    {/* Voice Playback - Clean & Simple */}
+                    {/* Voice Playback - Clean & Simple with ElevenLabs */}
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -581,21 +581,25 @@ const DemoPage = () => {
                     >
                       {/* Big Play Button - Original Voice (Default) */}
                       <div className="flex flex-col items-center gap-4">
-                        {(isSageNarrating || isPlayingOriginalVoice) ? (
+                        {(isVoicePlaying || isVoiceLoading) ? (
                           <motion.button
-                            onClick={stopSpeech}
+                            onClick={stopTTS}
                             className="w-20 h-20 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-xl"
                             whileTap={{ scale: 0.95 }}
                             data-testid="stop-voice-btn"
                           >
-                            <StopCircle className="w-10 h-10" />
+                            {isVoiceLoading ? (
+                              <Loader2 className="w-10 h-10 animate-spin" />
+                            ) : (
+                              <StopCircle className="w-10 h-10" />
+                            )}
                           </motion.button>
                         ) : (
                           <motion.button
                             onClick={() => {
                               setNarratorMode('original');
                               const member = DEMO_MEMBERS.find(m => m.id === selectedMemory.author_id);
-                              speakAsOriginalVoice(selectedMemory.narrative, member);
+                              playOriginalVoice(selectedMemory.narrative, member);
                             }}
                             className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-white flex items-center justify-center shadow-xl"
                             whileHover={{ scale: 1.05 }}
@@ -608,14 +612,19 @@ const DemoPage = () => {
                         
                         {/* Label */}
                         <div className="text-center">
-                          {(isSageNarrating || isPlayingOriginalVoice) ? (
+                          {isVoiceLoading ? (
+                            <p className="text-ivory text-sm flex items-center gap-2">
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Generating natural voice...
+                            </p>
+                          ) : isVoicePlaying ? (
                             <p className="text-ivory text-sm flex items-center gap-2">
                               <motion.span
                                 className="w-2 h-2 rounded-full bg-amber-400"
                                 animate={{ opacity: [1, 0.3, 1] }}
                                 transition={{ duration: 0.8, repeat: Infinity }}
                               />
-                              {isPlayingOriginalVoice ? 'Playing voice...' : 'Sage is narrating...'}
+                              {narratorMode === 'sage' ? 'Sage is narrating...' : 'Playing voice...'}
                             </p>
                           ) : (
                             <p className="text-ivory/80 text-sm">
@@ -626,12 +635,12 @@ const DemoPage = () => {
                         </div>
 
                         {/* Sage option - subtle secondary */}
-                        {!(isSageNarrating || isPlayingOriginalVoice) && (
+                        {!(isVoicePlaying || isVoiceLoading) && (
                           <button
                             onClick={() => {
                               setNarratorMode('sage');
                               const member = DEMO_MEMBERS.find(m => m.id === selectedMemory.author_id);
-                              narrateAsSage(selectedMemory, member);
+                              narrateWithSage(selectedMemory, member);
                             }}
                             className="flex items-center gap-2 px-4 py-2 text-ivory/50 hover:text-ivory/80 text-sm transition-colors"
                           >
@@ -647,7 +656,7 @@ const DemoPage = () => {
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
+                        transition={{ delay: 0.4 }}}
                         className="mb-6 space-y-2"
                       >
                         <p className="text-xs text-ivory/50 uppercase tracking-wide mb-2">Key Moments</p>
