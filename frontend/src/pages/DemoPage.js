@@ -41,25 +41,6 @@ const DemoPage = () => {
   // Combined playing state from TTS hook
   const isVoicePlaying = ttsPlaying;
   const isVoiceLoading = ttsLoading;
-      'Microsoft David', // Windows
-      'Google US English',
-    ];
-    
-    const preferredList = gender === 'male' ? maleVoices : femaleVoices;
-    
-    for (const preferred of preferredList) {
-      const voice = voices.find(v => v.name.includes(preferred));
-      if (voice) return voice;
-    }
-    
-    // Fallback - try to find any voice matching gender
-    const genderKeyword = gender === 'male' ? 'male' : 'female';
-    const genderVoice = voices.find(v => 
-      v.name.toLowerCase().includes(genderKeyword) && v.lang.startsWith('en')
-    );
-    
-    return genderVoice || voices.find(v => v.lang.startsWith('en'));
-  }, []);
 
   // Sage narration for each view
   useEffect(() => {
@@ -90,43 +71,42 @@ const DemoPage = () => {
     }
   }, [isPlaying, currentMemoryIndex, currentView]);
 
-  // Stop all speech
-  const stopSpeech = useCallback(() => {
-    synthRef.current.cancel();
-    setIsSageNarrating(false);
-    setIsPlayingOriginalVoice(false);
-  }, []);
-
-  // Speak with gender-appropriate voice (for original voice simulation)
-  const speakAsOriginalVoice = useCallback((text, member) => {
-    if (!voiceEnabled || !text || !voicesLoaded) return;
-    stopSpeech();
+  // Play original voice using ElevenLabs (gender-appropriate)
+  const playOriginalVoice = useCallback((text, member) => {
+    if (!voiceEnabled || !text) return;
     
     const gender = getMemberGender(member);
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.9; // Slightly faster for original voice
-    utterance.pitch = gender === 'male' ? 0.9 : 1.1;
+    const birthYear = member?.birth_year || 1970;
+    const age = 2024 - birthYear;
+    const isYoung = age < 40;
     
-    const voice = getVoiceForGender(gender);
-    if (voice) utterance.voice = voice;
-    
-    utterance.onstart = () => setIsPlayingOriginalVoice(true);
-    utterance.onend = () => setIsPlayingOriginalVoice(false);
-    utterance.onerror = () => setIsPlayingOriginalVoice(false);
-    
-    synthRef.current.speak(utterance);
-  }, [voiceEnabled, voicesLoaded, getVoiceForGender, stopSpeech]);
+    if (gender === 'male') {
+      speakAsMale(text, isYoung);
+    } else {
+      speakAsFemale(text, isYoung);
+    }
+  }, [voiceEnabled, speakAsMale, speakAsFemale]);
 
-  // Sage narrates story in third person
-  const narrateAsSage = useCallback((memory, member) => {
-    if (!voiceEnabled || !memory || !voicesLoaded) return;
-    stopSpeech();
+  // Sage narrates story in third person using ElevenLabs
+  const narrateWithSage = useCallback((memory, member) => {
+    if (!voiceEnabled || !memory) return;
     
     const gender = getMemberGender(member);
     
     // Create introduction
     const intro = createStoryIntro(memory, member);
+    
+    // Transform narrative to third person
+    const thirdPersonNarrative = transformToThirdPerson(memory.narrative, member.name, gender);
+    
+    // Create closing
+    const closing = createStoryClosing(memory, member);
+    
+    // Full narration
+    const fullNarration = `${intro} ${thirdPersonNarrative} ${closing}`;
+    
+    speakAsSage(fullNarration);
+  }, [voiceEnabled, speakAsSage]);
     
     // Transform narrative to third person
     const thirdPersonNarrative = transformToThirdPerson(memory.narrative, member.name, gender);
