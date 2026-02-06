@@ -65,9 +65,19 @@ const VoiceStudio = () => {
   const [voiceEnabled, setVoiceEnabled] = useState(localStorage.getItem('heirloom_voice') !== 'false');
   const [isSpeaking, setIsSpeaking] = useState(false);
   
+  // Audio recording state (for saving user's actual voice)
+  const [audioRecording, setAudioRecording] = useState(null);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [isAudioRecording, setIsAudioRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [audioUrl, setAudioUrl] = useState(null);
+  
   const recognitionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const synthRef = useRef(window.speechSynthesis);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const recordingIntervalRef = useRef(null);
 
   // Save language preference
   useEffect(() => {
