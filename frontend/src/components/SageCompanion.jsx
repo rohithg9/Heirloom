@@ -223,7 +223,8 @@ export const SageWelcomeModal = ({ isOpen, onClose, onExploreDemo }) => {
         utterance.onstart = () => setIsSpeaking(true);
         utterance.onend = () => setIsSpeaking(false);
         
-        synthRef.current.speak(utterance);
+        const synth = synthRef.current;
+        synth.speak(utterance);
       }, 800);
       
       return () => {
@@ -231,7 +232,7 @@ export const SageWelcomeModal = ({ isOpen, onClose, onExploreDemo }) => {
         synthRef.current.cancel();
       };
     }
-  }, [isOpen]);
+  }, [isOpen, welcomeMessage]);
 
   if (!isOpen) return null;
 
