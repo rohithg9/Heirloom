@@ -247,47 +247,46 @@ const DemoPage = () => {
       <Toaster position="top-center" richColors />
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-40 bg-charcoal/90 backdrop-blur-sm border-b border-ivory/10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 md:gap-4">
             <button 
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 text-ivory/70 hover:text-ivory transition-colors"
+              className="flex items-center gap-1 text-ivory/70 hover:text-ivory transition-colors"
               data-testid="back-home-btn"
             >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="hidden sm:inline">Back to Home</span>
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden md:inline text-sm">Home</span>
             </button>
-            <div className="w-px h-6 bg-ivory/20" />
-            <div className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-emerald" />
-              <span className="font-serif text-lg">Heirloom Demo</span>
-            </div>
+            <div className="w-px h-5 bg-ivory/20 hidden md:block" />
+            <HeirloomLogoLight size="sm" showText={true} />
+            <span className="text-ivory/50 text-sm hidden md:inline">Demo</span>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setVoiceEnabled(!voiceEnabled)}
-              className="text-ivory/70 hover:text-ivory"
+              className="text-ivory/70 hover:text-ivory h-9 w-9"
               data-testid="voice-toggle"
             >
-              {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+              {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
             </Button>
             <Button
-              className="btn-primary"
+              className="btn-primary text-sm px-3 py-2"
               onClick={() => navigate('/auth?mode=create')}
               data-testid="start-your-vault-btn"
             >
-              Start Your Vault
+              <span className="hidden sm:inline">Start Your Vault</span>
+              <span className="sm:hidden">Start</span>
             </Button>
           </div>
         </div>
       </header>
 
       {/* Navigation Tabs */}
-      <nav className="fixed top-[73px] left-0 right-0 z-30 bg-charcoal/80 backdrop-blur-sm border-b border-ivory/10">
-        <div className="max-w-7xl mx-auto px-6">
+      <nav className="fixed top-[57px] left-0 right-0 z-30 bg-charcoal/80 backdrop-blur-sm border-b border-ivory/10">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide">
             {[
               { id: 'intro', label: 'Introduction', icon: <Home className="w-4 h-4" /> },
