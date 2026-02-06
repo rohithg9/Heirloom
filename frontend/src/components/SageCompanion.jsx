@@ -207,12 +207,12 @@ export const SageBubble = ({ message, onClose, position = 'bottom-right', showVo
         
         {/* Message */}
         <div className="p-4">
-          <p className="text-charcoal leading-relaxed">{message}</p>
+          <p className="text-charcoal leading-relaxed text-sm">{message}</p>
         </div>
       </div>
       
       {/* Speech bubble pointer */}
-      <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white border-r border-b border-amber-200 transform rotate-45" />
+      <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white border-r border-b border-emerald/20 transform rotate-45" />
     </motion.div>
   );
 };
@@ -222,20 +222,20 @@ export const SageFloatingButton = ({ onClick, hasMessage = false }) => {
   return (
     <motion.button
       onClick={onClick}
-      className="fixed bottom-6 right-6 z-40"
+      className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       data-testid="sage-floating-btn"
     >
       <div className="relative">
-        <SageAvatar size="lg" />
+        <SageAvatar size="md" />
         {hasMessage && (
           <motion.div
-            className="absolute -top-1 -right-1 w-5 h-5 bg-emerald rounded-full flex items-center justify-center"
+            className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center"
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 1, repeat: Infinity }}
           >
-            <MessageCircle className="w-3 h-3 text-white" />
+            <MessageCircle className="w-2.5 h-2.5 text-white" />
           </motion.div>
         )}
       </div>
@@ -246,17 +246,59 @@ export const SageFloatingButton = ({ onClick, hasMessage = false }) => {
 // Sage Welcome Modal (for landing page)
 export const SageWelcomeModal = ({ isOpen, onClose, onExploreDemo }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
   const synthRef = React.useRef(window.speechSynthesis);
 
   const welcomeMessage = "Hello! I'm Sage, your family memory guide. I help families preserve their most precious stories across generations. Would you like to explore a demo family and see the magic of Heirloom?";
 
+  // Load voices
   useEffect(() => {
-    if (isOpen) {
+    const loadVoices = () => {
+      const voices = synthRef.current.getVoices();
+      if (voices.length > 0) {
+        setVoicesLoaded(true);
+      }
+    };
+    
+    loadVoices();
+    synthRef.current.addEventListener('voiceschanged', loadVoices);
+    return () => {
+      synthRef.current.removeEventListener('voiceschanged', loadVoices);
+    };
+  }, []);
+
+  // Find best voice
+  const getBestVoice = () => {
+    const voices = synthRef.current.getVoices();
+    const preferredVoices = [
+      'Google UK English Female',
+      'Google US English',
+      'Samantha',
+      'Karen',
+      'Victoria',
+      'Microsoft Zira',
+    ];
+    
+    for (const preferred of preferredVoices) {
+      const voice = voices.find(v => v.name.includes(preferred));
+      if (voice) return voice;
+    }
+    
+    return voices.find(v => v.lang.startsWith('en'));
+  };
+
+  useEffect(() => {
+    if (isOpen && voicesLoaded) {
       const timer = setTimeout(() => {
         const utterance = new SpeechSynthesisUtterance(welcomeMessage);
         utterance.lang = 'en-US';
-        utterance.rate = 0.9;
-        utterance.pitch = 1.1;
+        utterance.rate = 0.85;
+        utterance.pitch = 1.05;
+        
+        const voice = getBestVoice();
+        if (voice) {
+          utterance.voice = voice;
+        }
         
         utterance.onstart = () => setIsSpeaking(true);
         utterance.onend = () => setIsSpeaking(false);
@@ -270,7 +312,7 @@ export const SageWelcomeModal = ({ isOpen, onClose, onExploreDemo }) => {
         synthRef.current.cancel();
       };
     }
-  }, [isOpen, welcomeMessage]);
+  }, [isOpen, voicesLoaded, welcomeMessage]);
 
   if (!isOpen) return null;
 
