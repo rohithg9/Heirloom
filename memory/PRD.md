@@ -32,6 +32,10 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 | Memory Cards with Rich Metadata | ✅ Implemented | P0 |
 | AI Voice Interview (Gemini 3) | ✅ Implemented | P0 |
 | Voice Recording (Web Speech API) | ✅ Implemented | P0 |
+| AI Voice Output (TTS) | ✅ Implemented | P0 |
+| Editable Transcripts | ✅ Implemented | P0 |
+| Session Save & Continue | ✅ Implemented | P1 |
+| Multi-language Support (20+) | ✅ Implemented | P1 |
 | Life Book PDF Export | ✅ Implemented | P1 |
 | Theme Book Export | ✅ Implemented | P1 |
 | Elder-Friendly UI (Large Typography) | ✅ Implemented | P0 |
@@ -39,42 +43,39 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 
 ### What's Been Implemented
 
-**Date: Feb 6, 2026**
+**Date: Feb 6, 2026 (Update 2)**
+
+#### New Features Added:
+1. **Removed Emergent Badge** - Clean branding
+2. **Editable Transcripts** - Users can edit voice-to-text before sending
+3. **Save & Continue Sessions** - Story sessions are auto-saved and can be continued
+4. **AI Voice Output (TTS)** - AI speaks responses like Siri/Alexa
+5. **Age Detection in AI** - AI asks "how old were you?" to chronologically organize memories
+6. **Multi-language Support** - 20+ languages in settings and voice studio
+7. **Language Persistence** - Language choice saved in localStorage
 
 #### Backend (FastAPI + MongoDB)
 - JWT Authentication with family vault access
-- Family vault create/join/login endpoints
-- Family member CRUD operations
-- Memory cards with full metadata schema:
-  - Title, narrative, time period, life stage
-  - People involved, place, emotional tone
-  - Sensory cues (taste, smell, sound, sight)
-  - Occasion, highlights, privacy level
-- AI Interview endpoint using Gemini 3 Flash
-- Family relationship management
-- Life Book export (by life stage)
-- Theme Book export (food, love, travel, lessons, family)
-- Vault statistics
+- AI Interview with improved prompts for age detection
+- Session saving and retrieval
+- Memory extraction with approximate_age field
 
 #### Frontend (React + Tailwind + Shadcn)
-- **Landing Page**: Cinematic hero, feature highlights, emotional design
-- **Auth Page**: Create vault, join vault, login tabs
-- **Dashboard**: Stats, quick actions, recent memories, family members
-- **Voice Studio**: Voice recording, AI interview chat, memory extraction
-- **Family Tree**: D3.js force-directed graph, add members, create relationships
-- **Profile Page**: Member timeline, edit profile, view memories
-- **Memories Page**: Grid/list view, search, filter by life stage
-- **Memory Detail**: Full story view, edit, delete
-- **Export Page**: Life book and theme book PDF generation
-- **Settings Page**: Preferences, logout, account management
+- **Voice Studio Improvements:**
+  - Language selector in header
+  - Voice toggle (mute/unmute AI)
+  - Session history button
+  - Editable transcript with edit/confirm workflow
+  - "Start a New Story" initiates AI greeting
+  - "Continue a Story" loads saved sessions
+  - AI speaks responses using Web Speech API
+- **Settings Page:**
+  - Language selection dropdown (20+ languages)
+  - AI Voice toggle
+  - Saved to localStorage for persistence
 
-#### Design System
-- Warm Ivory palette (#F9F7F2 background)
-- Muted Emerald (#2E5C55) primary
-- Playfair Display (serif) for headings
-- Manrope (sans) for body text
-- 48px minimum touch targets
-- Large typography for elders
+#### Languages Supported
+English (US/UK/India), Hindi, Spanish, French, German, Italian, Portuguese, Chinese, Japanese, Korean, Arabic, Russian, Bengali, Tamil, Telugu, Marathi, Gujarati, Punjabi
 
 ### Architecture
 
@@ -85,7 +86,7 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 │   └── .env               # MongoDB, JWT, Emergent LLM Key
 ├── frontend/
 │   ├── src/
-│   │   ├── contexts/      # AuthContext
+│   │   ├── contexts/      # AuthContext (fixed)
 │   │   ├── pages/         # All page components
 │   │   └── components/ui/ # Shadcn components
 │   └── .env               # Backend URL
@@ -99,22 +100,24 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 - [x] Family vault authentication
 - [x] Memory card creation
 - [x] AI interview integration
-- [x] Family tree visualization
-- [x] Elder-friendly UI
+- [x] AI voice output (TTS)
+- [x] Editable transcripts
+- [x] Multi-language support
+- [x] Session save & continue
 
 #### P1 - High Priority (Done)
 - [x] PDF export (life book)
 - [x] Theme-based export
 - [x] Privacy controls
 - [x] Profile management
+- [x] Language settings persistence
 
 #### P2 - Medium Priority (Next Phase)
 - [ ] Audio recording storage (S3)
 - [ ] QR codes in PDF for voice playback
-- [ ] Multi-language TTS voice output
+- [ ] Photo/media attachments to memories
 - [ ] Family invitation email flow
 - [ ] Memory reactions/comments
-- [ ] Photo/media attachments to memories
 
 #### P3 - Low Priority (Future)
 - [ ] Print-ready book formatting
@@ -122,7 +125,6 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 - [ ] Mobile app (React Native)
 - [ ] Timeline visualization with maps
 - [ ] AI-generated chapter summaries
-- [ ] Family analytics dashboard
 
 ### Next Tasks List
 
@@ -130,8 +132,7 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 2. **Voice QR Codes**: Generate QR codes in PDFs linking to audio
 3. **Email Invites**: Send family invitation emails
 4. **Photo Upload**: Add image attachments to memories
-5. **Multi-language TTS**: Use Gemini for voice output in 60 languages
-6. **Mobile Optimization**: Enhance responsive design for mobile family viewing
+5. **Premium TTS**: Consider ElevenLabs for more natural voices
 
 ### Tech Stack
 
@@ -141,26 +142,12 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 | Backend | FastAPI, Python 3.11 |
 | Database | MongoDB |
 | AI | Gemini 3 Flash (via emergentintegrations) |
+| TTS | Web Speech API (browser native) |
+| STT | Web Speech API (browser native) |
 | Visualization | D3.js |
 | Animation | Framer Motion |
 | PDF Generation | jsPDF |
 | Auth | JWT (bcrypt hashing) |
-
-### API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/vaults/create` | POST | Create new family vault |
-| `/api/vaults/join` | POST | Join existing vault |
-| `/api/vaults/login` | POST | Login to vault |
-| `/api/members` | GET/POST | Manage family members |
-| `/api/memories` | GET/POST | List/create memories |
-| `/api/memories/{id}` | GET/PUT/DELETE | Memory CRUD |
-| `/api/ai/interview` | POST | AI interview session |
-| `/api/relationships` | GET/POST | Family relationships |
-| `/api/export/life-book/{id}` | GET | Export life book data |
-| `/api/export/theme-book` | GET | Export theme book data |
-| `/api/stats` | GET | Vault statistics |
 
 ---
 *Last Updated: Feb 6, 2026*
