@@ -415,10 +415,10 @@ const LandingPage = () => {
           viewport={{ once: true }}
         >
           <h2 className="font-serif text-charcoal mb-6">
-            Start Your Family's Story Today
+            Start Your Family&apos;s Story Today
           </h2>
           <p className="text-charcoal-light text-xl mb-10">
-            Create a private vault where your family's memories will be 
+            Create a private vault where your family&apos;s memories will be 
             treasured for generations to come.
           </p>
           <Button 
