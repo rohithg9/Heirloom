@@ -472,174 +472,126 @@ const DemoPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="h-[calc(100vh-8rem)]"
+              className="min-h-[calc(100vh-8rem)]"
             >
               {selectedMemory ? (
-                /* Cinematic Memory Detail View */
-                <div className="relative h-full">
-                  {/* Background Image */}
-                  <div className="absolute inset-0">
+                /* Cinematic Memory Detail View - Mobile Optimized */
+                <div className="relative min-h-[calc(100vh-8rem)]">
+                  {/* Background Image with stronger overlay for readability */}
+                  <div className="fixed inset-0 top-32">
                     <img 
                       src={selectedMemory.cover_image}
                       alt={selectedMemory.title}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-charcoal via-charcoal/80 to-charcoal/40" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-charcoal/95 via-charcoal/85 to-charcoal/95" />
                   </div>
 
-                  {/* Content */}
-                  <div className="relative h-full max-w-6xl mx-auto px-6 flex items-center">
-                    <div className="max-w-2xl">
-                      {/* Author */}
+                  {/* Content - Scrollable */}
+                  <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 py-6 pb-40">
+                    {/* Author */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center gap-3 mb-4"
+                    >
+                      <img 
+                        src={DEMO_MEMBERS.find(m => m.id === selectedMemory.author_id)?.photo_url}
+                        alt={selectedMemory.author_name}
+                        className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-ivory/30"
+                      />
+                      <div>
+                        <p className="text-ivory font-medium text-sm md:text-base">{selectedMemory.author_name}</p>
+                        <p className="text-ivory/60 text-xs md:text-sm">{selectedMemory.life_stage} • {selectedMemory.time_period}</p>
+                      </div>
+                    </motion.div>
+
+                    {/* Title */}
+                    <motion.h2
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="font-serif text-2xl md:text-4xl text-ivory mb-4"
+                    >
+                      {selectedMemory.title}
+                    </motion.h2>
+
+                    {/* Emotion Badge */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="mb-4"
+                    >
+                      <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${getEmotionColor(selectedMemory.emotional_tone)} text-white text-xs md:text-sm`}>
+                        {getEmotionEmoji(selectedMemory.emotional_tone)}
+                        {selectedMemory.emotional_tone}
+                      </span>
+                    </motion.div>
+
+                    {/* Narrative - Card style for better readability */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="bg-charcoal/60 backdrop-blur-sm rounded-xl p-4 md:p-6 mb-6 border border-ivory/10"
+                    >
+                      <p className="text-base md:text-xl text-ivory leading-relaxed">
+                        &ldquo;{selectedMemory.narrative}&rdquo;
+                      </p>
+                    </motion.div>
+
+                    {/* Highlights - Clean list */}
+                    {selectedMemory.highlights?.length > 0 && (
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-3 mb-6"
+                        transition={{ delay: 0.4 }}
+                        className="mb-6 space-y-2"
                       >
-                        <img 
-                          src={DEMO_MEMBERS.find(m => m.id === selectedMemory.author_id)?.photo_url}
-                          alt={selectedMemory.author_name}
-                          className="w-12 h-12 rounded-full border-2 border-ivory/20"
-                        />
-                        <div>
-                          <p className="text-ivory font-medium">{selectedMemory.author_name}</p>
-                          <p className="text-ivory/50 text-sm">{selectedMemory.life_stage} • {selectedMemory.time_period}</p>
-                        </div>
+                        <p className="text-xs text-ivory/50 uppercase tracking-wide mb-2">Key Moments</p>
+                        {selectedMemory.highlights.map((highlight, i) => (
+                          <div key={i} className="flex items-start gap-2 text-amber-400 text-sm md:text-base">
+                            <Quote className="w-4 h-4 mt-0.5 flex-shrink-0 opacity-70" />
+                            <span className="italic">&ldquo;{highlight}&rdquo;</span>
+                          </div>
+                        ))}
                       </motion.div>
+                    )}
 
-                      {/* Title */}
-                      <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="font-serif text-4xl md:text-5xl text-ivory mb-6"
-                      >
-                        {selectedMemory.title}
-                      </motion.h2>
-
-                      {/* Emotion Badge */}
+                    {/* Sensory Details - Compact pills */}
+                    {selectedMemory.sensory_cues && Object.keys(selectedMemory.sensory_cues).length > 0 && (
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
+                        transition={{ delay: 0.5 }}
                         className="mb-6"
                       >
-                        <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${getEmotionColor(selectedMemory.emotional_tone)} text-white text-sm`}>
-                          {getEmotionEmoji(selectedMemory.emotional_tone)}
-                          {selectedMemory.emotional_tone}
-                        </span>
-                      </motion.div>
-
-                      {/* Narrative */}
-                      <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="text-xl text-ivory/90 leading-relaxed mb-8"
-                      >
-                        &ldquo;{selectedMemory.narrative}&rdquo;
-                      </motion.p>
-
-                      {/* Highlights */}
-                      {selectedMemory.highlights?.length > 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.4 }}
-                          className="space-y-2 mb-8"
-                        >
-                          {selectedMemory.highlights.map((highlight, i) => (
-                            <div key={i} className="flex items-start gap-2 text-amber-400">
-                              <Quote className="w-4 h-4 mt-1 flex-shrink-0" />
-                              <span className="italic">&ldquo;{highlight}&rdquo;</span>
-                            </div>
-                          ))}
-                        </motion.div>
-                      )}
-
-                      {/* Sensory Details */}
-                      {selectedMemory.sensory_cues && Object.keys(selectedMemory.sensory_cues).length > 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.5 }}
-                          className="flex flex-wrap gap-3"
-                        >
+                        <p className="text-xs text-ivory/50 uppercase tracking-wide mb-2">Sensory Details</p>
+                        <div className="flex flex-wrap gap-2">
                           {Object.entries(selectedMemory.sensory_cues).map(([sense, detail]) => detail && (
-                            <span key={sense} className="px-3 py-1 bg-ivory/10 rounded-full text-sm text-ivory/70">
-                              {sense}: {detail.substring(0, 30)}...
+                            <span key={sense} className="px-2 py-1 bg-ivory/10 rounded-lg text-xs text-ivory/80">
+                              <span className="text-amber-400 capitalize">{sense}:</span> {detail.length > 25 ? detail.substring(0, 25) + '...' : detail}
                             </span>
                           ))}
-                        </motion.div>
-                      )}
-                    </div>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
 
-                  {/* Navigation Controls */}
-                  <div className="absolute bottom-8 left-0 right-0">
-                    <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-                      {/* Memory counter */}
-                      <div className="text-ivory/50">
-                        {currentMemoryIndex + 1} of {DEMO_MEMORIES.length}
-                      </div>
-
-                      {/* Controls */}
-                      <div className="flex items-center gap-4">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => navigateMemory('prev')}
-                          className="text-ivory hover:bg-ivory/10"
-                          data-testid="prev-memory-btn"
-                        >
-                          <ArrowLeft className="w-6 h-6" />
-                        </Button>
-                        
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setIsPlaying(!isPlaying)}
-                          className="w-14 h-14 rounded-full bg-ivory/10 text-ivory hover:bg-ivory/20"
-                          data-testid="play-pause-btn"
-                        >
-                          {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
-                        </Button>
-                        
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => navigateMemory('next')}
-                          className="text-ivory hover:bg-ivory/10"
-                          data-testid="next-memory-btn"
-                        >
-                          <ArrowRight className="w-6 h-6" />
-                        </Button>
-                      </div>
-
-                      {/* Close detail view */}
-                      <Button
-                        variant="ghost"
-                        onClick={() => setSelectedMemory(null)}
-                        className="text-ivory/70 hover:text-ivory"
-                        data-testid="close-memory-detail-btn"
-                      >
-                        View All
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Memory Timeline */}
-                  <div className="absolute bottom-24 left-0 right-0 px-6">
-                    <div className="max-w-6xl mx-auto">
-                      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                  {/* Fixed Bottom Controls */}
+                  <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-charcoal via-charcoal/95 to-transparent pt-8 pb-4 px-4 z-20">
+                    {/* Memory Timeline - Horizontal scroll */}
+                    <div className="max-w-4xl mx-auto mb-4">
+                      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-center">
                         {DEMO_MEMORIES.map((memory, index) => (
                           <button
                             key={memory.id}
                             onClick={() => handleMemorySelect(memory, index)}
-                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                            className={`flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden border-2 transition-all ${
                               index === currentMemoryIndex 
-                                ? 'border-emerald scale-110' 
-                                : 'border-ivory/20 opacity-50 hover:opacity-100'
+                                ? 'border-emerald ring-2 ring-emerald/30' 
+                                : 'border-ivory/20 opacity-60 hover:opacity-100'
                             }`}
                             data-testid={`memory-thumb-${memory.id}`}
                           >
@@ -651,6 +603,55 @@ const DemoPage = () => {
                           </button>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Navigation Controls */}
+                    <div className="max-w-4xl mx-auto flex items-center justify-between">
+                      <span className="text-ivory/50 text-sm">
+                        {currentMemoryIndex + 1}/{DEMO_MEMORIES.length}
+                      </span>
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => navigateMemory('prev')}
+                          className="h-10 w-10 text-ivory hover:bg-ivory/10"
+                          data-testid="prev-memory-btn"
+                        >
+                          <ArrowLeft className="w-5 h-5" />
+                        </Button>
+                        
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setIsPlaying(!isPlaying)}
+                          className="h-12 w-12 rounded-full bg-emerald text-ivory hover:bg-emerald/80"
+                          data-testid="play-pause-btn"
+                        >
+                          {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                        </Button>
+                        
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => navigateMemory('next')}
+                          className="h-10 w-10 text-ivory hover:bg-ivory/10"
+                          data-testid="next-memory-btn"
+                        >
+                          <ArrowRight className="w-5 h-5" />
+                        </Button>
+                      </div>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedMemory(null)}
+                        className="text-ivory/70 hover:text-ivory text-sm"
+                        data-testid="close-memory-detail-btn"
+                      >
+                        View All
+                      </Button>
                     </div>
                   </div>
                 </div>
