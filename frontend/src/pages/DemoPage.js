@@ -773,14 +773,21 @@ const DemoPage = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
                   className="btn-primary text-lg px-8 py-5"
-                  onClick={() => {
-                    // In demo, show a toast or modal
-                    alert('In your vault, you can download a beautiful PDF of all your family stories!');
-                  }}
+                  onClick={handleDownloadPdf}
+                  disabled={isGeneratingPdf}
                   data-testid="download-demo-book-btn"
                 >
-                  <Download className="w-5 h-5 mr-2" />
-                  Download Demo Book
+                  {isGeneratingPdf ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      {pdfProgress}
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-5 h-5 mr-2" />
+                      Download Demo Book
+                    </>
+                  )}
                 </Button>
                 <Button
                   variant="outline"
