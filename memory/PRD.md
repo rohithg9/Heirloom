@@ -40,42 +40,55 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 | Theme Book Export | ✅ Implemented | P1 |
 | Elder-Friendly UI (Large Typography) | ✅ Implemented | P0 |
 | Privacy Controls | ✅ Implemented | P1 |
+| **Interactive Demo Experience** | ✅ Implemented | P0 |
+| **Sage AI Companion** | ✅ Implemented | P0 |
+| **Cinematic Memory Viewer** | ✅ Implemented | P1 |
 
 ### What's Been Implemented
 
-**Date: Feb 6, 2026 (Update 2)**
+**Date: Feb 6, 2026 (Update 3) - Demo Experience**
 
 #### New Features Added:
-1. **Removed Emergent Badge** - Clean branding
-2. **Editable Transcripts** - Users can edit voice-to-text before sending
-3. **Save & Continue Sessions** - Story sessions are auto-saved and can be continued
-4. **AI Voice Output (TTS)** - AI speaks responses like Siri/Alexa
-5. **Age Detection in AI** - AI asks "how old were you?" to chronologically organize memories
-6. **Multi-language Support** - 20+ languages in settings and voice studio
-7. **Language Persistence** - Language choice saved in localStorage
+1. **Sage AI Companion** - Friendly character that guides users through the app
+   - Appears on landing page after 3 seconds for first-time visitors
+   - Provides context-aware narrations throughout the demo
+   - Voice output using Web Speech API
+   - Cute owl-inspired avatar design
 
-#### Backend (FastAPI + MongoDB)
-- JWT Authentication with family vault access
-- AI Interview with improved prompts for age detection
-- Session saving and retrieval
-- Memory extraction with approximate_age field
+2. **Interactive Demo Experience** (/demo route)
+   - Complete demo family: "Sharma-Williams" (3 generations, 6 members)
+   - 10 rich memories with cover images, emotions, and sensory details
+   - Four demo views: Introduction, Family Tree, Memory Gallery, Life Book
+   - Beautiful cinematic memory viewer with autoplay
+   - PDF Life Book export with professional cover page
 
-#### Frontend (React + Tailwind + Shadcn)
-- **Voice Studio Improvements:**
-  - Language selector in header
-  - Voice toggle (mute/unmute AI)
-  - Session history button
-  - Editable transcript with edit/confirm workflow
-  - "Start a New Story" initiates AI greeting
-  - "Continue a Story" loads saved sessions
-  - AI speaks responses using Web Speech API
-- **Settings Page:**
-  - Language selection dropdown (20+ languages)
-  - AI Voice toggle
-  - Saved to localStorage for persistence
+3. **Demo Family Members:**
+   - Generation 1: Kamala Devi Sharma (Nani), Rajan Sharma (Nana)
+   - Generation 2: Priya Sharma-Williams (Mom), James Williams (Dad)
+   - Generation 3: Maya Williams, Arjun Williams
 
-#### Languages Supported
-English (US/UK/India), Hindi, Spanish, French, German, Italian, Portuguese, Chinese, Japanese, Korean, Arabic, Russian, Bengali, Tamil, Telugu, Marathi, Gujarati, Punjabi
+4. **Demo Memories Include:**
+   - "The Day I Became a Teacher" - Nani's first teaching day
+   - "My Mother's Kitchen Magic" - Sunday jalebi traditions
+   - "Building the Bridge at Haridwar" - Nana's engineering achievement
+   - "The Night I Met Kamala" - Love story at a Delhi wedding
+   - "When London Rain Brought Me Love" - Priya meets James
+   - "Why I Created Heirloom" - Maya's inspiration story
+   - And more across all life stages
+
+5. **Cinematic Memory Viewer:**
+   - Full-screen memory display with background images
+   - Prev/Next navigation with timeline thumbnails
+   - Autoplay mode (8 seconds per memory)
+   - Emotion badges and sensory cue display
+   - Voice narration of story content
+
+6. **PDF Life Book Export:**
+   - Professional cover page design
+   - Table of contents
+   - Family tree page
+   - Chapters organized by life stage
+   - Gold accents and elegant typography
 
 ### Architecture
 
@@ -86,12 +99,22 @@ English (US/UK/India), Hindi, Spanish, French, German, Italian, Portuguese, Chin
 │   └── .env               # MongoDB, JWT, Emergent LLM Key
 ├── frontend/
 │   ├── src/
-│   │   ├── contexts/      # AuthContext (fixed)
-│   │   ├── pages/         # All page components
-│   │   └── components/ui/ # Shadcn components
-│   └── .env               # Backend URL
+│   │   ├── components/
+│   │   │   ├── ui/        # Shadcn components
+│   │   │   └── SageCompanion.jsx  # Sage avatar & bubbles
+│   │   ├── contexts/
+│   │   │   └── AuthContext.js
+│   │   ├── data/
+│   │   │   └── demoFamily.js  # Demo family static data
+│   │   ├── pages/
+│   │   │   ├── LandingPage.js  # With Sage welcome
+│   │   │   ├── DemoPage.js     # Full demo experience
+│   │   │   └── ...
+│   │   └── utils/
+│   │       └── pdfExport.js    # PDF generation utility
+│   └── .env
 └── memory/
-    └── PRD.md             # This file
+    └── PRD.md
 ```
 
 ### Prioritized Backlog
@@ -99,11 +122,13 @@ English (US/UK/India), Hindi, Spanish, French, German, Italian, Portuguese, Chin
 #### P0 - Critical (Done)
 - [x] Family vault authentication
 - [x] Memory card creation
-- [x] AI interview integration
+- [x] AI interview integration (Sage)
 - [x] AI voice output (TTS)
 - [x] Editable transcripts
 - [x] Multi-language support
 - [x] Session save & continue
+- [x] Interactive demo experience
+- [x] Sage AI companion
 
 #### P1 - High Priority (Done)
 - [x] PDF export (life book)
@@ -111,6 +136,7 @@ English (US/UK/India), Hindi, Spanish, French, German, Italian, Portuguese, Chin
 - [x] Privacy controls
 - [x] Profile management
 - [x] Language settings persistence
+- [x] Cinematic memory viewer
 
 #### P2 - Medium Priority (Next Phase)
 - [ ] Audio recording storage (S3)
@@ -118,6 +144,7 @@ English (US/UK/India), Hindi, Spanish, French, German, Italian, Portuguese, Chin
 - [ ] Photo/media attachments to memories
 - [ ] Family invitation email flow
 - [ ] Memory reactions/comments
+- [ ] Visual Family Tree with D3.js
 
 #### P3 - Low Priority (Future)
 - [ ] Print-ready book formatting
@@ -125,14 +152,15 @@ English (US/UK/India), Hindi, Spanish, French, German, Italian, Portuguese, Chin
 - [ ] Mobile app (React Native)
 - [ ] Timeline visualization with maps
 - [ ] AI-generated chapter summaries
+- [ ] Owner vs Family-View modes
 
 ### Next Tasks List
 
-1. **Audio Storage**: Integrate S3 for storing voice recordings
-2. **Voice QR Codes**: Generate QR codes in PDFs linking to audio
-3. **Email Invites**: Send family invitation emails
-4. **Photo Upload**: Add image attachments to memories
-5. **Premium TTS**: Consider ElevenLabs for more natural voices
+1. **Visual Family Tree**: Implement D3.js organic tree visualization
+2. **Audio Storage**: Integrate S3 for storing voice recordings
+3. **Voice QR Codes**: Generate QR codes in PDFs linking to audio
+4. **Owner/Family Modes**: Implement dual-mode system (edit vs read-only)
+5. **Photo Upload**: Add image attachments to memories
 
 ### Tech Stack
 
@@ -144,10 +172,21 @@ English (US/UK/India), Hindi, Spanish, French, German, Italian, Portuguese, Chin
 | AI | Gemini 3 Flash (via emergentintegrations) |
 | TTS | Web Speech API (browser native) |
 | STT | Web Speech API (browser native) |
-| Visualization | D3.js |
+| Visualization | D3.js (installed) |
 | Animation | Framer Motion |
 | PDF Generation | jsPDF |
 | Auth | JWT (bcrypt hashing) |
+
+### Key Files Reference
+
+| File | Purpose |
+|------|---------|
+| `/app/frontend/src/pages/DemoPage.js` | Complete demo experience |
+| `/app/frontend/src/components/SageCompanion.jsx` | Sage avatar, bubble, modal |
+| `/app/frontend/src/data/demoFamily.js` | Demo family static data |
+| `/app/frontend/src/utils/pdfExport.js` | PDF generation utility |
+| `/app/frontend/src/pages/LandingPage.js` | Landing with Sage welcome |
+| `/app/backend/server.py` | All backend API endpoints |
 
 ---
 *Last Updated: Feb 6, 2026*
