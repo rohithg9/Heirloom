@@ -444,6 +444,31 @@ const LandingPage = () => {
           </p>
         </div>
       </footer>
+
+      {/* Sage Welcome Modal */}
+      <SageWelcomeModal
+        isOpen={showSageWelcome}
+        onClose={handleCloseSageWelcome}
+        onExploreDemo={handleExploreDemo}
+      />
+
+      {/* Floating Sage button after dismissing modal */}
+      {hasSeenSage && !showSageWelcome && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="fixed bottom-6 right-6 z-40"
+          onClick={() => navigate('/demo')}
+          data-testid="floating-sage-btn"
+        >
+          <div className="relative group">
+            <SageAvatar size="lg" />
+            <div className="absolute -top-2 -right-2 px-2 py-1 bg-emerald text-white text-xs rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Try Demo
+            </div>
+          </div>
+        </motion.button>
+      )}
     </div>
   );
 };
