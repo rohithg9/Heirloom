@@ -1,75 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&family=Caveat:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-    margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-    font-family:
-        source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
-}
-
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --primary: 0 0% 9%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
-    }
-    .dark {
-        --background: 0 0% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 0 0% 14.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 14.9%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 14.9%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.9%;
-        --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
+        /* Heirloom Theme - Warm Ivory */
+        --background: 40 30% 97%;
+        --foreground: 20 15% 15%;
+        --card: 40 40% 99%;
+        --card-foreground: 20 15% 15%;
+        --popover: 40 40% 99%;
+        --popover-foreground: 20 15% 15%;
+        --primary: 168 33% 27%;
+        --primary-foreground: 40 30% 97%;
+        --secondary: 35 30% 90%;
+        --secondary-foreground: 20 15% 15%;
+        --muted: 35 20% 92%;
+        --muted-foreground: 20 8% 45%;
+        --accent: 35 30% 90%;
+        --accent-foreground: 20 15% 15%;
+        --destructive: 0 35% 52%;
+        --destructive-foreground: 40 30% 97%;
+        --border: 35 20% 88%;
+        --input: 35 20% 88%;
+        --ring: 168 33% 27%;
+        --radius: 0.75rem;
     }
 }
 
@@ -77,39 +34,190 @@ code {
     * {
         @apply border-border;
     }
+    
+    html {
+        scroll-behavior: smooth;
+    }
+    
     body {
-        @apply bg-background text-foreground;
+        @apply bg-ivory text-charcoal font-sans antialiased;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: 'liga' 1, 'calt' 1;
+    }
+    
+    /* Typography */
+    h1, h2, h3, h4 {
+        @apply font-serif tracking-tight;
+    }
+    
+    h1 {
+        @apply text-5xl md:text-7xl leading-[1.1];
+    }
+    
+    h2 {
+        @apply text-4xl md:text-5xl leading-tight;
+    }
+    
+    h3 {
+        @apply text-2xl md:text-3xl leading-snug;
+    }
+    
+    p, span, div {
+        @apply text-lg leading-relaxed;
+    }
+    
+    /* Selection */
+    ::selection {
+        @apply bg-emerald/20 text-charcoal;
     }
 }
 
-@layer base {
-    [data-debug-wrapper="true"] {
-        display: contents !important;
+@layer components {
+    /* Memory Card */
+    .memory-card {
+        @apply bg-ivory-50 p-6 rounded-xl shadow-soft border border-ivory-300 relative overflow-hidden;
+        @apply hover:shadow-deep hover:-translate-y-0.5 transition-all duration-500;
     }
+    
+    /* Voice Button */
+    .voice-button {
+        @apply w-24 h-24 md:w-32 md:h-32 rounded-full bg-rose text-white flex items-center justify-center shadow-deep;
+        @apply hover:scale-105 active:scale-95 transition-transform duration-300;
+    }
+    
+    .voice-button.recording {
+        @apply animate-pulse-slow bg-rose shadow-glow;
+    }
+    
+    /* Primary Button */
+    .btn-primary {
+        @apply bg-emerald text-ivory hover:bg-emerald-dark rounded-full px-8 py-4 text-lg font-medium shadow-soft;
+        @apply hover:shadow-deep hover:-translate-y-0.5 transition-all duration-300;
+    }
+    
+    /* Secondary Button */
+    .btn-secondary {
+        @apply bg-ivory-200 text-charcoal hover:bg-ivory-300 rounded-full px-8 py-4 text-lg font-medium;
+        @apply transition-all duration-300;
+    }
+    
+    /* Ghost Button */
+    .btn-ghost {
+        @apply text-emerald hover:bg-ivory-200/50 rounded-full px-6 py-3 text-lg;
+        @apply transition-all duration-300;
+    }
+    
+    /* Input */
+    .input-heirloom {
+        @apply bg-white/50 border border-ivory-300 rounded-lg px-6 py-4 text-xl;
+        @apply focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all;
+        @apply placeholder:text-charcoal-muted;
+    }
+    
+    /* Card */
+    .card-paper {
+        @apply bg-ivory-50 rounded-xl border border-ivory-300 shadow-soft;
+    }
+    
+    /* Timeline */
+    .timeline-dot {
+        @apply w-4 h-4 rounded-full bg-emerald border-4 border-ivory-200;
+    }
+    
+    /* Family Tree Node */
+    .tree-node {
+        @apply w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-ivory-300 overflow-hidden;
+        @apply shadow-soft hover:shadow-deep hover:border-emerald transition-all duration-500;
+    }
+    
+    /* Emotion Colors */
+    .emotion-joy { @apply bg-amber/20 border-l-4 border-amber; }
+    .emotion-nostalgia { @apply bg-emerald/10 border-l-4 border-emerald; }
+    .emotion-love { @apply bg-rose/20 border-l-4 border-rose; }
+    .emotion-pride { @apply bg-amber/30 border-l-4 border-amber; }
+    .emotion-gratitude { @apply bg-emerald/20 border-l-4 border-emerald; }
+    .emotion-sadness { @apply bg-charcoal/10 border-l-4 border-charcoal-muted; }
+    
+    /* Sepia Filter for Images */
+    .img-heirloom {
+        filter: sepia(0.15) contrast(0.95) brightness(1.05);
+        @apply transition-all duration-500;
+    }
+    
+    .img-heirloom:hover {
+        filter: sepia(0) contrast(1) brightness(1);
+    }
+}
 
-    [data-debug-wrapper="true"] > * {
-        margin-left: inherit;
-        margin-right: inherit;
-        margin-top: inherit;
-        margin-bottom: inherit;
-        padding-left: inherit;
-        padding-right: inherit;
-        padding-top: inherit;
-        padding-bottom: inherit;
-        column-gap: inherit;
-        row-gap: inherit;
-        gap: inherit;
-        border-left-width: inherit;
-        border-right-width: inherit;
-        border-top-width: inherit;
-        border-bottom-width: inherit;
-        border-left-style: inherit;
-        border-right-style: inherit;
-        border-top-style: inherit;
-        border-bottom-style: inherit;
-        border-left-color: inherit;
-        border-right-color: inherit;
-        border-top-color: inherit;
-        border-bottom-color: inherit;
+@layer utilities {
+    /* Paper texture overlay - subtle */
+    .paper-texture::before {
+        content: '';
+        @apply absolute inset-0 pointer-events-none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        opacity: 0.02;
+        mix-blend-mode: multiply;
+    }
+    
+    /* Gentle fade-in animation */
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Stagger children */
+    .stagger-children > * {
+        @apply opacity-0;
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+    
+    .stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+    .stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+    .stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+    .stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+    .stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+    .stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-ivory-200;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-charcoal-muted/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-charcoal-muted/50;
+}
+
+/* Focus states for accessibility */
+:focus-visible {
+    @apply outline-2 outline-offset-2 outline-emerald;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
