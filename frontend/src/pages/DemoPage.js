@@ -656,7 +656,7 @@ const DemoPage = () => {
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}}
+                        transition={{ delay: 0.4 }}
                         className="mb-6 space-y-2"
                       >
                         <p className="text-xs text-ivory/50 uppercase tracking-wide mb-2">Key Moments</p>
