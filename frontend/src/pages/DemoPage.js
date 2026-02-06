@@ -877,6 +877,12 @@ const DemoPage = () => {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/50 to-transparent" />
                         
+                        {/* Voice recording indicator */}
+                        <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-amber-500/90 rounded-full text-white text-xs">
+                          <Mic className="w-3 h-3" />
+                          <span>Voice</span>
+                        </div>
+                        
                         {/* Content */}
                         <div className="absolute bottom-0 left-0 right-0 p-4">
                           <div className="flex items-center gap-2 mb-2">
