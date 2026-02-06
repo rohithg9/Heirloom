@@ -148,9 +148,9 @@ export const SageBubble = ({ message, onClose, position = 'bottom-right', showVo
   }, []);
 
   const positionClasses = {
-    'bottom-right': 'bottom-24 right-6',
-    'bottom-left': 'bottom-24 left-6',
-    'top-right': 'top-24 right-6',
+    'bottom-right': 'bottom-36 right-4 md:bottom-24 md:right-6',
+    'bottom-left': 'bottom-36 left-4 md:bottom-24 md:left-6',
+    'top-right': 'top-36 right-4 md:top-24 md:right-6',
     'center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
   };
 
