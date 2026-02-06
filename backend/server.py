@@ -142,6 +142,7 @@ class MemoryCard(BaseModel):
 class AIInterviewMessage(BaseModel):
     message: str
     session_id: Optional[str] = None
+    language: Optional[str] = "en-US"
 
 class AIInterviewResponse(BaseModel):
     response: str
