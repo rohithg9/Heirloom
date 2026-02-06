@@ -660,81 +660,74 @@ const DemoPage = () => {
                       </p>
                     </motion.div>
 
-                    {/* Voice Recording / Playback Section */}
+                    {/* Voice Playback - Clean & Simple */}
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.35 }}
                       className="mb-6"
                     >
-                      {/* Voice Mode Toggle */}
-                      <div className="flex flex-wrap items-center gap-3 mb-3">
-                        <span className="text-xs text-ivory/50 uppercase tracking-wide">Listen:</span>
-                        <button
-                          onClick={() => setNarratorMode('original')}
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-all ${
-                            narratorMode === 'original' 
-                              ? 'bg-amber-500 text-white' 
-                              : 'bg-ivory/10 text-ivory/70 hover:bg-ivory/20'
-                          }`}
-                        >
-                          <Mic className="w-3.5 h-3.5" />
-                          Original Voice
-                        </button>
-                        <button
-                          onClick={() => setNarratorMode('sage')}
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-all ${
-                            narratorMode === 'sage' 
-                              ? 'bg-emerald text-white' 
-                              : 'bg-ivory/10 text-ivory/70 hover:bg-ivory/20'
-                          }`}
-                        >
-                          <SageAvatar size="sm" />
-                          <span className="ml-1">Sage Narrates</span>
-                        </button>
-                      </div>
-
-                      {/* Play/Stop Button */}
-                      <div className="flex items-center gap-3">
+                      {/* Big Play Button - Original Voice (Default) */}
+                      <div className="flex flex-col items-center gap-4">
                         {(isSageNarrating || isPlayingOriginalVoice) ? (
-                          <Button
+                          <motion.button
                             onClick={stopSpeech}
-                            className="bg-red-500 hover:bg-red-600 text-white"
+                            className="w-20 h-20 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-xl"
+                            whileTap={{ scale: 0.95 }}
                             data-testid="stop-voice-btn"
                           >
-                            <StopCircle className="w-5 h-5 mr-2" />
-                            Stop
-                          </Button>
+                            <StopCircle className="w-10 h-10" />
+                          </motion.button>
                         ) : (
-                          <Button
-                            onClick={() => playMemory(selectedMemory)}
-                            className={narratorMode === 'sage' ? 'btn-primary' : 'bg-amber-500 hover:bg-amber-600 text-white'}
+                          <motion.button
+                            onClick={() => {
+                              setNarratorMode('original');
+                              const member = DEMO_MEMBERS.find(m => m.id === selectedMemory.author_id);
+                              speakAsOriginalVoice(selectedMemory.narrative, member);
+                            }}
+                            className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-white flex items-center justify-center shadow-xl"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             data-testid="play-voice-btn"
                           >
-                            <PlayCircle className="w-5 h-5 mr-2" />
-                            {narratorMode === 'sage' ? 'Hear Sage Tell This Story' : `Hear ${selectedMemory.author_name.split(' ')[0]}'s Voice`}
-                          </Button>
+                            <PlayCircle className="w-10 h-10" />
+                          </motion.button>
                         )}
                         
-                        {/* Status indicator */}
-                        {(isSageNarrating || isPlayingOriginalVoice) && (
-                          <div className="flex items-center gap-2 text-ivory/70 text-sm">
-                            <motion.div
-                              className="w-2 h-2 rounded-full bg-emerald"
-                              animate={{ opacity: [1, 0.4, 1] }}
-                              transition={{ duration: 1, repeat: Infinity }}
-                            />
-                            {isSageNarrating ? 'Sage is narrating...' : 'Playing original voice...'}
-                          </div>
+                        {/* Label */}
+                        <div className="text-center">
+                          {(isSageNarrating || isPlayingOriginalVoice) ? (
+                            <p className="text-ivory text-sm flex items-center gap-2">
+                              <motion.span
+                                className="w-2 h-2 rounded-full bg-amber-400"
+                                animate={{ opacity: [1, 0.3, 1] }}
+                                transition={{ duration: 0.8, repeat: Infinity }}
+                              />
+                              {isPlayingOriginalVoice ? 'Playing voice...' : 'Sage is narrating...'}
+                            </p>
+                          ) : (
+                            <p className="text-ivory/80 text-sm">
+                              <Mic className="w-4 h-4 inline mr-1" />
+                              Hear {selectedMemory.author_name.split(' ')[0]}&apos;s Voice
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Sage option - subtle secondary */}
+                        {!(isSageNarrating || isPlayingOriginalVoice) && (
+                          <button
+                            onClick={() => {
+                              setNarratorMode('sage');
+                              const member = DEMO_MEMBERS.find(m => m.id === selectedMemory.author_id);
+                              narrateAsSage(selectedMemory, member);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 text-ivory/50 hover:text-ivory/80 text-sm transition-colors"
+                          >
+                            <SageAvatar size="sm" />
+                            <span>or let Sage narrate</span>
+                          </button>
                         )}
                       </div>
-
-                      {/* Demo notice */}
-                      <p className="text-xs text-ivory/40 mt-2">
-                        {narratorMode === 'original' 
-                          ? '🎙️ Demo: This simulates how your recorded voice would sound' 
-                          : '✨ Sage transforms the story into third-person narration'}
-                      </p>
                     </motion.div>
 
                     {/* Highlights - Clean list */}
