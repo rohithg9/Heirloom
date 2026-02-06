@@ -298,8 +298,8 @@ const LandingPage = () => {
           viewport={{ once: true }}
         >
           <blockquote className="font-serif text-3xl md:text-4xl leading-relaxed mb-8 italic">
-            "Every ordinary life deserves to be preserved with the dignity, 
-            voice, and beauty usually reserved for kings and queens."
+            &ldquo;Every ordinary life deserves to be preserved with the dignity, 
+            voice, and beauty usually reserved for kings and queens.&rdquo;
           </blockquote>
           <div className="w-16 h-0.5 bg-ivory/30 mx-auto" />
         </motion.div>
