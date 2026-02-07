@@ -22,8 +22,14 @@ const DemoPage = () => {
   const [searchParams] = useSearchParams();
   const initialView = searchParams.get('view') || 'intro';
   
-  // ElevenLabs TTS hook
-  const { speak, speakAsSage, speakAsFemale, speakAsMale, stop: stopTTS, isLoading: ttsLoading, isPlaying: ttsPlaying } = useElevenLabsTTS();
+  // ElevenLabs TTS hook - with age-appropriate voice support
+  const { 
+    speakAsSage, 
+    speakAsCharacter, 
+    stop: stopTTS, 
+    isLoading: ttsLoading, 
+    isPlaying: ttsPlaying 
+  } = useElevenLabsTTS();
   
   const [currentView, setCurrentView] = useState(initialView); // intro, family, memories, memory-detail, export
   const [selectedMember, setSelectedMember] = useState(null);
