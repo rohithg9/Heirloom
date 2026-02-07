@@ -46,6 +46,34 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 
 ### What's Been Implemented
 
+**Date: Feb 7, 2026 (Update 9) - Age-Appropriate Voices & Voice Clashing Fix**
+
+#### Bug Fixes:
+1. **Voice Clashing Bug Fixed** - Audio now properly stops when:
+   - Switching between memories
+   - Navigating to different views
+   - Clicking play on a new story
+   - Using AbortController to cancel pending TTS requests
+
+#### Voice Improvements:
+2. **Age-Appropriate Voices** - Characters now have voices matching their age:
+   - **Elderly (65+)**: Mature, grandparent-like voices
+     - `female_elderly` - Lily (grandmotherly)
+     - `male_elderly` - Arnold (deep, wise)
+   - **Middle-Aged (40-65)**: Warm adult voices
+     - `female_mature` - Sarah
+     - `male_mature` - Antoni
+   - **Young (<40)**: Youthful voices
+     - `female_young` - Rachel
+     - `male_young` - Adam
+
+3. **More Emotional Delivery** - Increased style parameter to 0.6 for more expressive narration
+
+4. **New TTS Hook Features** (`useElevenLabsTTS.js`)
+   - `speakAsCharacter(text, gender, birthYear)` - Auto-selects age-appropriate voice
+   - AbortController for cancelling pending requests
+   - Proper cleanup on unmount
+
 **Date: Feb 6, 2026 (Update 8) - ElevenLabs Natural Voice Integration**
 
 #### New Features:
