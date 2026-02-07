@@ -77,25 +77,31 @@ const DemoPage = () => {
     }
   }, [isPlaying, currentMemoryIndex, currentView]);
 
-  // Play original voice using ElevenLabs (gender-appropriate)
+  // Stop voice when view changes or memory changes
+  useEffect(() => {
+    stopTTS();
+  }, [currentView, stopTTS]);
+
+  // Play original voice using ElevenLabs with AGE-APPROPRIATE voice
   const playOriginalVoice = useCallback((text, member) => {
-    if (!voiceEnabled || !text) return;
+    if (!voiceEnabled || !text || !member) return;
+    
+    // Stop any existing audio first
+    stopTTS();
     
     const gender = getMemberGender(member);
-    const birthYear = member?.birth_year || 1970;
-    const age = 2024 - birthYear;
-    const isYoung = age < 40;
+    const birthYear = member.birth_year || 1970;
     
-    if (gender === 'male') {
-      speakAsMale(text, isYoung);
-    } else {
-      speakAsFemale(text, isYoung);
-    }
-  }, [voiceEnabled, speakAsMale, speakAsFemale]);
+    // Use age-appropriate voice with emotional delivery
+    speakAsCharacter(text, gender, birthYear);
+  }, [voiceEnabled, speakAsCharacter, stopTTS]);
 
   // Sage narrates story in third person using ElevenLabs
   const narrateWithSage = useCallback((memory, member) => {
     if (!voiceEnabled || !memory) return;
+    
+    // Stop any existing audio first
+    stopTTS();
     
     const gender = getMemberGender(member);
     
@@ -112,7 +118,7 @@ const DemoPage = () => {
     const fullNarration = `${intro} ${thirdPersonNarrative} ${closing}`;
     
     speakAsSage(fullNarration);
-  }, [voiceEnabled, speakAsSage]);
+  }, [voiceEnabled, speakAsSage, stopTTS]);
 
   const handleMemorySelect = (memory, index) => {
     setSelectedMemory(memory);
