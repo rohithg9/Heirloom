@@ -48,17 +48,25 @@ EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', '')
 eleven_client = ElevenLabs(api_key=ELEVENLABS_API_KEY) if ELEVENLABS_API_KEY else None
 
-# ElevenLabs Voice IDs - Natural, warm voices
+# ElevenLabs Voice IDs - Age and gender appropriate voices
+# See: https://elevenlabs.io/voice-library for more options
 VOICE_IDS = {
     # Sage - warm, friendly female narrator
     "sage": "EXAVITQu4vr4xnSDxMaL",  # Sarah - soft, warm
-    # Female storyteller voices
-    "female_warm": "EXAVITQu4vr4xnSDxMaL",  # Sarah
-    "female_young": "21m00Tcm4TlvDq8ikWAM",  # Rachel - clear, engaging
-    # Male storyteller voices  
-    "male_warm": "VR6AewLTigWG4xSOukaG",  # Arnold - deep, warm
-    "male_young": "pNInz6obpgDQGcFmaJgB",  # Adam - clear, friendly
-    # Default fallbacks
+    
+    # FEMALE VOICES by age
+    "female_elderly": "XrExE9yKIg1WjnnlVkGX",  # Lily - mature, grandmotherly
+    "female_mature": "EXAVITQu4vr4xnSDxMaL",  # Sarah - warm, middle-aged
+    "female_young": "21m00Tcm4TlvDq8ikWAM",   # Rachel - clear, youthful
+    
+    # MALE VOICES by age
+    "male_elderly": "VR6AewLTigWG4xSOukaG",   # Arnold - deep, older
+    "male_mature": "ErXwobaYiN019PkySvjV",    # Antoni - warm, middle-aged
+    "male_young": "pNInz6obpgDQGcFmaJgB",     # Adam - clear, youthful
+    
+    # Legacy mappings for compatibility
+    "female_warm": "EXAVITQu4vr4xnSDxMaL",
+    "male_warm": "VR6AewLTigWG4xSOukaG",
     "default_female": "EXAVITQu4vr4xnSDxMaL",
     "default_male": "VR6AewLTigWG4xSOukaG"
 }
