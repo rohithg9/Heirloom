@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, BookOpen, ArrowLeft, ArrowRight, Play, Pause,
   Volume2, VolumeX, Download, ChevronRight, MapPin, Calendar,
-  Sparkles, Home, Quote, Loader2, Mic, PlayCircle, StopCircle
+  Sparkles, Home, Quote, Loader2, Mic, PlayCircle, StopCircle, Heart
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { SageAvatar, SageBubble, SageFloatingButton } from '../components/SageCompanion';
