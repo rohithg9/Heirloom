@@ -805,7 +805,7 @@ async def create_story_share_link(memory_id: str, user: dict = Depends(get_curre
         raise HTTPException(status_code=404, detail="Memory not found")
     
     # Only author or admin can share
-    if memory["author_id"] != user["member_id"] and user["role"] != "admin":
+    if memory["author_id"] != user["id"] and user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Only the author can share this story")
     
     # Generate a share token if not exists
