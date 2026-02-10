@@ -529,7 +529,39 @@ async def get_memory(memory_id: str, user: dict = Depends(get_current_user)):
     if memory["privacy_level"] == "private" and memory["author_id"] != user["id"]:
         raise HTTPException(status_code=403, detail="This memory is private")
     
+    # Increment view count (anonymous)
+    await db.memories.update_one(
+        {"id": memory_id},
+        {"$inc": {"view_count": 1}}
+    )
+    
     return memory
+
+@api_router.post("/memories/{memory_id}/heart")
+async def heart_memory(memory_id: str, user: dict = Depends(get_current_user)):
+    """Add a heart to a memory (anonymous, just increments count)"""
+    memory = await db.memories.find_one({"id": memory_id, "vault_id": user["vault_id"]}, {"_id": 0})
+    if not memory:
+        raise HTTPException(status_code=404, detail="Memory not found")
+    
+    await db.memories.update_one(
+        {"id": memory_id},
+        {"$inc": {"heart_count": 1}}
+    )
+    
+    return {"message": "Heart added", "heart_count": memory.get("heart_count", 0) + 1}
+
+@api_router.get("/memories/{memory_id}/stats")
+async def get_memory_stats(memory_id: str, user: dict = Depends(get_current_user)):
+    """Get view and heart counts for a memory"""
+    memory = await db.memories.find_one({"id": memory_id, "vault_id": user["vault_id"]}, {"_id": 0, "view_count": 1, "heart_count": 1})
+    if not memory:
+        raise HTTPException(status_code=404, detail="Memory not found")
+    
+    return {
+        "view_count": memory.get("view_count", 0),
+        "heart_count": memory.get("heart_count", 0)
+    }
 
 @api_router.put("/memories/{memory_id}")
 async def update_memory(memory_id: str, data: MemoryCardCreate, user: dict = Depends(get_current_user)):
