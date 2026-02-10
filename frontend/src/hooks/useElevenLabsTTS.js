@@ -65,9 +65,9 @@ export const useElevenLabsTTS = () => {
         body: JSON.stringify({
           text,
           voice_type: voiceType,
-          stability: options.stability || 0.5,
+          stability: options.stability || 0.4,     // Lower = more natural variation
           similarity_boost: options.similarity_boost || 0.8,
-          style: options.style || 0.5  // Higher style = more expressive/emotional
+          style: options.style || 0.65  // Higher = more emotional/expressive
         }),
         signal: abortControllerRef.current.signal
       });
