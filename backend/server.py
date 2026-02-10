@@ -1305,19 +1305,29 @@ async def delete_audio(audio_id: str, user: dict = Depends(get_current_user)):
 class TTSRequest(BaseModel):
     text: str
     voice_type: str = "sage"  # sage, female_elderly, female_mature, female_young, male_elderly, male_mature, male_young
-    stability: float = 0.4  # Lower = more expressive variation
+    language: str = "en"  # Language code from SUPPORTED_LANGUAGES
+    emotion: Optional[str] = None  # warm, nostalgic, loving, proud, sad, joyful, wise, encouraging
+    stability: float = 0.35  # Lower = more natural variation (grandmother-like warmth)
     similarity_boost: float = 0.8
-    style: float = 0.6  # Higher = more emotional delivery
+    style: float = 0.7  # Higher = more emotional delivery
 
 @api_router.post("/tts/generate")
 async def generate_tts(request: TTSRequest):
-    """Generate text-to-speech audio using ElevenLabs"""
+    """Generate text-to-speech audio using ElevenLabs with multi-language support"""
     if not eleven_client:
         raise HTTPException(status_code=503, detail="ElevenLabs not configured")
     
     try:
         # Select appropriate voice
         voice_id = VOICE_IDS.get(request.voice_type, VOICE_IDS["sage"])
+        
+        # Add emotional prefix for warmer, more natural delivery
+        text_to_speak = request.text
+        if request.emotion and request.emotion in EMOTION_PREFIXES:
+            text_to_speak = EMOTION_PREFIXES[request.emotion] + text_to_speak
+        elif request.voice_type == "sage":
+            # Default warm grandmother tone for Sage
+            text_to_speak = "[Speaking gently like a loving grandmother] " + text_to_speak
         
         # Generate audio using ElevenLabs
         voice_settings = VoiceSettings(
@@ -1328,9 +1338,9 @@ async def generate_tts(request: TTSRequest):
         )
         
         audio_generator = eleven_client.text_to_speech.convert(
-            text=request.text,
+            text=text_to_speak,
             voice_id=voice_id,
-            model_id="eleven_multilingual_v2",
+            model_id="eleven_multilingual_v2",  # Supports all Indian languages
             voice_settings=voice_settings
         )
         
@@ -1345,7 +1355,8 @@ async def generate_tts(request: TTSRequest):
         return {
             "audio_data": audio_b64,
             "content_type": "audio/mpeg",
-            "voice_type": request.voice_type
+            "voice_type": request.voice_type,
+            "language": request.language
         }
         
     except Exception as e:
