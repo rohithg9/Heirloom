@@ -657,17 +657,18 @@ const DemoPage = () => {
 
                         {/* Sage option - subtle secondary */}
                         {!(isVoicePlaying || isVoiceLoading) && (
-                          <button
+                          <div
                             onClick={() => {
                               setNarratorMode('sage');
                               const member = DEMO_MEMBERS.find(m => m.id === selectedMemory.author_id);
                               narrateWithSage(selectedMemory, member);
                             }}
-                            className="flex items-center gap-2 px-4 py-2 text-ivory/50 hover:text-ivory/80 text-sm transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 text-ivory/50 hover:text-ivory/80 text-sm transition-colors cursor-pointer"
+                            data-testid="sage-narrate-option"
                           >
                             <SageAvatar size="sm" />
                             <span>or let Sage narrate</span>
-                          </button>
+                          </div>
                         )}
                       </div>
                     </motion.div>
