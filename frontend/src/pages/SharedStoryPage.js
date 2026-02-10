@@ -31,6 +31,7 @@ const SharedStoryPage = () => {
     // Check if user has already hearted (stored in localStorage)
     const hearted = localStorage.getItem(`hearted_${shareToken}`);
     if (hearted) setHasHearted(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shareToken]);
 
   const fetchStory = async () => {
