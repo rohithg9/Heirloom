@@ -803,10 +803,25 @@ const DemoPage = () => {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/50 to-transparent" />
                         
-                        {/* Voice recording indicator */}
-                        <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-amber-500/90 rounded-full text-white text-xs">
-                          <Mic className="w-3 h-3" />
-                          <span>Voice</span>
+                        {/* Top badges row */}
+                        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                          {/* Views & Hearts */}
+                          <div className="flex items-center gap-2">
+                            <span className="flex items-center gap-1 px-2 py-1 bg-charcoal/70 backdrop-blur-sm rounded-full text-ivory/80 text-xs" data-testid={`views-${memory.id}`}>
+                              <Eye className="w-3 h-3" />
+                              {memory.view_count || 0}
+                            </span>
+                            <span className="flex items-center gap-1 px-2 py-1 bg-charcoal/70 backdrop-blur-sm rounded-full text-rose-400 text-xs" data-testid={`hearts-${memory.id}`}>
+                              <Heart className="w-3 h-3 fill-rose-400" />
+                              {memory.heart_count || 0}
+                            </span>
+                          </div>
+                          
+                          {/* Voice recording indicator */}
+                          <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/90 rounded-full text-white text-xs">
+                            <Mic className="w-3 h-3" />
+                            <span>Voice</span>
+                          </div>
                         </div>
                         
                         {/* Content */}
