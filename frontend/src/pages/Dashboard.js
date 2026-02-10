@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Heart, Mic, BookOpen, Users, Settings, LogOut, Plus, 
-  ChevronRight, Clock, MapPin, Sparkles
+  ChevronRight, Clock, MapPin, Sparkles, UserPlus, Share2
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { Toaster, toast } from 'sonner';
+import InviteManager from '../components/InviteManager';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Dashboard = () => {
   const [recentMemories, setRecentMemories] = useState([]);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showInviteManager, setShowInviteManager] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
