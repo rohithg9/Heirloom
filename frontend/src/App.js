@@ -15,6 +15,8 @@ import MemoryDetail from './pages/MemoryDetail';
 import ExportPage from './pages/ExportPage';
 import SettingsPage from './pages/SettingsPage';
 import DemoPage from './pages/DemoPage';
+import JoinInvitePage from './pages/JoinInvitePage';
+import SharedStoryPage from './pages/SharedStoryPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -45,6 +47,8 @@ const AppRoutes = () => {
       <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/demo" element={<DemoPage />} />
+      <Route path="/join/:inviteToken" element={<JoinInvitePage />} />
+      <Route path="/story/:shareToken" element={<SharedStoryPage />} />
       
       {/* Protected Routes */}
       <Route path="/dashboard" element={
