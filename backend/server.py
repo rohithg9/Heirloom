@@ -755,6 +755,85 @@ async def get_memory_stats(memory_id: str, user: dict = Depends(get_current_user
         "heart_count": memory.get("heart_count", 0)
     }
 
+@api_router.post("/memories/{memory_id}/share")
+async def create_story_share_link(memory_id: str, user: dict = Depends(get_current_user)):
+    """Generate a shareable link for a memory/story"""
+    memory = await db.memories.find_one({"id": memory_id, "vault_id": user["vault_id"]}, {"_id": 0})
+    if not memory:
+        raise HTTPException(status_code=404, detail="Memory not found")
+    
+    # Only author or admin can share
+    if memory["author_id"] != user["member_id"] and user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Only the author can share this story")
+    
+    # Generate a share token if not exists
+    share_token = memory.get("share_token") or str(uuid.uuid4())
+    
+    await db.memories.update_one(
+        {"id": memory_id},
+        {"$set": {"share_token": share_token, "is_publicly_shared": True}}
+    )
+    
+    return {
+        "share_token": share_token,
+        "share_link": f"/story/{share_token}",
+        "message": "Share this link with family and friends"
+    }
+
+@api_router.delete("/memories/{memory_id}/share")
+async def revoke_story_share(memory_id: str, user: dict = Depends(get_current_user)):
+    """Revoke a story share link"""
+    memory = await db.memories.find_one({"id": memory_id, "vault_id": user["vault_id"]}, {"_id": 0})
+    if not memory:
+        raise HTTPException(status_code=404, detail="Memory not found")
+    
+    await db.memories.update_one(
+        {"id": memory_id},
+        {"$set": {"share_token": None, "is_publicly_shared": False}}
+    )
+    
+    return {"message": "Share link revoked"}
+
+@api_router.get("/stories/shared/{share_token}")
+async def get_shared_story(share_token: str):
+    """Get a publicly shared story (no auth required)"""
+    memory = await db.memories.find_one(
+        {"share_token": share_token, "is_publicly_shared": True},
+        {"_id": 0, "vault_id": 0}  # Don't expose vault info
+    )
+    
+    if not memory:
+        raise HTTPException(status_code=404, detail="Story not found or no longer shared")
+    
+    # Increment view count
+    await db.memories.update_one(
+        {"share_token": share_token},
+        {"$inc": {"view_count": 1}}
+    )
+    
+    # Get author info (limited)
+    author = await db.members.find_one({"id": memory["author_id"]}, {"_id": 0, "name": 1, "photo_url": 1})
+    
+    return {
+        **memory,
+        "author_name": author.get("name") if author else "Unknown",
+        "author_photo": author.get("photo_url") if author else None
+    }
+
+@api_router.post("/stories/shared/{share_token}/heart")
+async def heart_shared_story(share_token: str):
+    """Heart a shared story (no auth required)"""
+    result = await db.memories.update_one(
+        {"share_token": share_token, "is_publicly_shared": True},
+        {"$inc": {"heart_count": 1}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Story not found")
+    
+    memory = await db.memories.find_one({"share_token": share_token}, {"_id": 0, "heart_count": 1})
+    return {"heart_count": memory.get("heart_count", 1)}
+
 @api_router.put("/memories/{memory_id}")
 async def update_memory(memory_id: str, data: MemoryCardCreate, user: dict = Depends(get_current_user)):
     """Update a memory card"""
