@@ -992,10 +992,10 @@ async def delete_audio(audio_id: str, user: dict = Depends(get_current_user)):
 
 class TTSRequest(BaseModel):
     text: str
-    voice_type: str = "sage"  # sage, female_warm, female_young, male_warm, male_young
-    stability: float = 0.5
-    similarity_boost: float = 0.75
-    style: float = 0.3
+    voice_type: str = "sage"  # sage, female_elderly, female_mature, female_young, male_elderly, male_mature, male_young
+    stability: float = 0.4  # Lower = more expressive variation
+    similarity_boost: float = 0.8
+    style: float = 0.6  # Higher = more emotional delivery
 
 @api_router.post("/tts/generate")
 async def generate_tts(request: TTSRequest):
