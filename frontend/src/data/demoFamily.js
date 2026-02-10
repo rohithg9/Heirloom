@@ -123,7 +123,9 @@ export const DEMO_MEMORIES = [
     occasion: "First day of teaching",
     highlights: ["That smile gave me courage", "Thirty-five pairs of eyes looking at me"],
     cover_image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800",
-    privacy_level: "family"
+    privacy_level: "family",
+    view_count: 47,
+    heart_count: 12
   },
   {
     id: "memory-2",
@@ -146,7 +148,9 @@ export const DEMO_MEMORIES = [
     occasion: "Sunday morning ritual",
     highlights: ["The oil must sing to you", "I cried into the batter but they tasted just like hers"],
     cover_image: "https://images.unsplash.com/photo-1567337710282-00832b415979?w=800",
-    privacy_level: "family"
+    privacy_level: "family",
+    view_count: 89,
+    heart_count: 34
   },
   // Nana's Stories
   {
@@ -169,7 +173,9 @@ export const DEMO_MEMORIES = [
     occasion: "Professional achievement",
     highlights: ["Don't fight the river, son. Dance with it.", "That bridge still stands today"],
     cover_image: "https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?w=800",
-    privacy_level: "family"
+    privacy_level: "family",
+    view_count: 56,
+    heart_count: 23
   },
   {
     id: "memory-4",
@@ -191,7 +197,9 @@ export const DEMO_MEMORIES = [
     occasion: "First meeting with wife",
     highlights: ["She laughed, and I was lost forever", "Then I'll be your view instead"],
     cover_image: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800",
-    privacy_level: "family"
+    privacy_level: "family",
+    view_count: 124,
+    heart_count: 67
   },
   // Priya's Stories
   {
@@ -214,7 +222,9 @@ export const DEMO_MEMORIES = [
     occasion: "Meeting future husband",
     highlights: ["You look like you need some sunshine", "He calls it 'Rain in Delhi'"],
     cover_image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800",
-    privacy_level: "family"
+    privacy_level: "family",
+    view_count: 98,
+    heart_count: 45
   },
   {
     id: "memory-6",
@@ -236,7 +246,9 @@ export const DEMO_MEMORIES = [
     occasion: "Wedding",
     highlights: ["They'd have twice the love, twice the traditions", "Beautiful chaos"],
     cover_image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=800",
-    privacy_level: "family"
+    privacy_level: "family",
+    view_count: 76,
+    heart_count: 38
   },
   // James's Stories
   {
@@ -259,7 +271,9 @@ export const DEMO_MEMORIES = [
     occasion: "Father's passing",
     highlights: ["He held my hand and hummed", "It's just for him and me"],
     cover_image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
-    privacy_level: "family"
+    privacy_level: "family",
+    view_count: 65,
+    heart_count: 41
   },
   // Maya's Stories
   {
@@ -282,7 +296,9 @@ export const DEMO_MEMORIES = [
     occasion: "Discovery of family history",
     highlights: ["This is why we tell stories, beta. So they are never truly gone.", "I decided to become a filmmaker"],
     cover_image: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=800",
-    privacy_level: "family"
+    privacy_level: "family",
+    view_count: 112,
+    heart_count: 52
   },
   {
     id: "memory-9",
@@ -304,7 +320,9 @@ export const DEMO_MEMORIES = [
     occasion: "Inspiration for Heirloom",
     highlights: ["So that no one has to fear losing the voices they love", "Did I ever tell you about the river at Haridwar?"],
     cover_image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800",
-    privacy_level: "family"
+    privacy_level: "family",
+    view_count: 203,
+    heart_count: 89
   },
   // Arjun's Stories
   {
@@ -327,7 +345,9 @@ export const DEMO_MEMORIES = [
     occasion: "Language learning",
     highlights: ["I learned it from love stories and cooking instructions", "She'd test me the next week"],
     cover_image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800",
-    privacy_level: "family"
+    privacy_level: "family",
+    view_count: 58,
+    heart_count: 27
   }
 ];
 
