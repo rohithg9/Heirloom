@@ -397,6 +397,12 @@ const Dashboard = () => {
           ))}
         </div>
       </nav>
+      
+      {/* Invite Manager Modal */}
+      <InviteManager 
+        isOpen={showInviteManager} 
+        onClose={() => setShowInviteManager(false)} 
+      />
     </div>
   );
 };
