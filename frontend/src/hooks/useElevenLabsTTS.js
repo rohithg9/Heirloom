@@ -136,9 +136,9 @@ export const useElevenLabsTTS = () => {
   // Speak as Sage (warm female narrator) - with more emotion
   const speakAsSage = useCallback((text, options = {}) => {
     return speak(text, 'sage', { 
-      stability: 0.5,      // More variation = more natural
-      similarity_boost: 0.8, 
-      style: 0.6,          // More expressive
+      stability: 0.35,       // More natural variation
+      similarity_boost: 0.85, 
+      style: 0.7,            // Very expressive for storytelling
       ...options 
     });
   }, [speak]);
@@ -147,9 +147,9 @@ export const useElevenLabsTTS = () => {
   const speakAsCharacter = useCallback((text, gender, birthYear, options = {}) => {
     const voiceType = getVoiceType(gender, birthYear);
     return speak(text, voiceType, {
-      stability: 0.4,      // More natural variation
-      similarity_boost: 0.75,
-      style: 0.6,          // More emotional/expressive
+      stability: 0.35,       // More natural variation
+      similarity_boost: 0.8,
+      style: 0.7,            // Very emotional/expressive
       ...options
     });
   }, [speak, getVoiceType]);
@@ -158,9 +158,9 @@ export const useElevenLabsTTS = () => {
   const speakAsFemale = useCallback((text, young = false, options = {}) => {
     const voiceType = young ? 'female_young' : 'female_mature';
     return speak(text, voiceType, { 
-      stability: 0.4, 
-      similarity_boost: 0.75, 
-      style: 0.6,
+      stability: 0.35, 
+      similarity_boost: 0.8, 
+      style: 0.7,
       ...options 
     });
   }, [speak]);
@@ -169,9 +169,9 @@ export const useElevenLabsTTS = () => {
   const speakAsMale = useCallback((text, young = false, options = {}) => {
     const voiceType = young ? 'male_young' : 'male_mature';
     return speak(text, voiceType, { 
-      stability: 0.4, 
-      similarity_boost: 0.75, 
-      style: 0.6,
+      stability: 0.35, 
+      similarity_boost: 0.8, 
+      style: 0.7,
       ...options 
     });
   }, [speak]);
