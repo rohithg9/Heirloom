@@ -147,6 +147,78 @@ const Dashboard = () => {
               <ChevronRight className="w-5 h-5 text-emerald mt-4 group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </motion.div>
+          
+          {/* Secondary Actions Row */}
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            {/* Invite Family Members */}
+            <motion.button
+              onClick={() => setShowInviteManager(true)}
+              className="card-paper p-4 text-left hover:shadow-deep transition-all group flex items-center gap-4"
+              whileHover={{ scale: 1.02 }}
+              data-testid="invite-family-btn"
+            >
+              <div className="w-12 h-12 rounded-full bg-sage/20 flex items-center justify-center">
+                <UserPlus className="w-6 h-6 text-sage" />
+              </div>
+              <div>
+                <h3 className="font-medium text-charcoal">Invite Family</h3>
+                <p className="text-sm text-charcoal-muted">Share your vault</p>
+              </div>
+            </motion.button>
+            
+            {/* View All Memories */}
+            <motion.button
+              onClick={() => navigate('/memories')}
+              className="card-paper p-4 text-left hover:shadow-deep transition-all group flex items-center gap-4"
+              whileHover={{ scale: 1.02 }}
+              data-testid="view-memories-btn"
+            >
+              <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="font-medium text-charcoal">All Memories</h3>
+                <p className="text-sm text-charcoal-muted">Browse stories</p>
+              </div>
+            </motion.button>
+            
+            {/* Export / Life Book */}
+            <motion.button
+              onClick={() => user?.member_id && navigate(`/export/${user.member_id}`)}
+              className="card-paper p-4 text-left hover:shadow-deep transition-all group flex items-center gap-4"
+              whileHover={{ scale: 1.02 }}
+              data-testid="export-book-btn"
+            >
+              <div className="w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center">
+                <Heart className="w-6 h-6 text-rose-500" />
+              </div>
+              <div>
+                <h3 className="font-medium text-charcoal">Life Book</h3>
+                <p className="text-sm text-charcoal-muted">Export memories</p>
+              </div>
+            </motion.button>
+            
+            {/* Settings */}
+            <motion.button
+              onClick={() => navigate('/settings')}
+              className="card-paper p-4 text-left hover:shadow-deep transition-all group flex items-center gap-4"
+              whileHover={{ scale: 1.02 }}
+              data-testid="settings-btn"
+            >
+              <div className="w-12 h-12 rounded-full bg-charcoal/10 flex items-center justify-center">
+                <Settings className="w-6 h-6 text-charcoal" />
+              </div>
+              <div>
+                <h3 className="font-medium text-charcoal">Settings</h3>
+                <p className="text-sm text-charcoal-muted">Preferences</p>
+              </div>
+            </motion.button>
+          </motion.div>
         </section>
 
         {/* Stats */}
