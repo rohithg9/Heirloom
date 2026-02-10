@@ -5,6 +5,8 @@
 ### Original Problem Statement
 Build a public SaaS product called "Heirloom" that allows families to privately preserve life stories and memories across generations. The product is legacy-first, optimized primarily for elders (55-85 years), while supporting family members across tablet, mobile, and web.
 
+**Core Differentiator**: Voice-first AI that feels like a warm, loving grandmother listening to your stories - NOT a robotic newsreader.
+
 ### User Personas
 
 1. **Primary: Elder Storyteller (55-85 years)**
@@ -44,8 +46,50 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 | **Sage AI Companion** | ✅ Implemented | P0 |
 | **Cinematic Memory Viewer** | ✅ Implemented | P1 |
 | **Views & Hearts on Stories** | ✅ Implemented | P2 |
+| **Family Invite System** | ✅ Implemented | P0 |
+| **Story Sharing Links** | ✅ Implemented | P1 |
+| **15 Indian Languages** | ✅ Implemented | P1 |
 
 ### What's Been Implemented
+
+**Date: Feb 10, 2026 (Update 11) - Invite System, Story Sharing & Indian Languages**
+
+#### New Features:
+1. **Family Invite System**
+   - Generate invite links with 6-digit codes
+   - Share via WhatsApp with one click
+   - Pending invites management
+   - Public join page at `/join/:inviteToken`
+   - 7-day expiry on invites
+
+2. **Story Sharing**
+   - Generate public share links for stories
+   - Public story view at `/story/:shareToken`
+   - Visitors can heart stories (anonymous)
+   - View counts track public engagement
+   - Revocable share links
+
+3. **15 Indian Languages Support**
+   - Hindi
+   - Hinglish (Hindi in English script)
+   - Tamil, Telugu, Bengali
+   - Marathi, Gujarati, Kannada
+   - Malayalam, Punjabi, Odia
+   - Assamese, **Konkani**, Nepali, Sindhi
+
+4. **Sage Warm Grandmother Voice**
+   - Updated voice to Lily (grandmotherly, warm, nurturing)
+   - Emotion prefixes: warm, nostalgic, loving, proud, sad, joyful, wise, encouraging
+   - Lower stability (0.35) for natural variation
+   - Higher style (0.7) for emotional delivery
+
+#### New API Endpoints:
+- `POST /api/invites/create` - Create invite (auth required)
+- `GET /api/invites/validate/:token` - Validate invite (public)
+- `POST /api/invites/join` - Join via invite (public)
+- `POST /api/memories/:id/share` - Create share link (auth required)
+- `GET /api/stories/shared/:token` - View shared story (public)
+- `GET /api/tts/languages` - Get 15 Indian languages
 
 **Date: Feb 10, 2026 (Update 10) - Bug Fixes & Views/Hearts Feature**
 
