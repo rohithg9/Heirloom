@@ -43,8 +43,29 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 | **Interactive Demo Experience** | ✅ Implemented | P0 |
 | **Sage AI Companion** | ✅ Implemented | P0 |
 | **Cinematic Memory Viewer** | ✅ Implemented | P1 |
+| **Views & Hearts on Stories** | ✅ Implemented | P2 |
 
 ### What's Been Implemented
+
+**Date: Feb 10, 2026 (Update 10) - Bug Fixes & Views/Hearts Feature**
+
+#### Bug Fixes:
+1. **Heart Icon Import Fixed** - Added missing Heart icon import to DemoPage.js that was causing page crash
+2. **PDF Export Working** - Life Book export now works correctly on the demo page
+3. **Family Creation Verified** - Vault creation flow confirmed working end-to-end
+4. **Nested Button Warning Fixed** - Changed SageAvatar wrapper from button to div
+
+#### New Features:
+1. **Views & Hearts on Memory Cards** - Each memory card now shows:
+   - 👁️ View count (e.g., 47, 89, 124)
+   - ❤️ Heart count (e.g., 12, 34, 67)
+   - Both metrics visible in gallery and detail views
+
+2. **Enhanced Voice Quality** - Updated ElevenLabs voice configuration:
+   - New voice IDs: Bella (Sage), Lily (elderly female), Rachel (young female)
+   - New voice IDs: Arnold (elderly male), Henry (mature male), Liam (young male)
+   - Higher style parameter (0.65-0.7) for more emotional delivery
+   - Lower stability (0.35) for more natural variation
 
 **Date: Feb 7, 2026 (Update 9) - Age-Appropriate Voices & Voice Clashing Fix**
 
