@@ -26,6 +26,7 @@ const JoinInvitePage = () => {
 
   useEffect(() => {
     validateInvite();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inviteToken]);
 
   const validateInvite = async () => {
