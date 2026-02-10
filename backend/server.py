@@ -182,8 +182,35 @@ class MemoryCard(BaseModel):
     # Engagement metrics (anonymous)
     view_count: int = 0
     heart_count: int = 0
+    # Sharing
+    share_token: Optional[str] = None
+    is_publicly_shared: bool = False
     created_at: str
     updated_at: str
+
+class FamilyInvite(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    vault_id: str
+    invite_code: str  # 6-digit code
+    invite_token: str  # UUID for share link
+    created_by: str  # member_id
+    invited_name: Optional[str] = None
+    invited_email: Optional[str] = None
+    status: str = "pending"  # pending, accepted, expired
+    expires_at: str
+    created_at: str
+
+class CreateInviteRequest(BaseModel):
+    invited_name: Optional[str] = None
+    invited_email: Optional[str] = None
+
+class JoinViaInvite(BaseModel):
+    invite_token: str
+    invite_code: str
+    member_name: str
+    email: str
+    password: str
 
 class AIInterviewMessage(BaseModel):
     message: str
