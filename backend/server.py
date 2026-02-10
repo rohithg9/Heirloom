@@ -175,8 +175,12 @@ class MemoryCard(BaseModel):
     sensory_cues: Dict[str, str] = Field(default_factory=dict)
     occasion: Optional[str] = None
     highlights: List[str] = Field(default_factory=list)
+    cover_image: Optional[str] = None  # Cover image URL
     privacy_level: str = "family"
     confidence: str = "clear"
+    # Engagement metrics (anonymous)
+    view_count: int = 0
+    heart_count: int = 0
     created_at: str
     updated_at: str
 
