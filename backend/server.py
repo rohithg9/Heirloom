@@ -400,6 +400,170 @@ async def login_vault(data: FamilyVaultLogin):
         "role": member["role"]
     }
 
+# ==================== INVITE ENDPOINTS ====================
+
+def generate_invite_code() -> str:
+    """Generate a 6-digit invite code"""
+    return ''.join(random.choices('0123456789', k=6))
+
+@api_router.post("/invites/create")
+async def create_invite(data: CreateInviteRequest, user: dict = Depends(get_current_user)):
+    """Create an invite link for a family member"""
+    now = datetime.now(timezone.utc)
+    expires_at = (now + timedelta(days=7)).isoformat()  # Invite valid for 7 days
+    
+    invite = FamilyInvite(
+        vault_id=user["vault_id"],
+        invite_code=generate_invite_code(),
+        invite_token=str(uuid.uuid4()),
+        created_by=user["member_id"],
+        invited_name=data.invited_name,
+        invited_email=data.invited_email,
+        status="pending",
+        expires_at=expires_at,
+        created_at=now.isoformat()
+    )
+    
+    invite_dict = invite.model_dump()
+    await db.invites.insert_one(invite_dict)
+    
+    # Get vault info for the share link
+    vault = await db.vaults.find_one({"id": user["vault_id"]}, {"_id": 0})
+    
+    return {
+        "invite_id": invite.id,
+        "invite_code": invite.invite_code,
+        "invite_token": invite.invite_token,
+        "share_link": f"/join/{invite.invite_token}",
+        "family_name": vault["family_name"] if vault else "",
+        "expires_at": expires_at,
+        "message": f"Share this link with your family member. They'll need the code: {invite.invite_code}"
+    }
+
+@api_router.get("/invites")
+async def get_invites(user: dict = Depends(get_current_user)):
+    """Get all pending invites for the vault"""
+    invites = await db.invites.find(
+        {"vault_id": user["vault_id"]},
+        {"_id": 0}
+    ).to_list(50)
+    return invites
+
+@api_router.get("/invites/validate/{invite_token}")
+async def validate_invite(invite_token: str):
+    """Validate an invite token (public endpoint)"""
+    invite = await db.invites.find_one(
+        {"invite_token": invite_token, "status": "pending"},
+        {"_id": 0}
+    )
+    
+    if not invite:
+        raise HTTPException(status_code=404, detail="Invalid or expired invite")
+    
+    # Check expiry
+    expires_at = datetime.fromisoformat(invite["expires_at"].replace('Z', '+00:00'))
+    if datetime.now(timezone.utc) > expires_at:
+        await db.invites.update_one(
+            {"invite_token": invite_token},
+            {"$set": {"status": "expired"}}
+        )
+        raise HTTPException(status_code=410, detail="Invite has expired")
+    
+    # Get vault info
+    vault = await db.vaults.find_one({"id": invite["vault_id"]}, {"_id": 0})
+    
+    return {
+        "valid": True,
+        "family_name": vault["family_name"] if vault else "",
+        "invited_name": invite.get("invited_name"),
+        "expires_at": invite["expires_at"]
+    }
+
+@api_router.post("/invites/join")
+async def join_via_invite(data: JoinViaInvite):
+    """Join a family vault using an invite link and code"""
+    # Find the invite
+    invite = await db.invites.find_one(
+        {"invite_token": data.invite_token, "status": "pending"},
+        {"_id": 0}
+    )
+    
+    if not invite:
+        raise HTTPException(status_code=404, detail="Invalid or expired invite")
+    
+    # Verify the code
+    if invite["invite_code"] != data.invite_code:
+        raise HTTPException(status_code=401, detail="Invalid invite code")
+    
+    # Check expiry
+    expires_at = datetime.fromisoformat(invite["expires_at"].replace('Z', '+00:00'))
+    if datetime.now(timezone.utc) > expires_at:
+        await db.invites.update_one(
+            {"invite_token": data.invite_token},
+            {"$set": {"status": "expired"}}
+        )
+        raise HTTPException(status_code=410, detail="Invite has expired")
+    
+    # Check if email already exists in vault
+    existing = await db.members.find_one({
+        "vault_id": invite["vault_id"],
+        "email": data.email.lower()
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered in this vault")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Create member
+    member = FamilyMember(
+        vault_id=invite["vault_id"],
+        name=data.member_name,
+        email=data.email.lower(),
+        password_hash=hash_password(data.password),
+        role="member",
+        created_at=now,
+        updated_at=now
+    )
+    member_dict = member.model_dump()
+    await db.members.insert_one(member_dict)
+    
+    # Mark invite as accepted
+    await db.invites.update_one(
+        {"invite_token": data.invite_token},
+        {"$set": {"status": "accepted"}}
+    )
+    
+    # Get vault info
+    vault = await db.vaults.find_one({"id": invite["vault_id"]}, {"_id": 0})
+    
+    token = create_token({
+        "vault_id": invite["vault_id"],
+        "member_id": member.id,
+        "role": member.role
+    })
+    
+    return {
+        "token": token,
+        "vault_id": invite["vault_id"],
+        "member_id": member.id,
+        "family_name": vault["family_name"] if vault else "",
+        "member_name": data.member_name,
+        "role": "member"
+    }
+
+@api_router.delete("/invites/{invite_id}")
+async def revoke_invite(invite_id: str, user: dict = Depends(get_current_user)):
+    """Revoke an invite"""
+    result = await db.invites.delete_one({
+        "id": invite_id,
+        "vault_id": user["vault_id"]
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Invite not found")
+    
+    return {"success": True}
+
 # ==================== MEMBER ENDPOINTS ====================
 
 @api_router.get("/members")
