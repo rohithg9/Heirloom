@@ -48,27 +48,27 @@ EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', '')
 eleven_client = ElevenLabs(api_key=ELEVENLABS_API_KEY) if ELEVENLABS_API_KEY else None
 
-# ElevenLabs Voice IDs - Age and gender appropriate voices
-# See: https://elevenlabs.io/voice-library for more options
+# ElevenLabs Voice IDs - Emotional, storytelling voices
+# Selected for warmth, emotion, and natural storytelling quality
 VOICE_IDS = {
-    # Sage - warm, friendly female narrator
-    "sage": "EXAVITQu4vr4xnSDxMaL",  # Sarah - soft, warm
+    # Sage - warm, kind narrator (Hope - emotional, conversational)
+    "sage": "OYTbf65OHHFELVut7v2H",  # Hope - warm, engaging, kind
     
-    # FEMALE VOICES by age
-    "female_elderly": "XrExE9yKIg1WjnnlVkGX",  # Lily - mature, grandmotherly
-    "female_mature": "EXAVITQu4vr4xnSDxMaL",  # Sarah - warm, middle-aged
-    "female_young": "21m00Tcm4TlvDq8ikWAM",   # Rachel - clear, youthful
+    # FEMALE VOICES by age - prioritizing emotional range
+    "female_elderly": "pFZP5JQG7iQjIQuC4Bku",  # Lily - mature, grandmotherly
+    "female_mature": "OYTbf65OHHFELVut7v2H",   # Hope - warm, emotional
+    "female_young": "jBpfuIE2acCO8z3wKNLl",    # Gigi - youthful, expressive
     
-    # MALE VOICES by age
-    "male_elderly": "VR6AewLTigWG4xSOukaG",   # Arnold - deep, older
-    "male_mature": "ErXwobaYiN019PkySvjV",    # Antoni - warm, middle-aged
-    "male_young": "pNInz6obpgDQGcFmaJgB",     # Adam - clear, youthful
+    # MALE VOICES by age - warm and emotional
+    "male_elderly": "JBFqnCBsd6RMkjVDRZzb",    # George - wise, warm elderly
+    "male_mature": "iP95p4xoKVk53GoZ742B",     # Chris - warm, conversational
+    "male_young": "cjVigY5qzO86Huf0OWal",      # Eric - friendly, emotional
     
-    # Legacy mappings for compatibility
-    "female_warm": "EXAVITQu4vr4xnSDxMaL",
-    "male_warm": "VR6AewLTigWG4xSOukaG",
-    "default_female": "EXAVITQu4vr4xnSDxMaL",
-    "default_male": "VR6AewLTigWG4xSOukaG"
+    # Legacy mappings
+    "female_warm": "OYTbf65OHHFELVut7v2H",
+    "male_warm": "iP95p4xoKVk53GoZ742B",
+    "default_female": "OYTbf65OHHFELVut7v2H",
+    "default_male": "iP95p4xoKVk53GoZ742B"
 }
 
 # Create the main app
