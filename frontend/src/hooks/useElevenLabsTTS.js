@@ -65,9 +65,11 @@ export const useElevenLabsTTS = () => {
         body: JSON.stringify({
           text,
           voice_type: voiceType,
-          stability: options.stability || 0.4,     // Lower = more natural variation
+          language: options.language || 'en',     // Support for Indian languages
+          emotion: options.emotion || null,        // warm, nostalgic, loving, etc.
+          stability: options.stability || 0.35,    // Lower = more natural grandmother-like warmth
           similarity_boost: options.similarity_boost || 0.8,
-          style: options.style || 0.65  // Higher = more emotional/expressive
+          style: options.style || 0.7              // Higher = more emotional/expressive
         }),
         signal: abortControllerRef.current.signal
       });
