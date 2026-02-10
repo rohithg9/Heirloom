@@ -559,16 +559,25 @@ const DemoPage = () => {
                       {selectedMemory.title}
                     </motion.h2>
 
-                    {/* Emotion Badge */}
+                    {/* Emotion Badge & Engagement Stats */}
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
-                      className="mb-4"
+                      className="mb-4 flex flex-wrap items-center gap-3"
                     >
                       <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${getEmotionColor(selectedMemory.emotional_tone)} text-white text-xs md:text-sm`}>
                         {getEmotionEmoji(selectedMemory.emotional_tone)}
                         {selectedMemory.emotional_tone}
+                      </span>
+                      {/* Views & Hearts */}
+                      <span className="flex items-center gap-1 px-3 py-1.5 bg-ivory/10 rounded-full text-ivory/70 text-xs md:text-sm" data-testid="detail-views">
+                        <Eye className="w-4 h-4" />
+                        {selectedMemory.view_count || 0} views
+                      </span>
+                      <span className="flex items-center gap-1 px-3 py-1.5 bg-ivory/10 rounded-full text-rose-400 text-xs md:text-sm" data-testid="detail-hearts">
+                        <Heart className="w-4 h-4 fill-rose-400" />
+                        {selectedMemory.heart_count || 0}
                       </span>
                     </motion.div>
 
