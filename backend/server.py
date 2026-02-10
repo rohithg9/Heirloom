@@ -1368,11 +1368,40 @@ async def get_available_voices():
     """Get list of available voice types"""
     return {
         "voices": [
-            {"id": "sage", "name": "Sage", "description": "Warm, friendly female narrator for Heirloom"},
-            {"id": "female_warm", "name": "Sarah", "description": "Soft, warm female voice"},
-            {"id": "female_young", "name": "Rachel", "description": "Clear, engaging young female voice"},
-            {"id": "male_warm", "name": "Arnold", "description": "Deep, warm male voice"},
-            {"id": "male_young", "name": "Adam", "description": "Clear, friendly young male voice"}
+            {"id": "sage", "name": "Sage", "description": "Warm grandmother voice - gentle, patient, loving"},
+            {"id": "female_elderly", "name": "Grandmother", "description": "Mature, grandmotherly, warm"},
+            {"id": "female_mature", "name": "Mother", "description": "Warm, emotional narrator"},
+            {"id": "female_young", "name": "Daughter", "description": "Clear, youthful, expressive"},
+            {"id": "male_elderly", "name": "Grandfather", "description": "Deep, wise, grandfatherly"},
+            {"id": "male_mature", "name": "Father", "description": "Calm, thoughtful, dramatic"},
+            {"id": "male_young", "name": "Son", "description": "Expressive, warm, friendly"}
+        ]
+    }
+
+@api_router.get("/tts/languages")
+async def get_supported_languages():
+    """Get list of supported languages for TTS"""
+    return {
+        "languages": [
+            {"code": code, "name": info["name"]} 
+            for code, info in SUPPORTED_LANGUAGES.items()
+        ],
+        "indian_languages": [
+            {"code": "hi", "name": "Hindi"},
+            {"code": "hi-Latn", "name": "Hinglish (Hindi in English script)"},
+            {"code": "ta", "name": "Tamil"},
+            {"code": "te", "name": "Telugu"},
+            {"code": "bn", "name": "Bengali"},
+            {"code": "mr", "name": "Marathi"},
+            {"code": "gu", "name": "Gujarati"},
+            {"code": "kn", "name": "Kannada"},
+            {"code": "ml", "name": "Malayalam"},
+            {"code": "pa", "name": "Punjabi"},
+            {"code": "or", "name": "Odia"},
+            {"code": "as", "name": "Assamese"},
+            {"code": "kok", "name": "Konkani"},
+            {"code": "ne", "name": "Nepali"},
+            {"code": "sd", "name": "Sindhi"}
         ]
     }
 
