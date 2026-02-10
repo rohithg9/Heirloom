@@ -50,25 +50,26 @@ eleven_client = ElevenLabs(api_key=ELEVENLABS_API_KEY) if ELEVENLABS_API_KEY els
 
 # ElevenLabs Voice IDs - Emotional, storytelling voices
 # Selected for warmth, emotion, and natural storytelling quality
+# Using highly expressive voices from the ElevenLabs voice library
 VOICE_IDS = {
-    # Sage - warm, kind narrator (Hope - emotional, conversational)
-    "sage": "OYTbf65OHHFELVut7v2H",  # Hope - warm, engaging, kind
+    # Sage - warm, kind narrator 
+    "sage": "EXAVITQu4vr4xnSDxMaL",  # Bella - warm, engaging storyteller
     
     # FEMALE VOICES by age - prioritizing emotional range
-    "female_elderly": "pFZP5JQG7iQjIQuC4Bku",  # Lily - mature, grandmotherly
-    "female_mature": "OYTbf65OHHFELVut7v2H",   # Hope - warm, emotional
-    "female_young": "jBpfuIE2acCO8z3wKNLl",    # Gigi - youthful, expressive
+    "female_elderly": "pFZP5JQG7iQjIQuC4Bku",  # Lily - mature, grandmotherly, warm
+    "female_mature": "EXAVITQu4vr4xnSDxMaL",   # Bella - emotional, warm narrator
+    "female_young": "21m00Tcm4TlvDq8ikWAM",    # Rachel - clear, youthful, expressive
     
-    # MALE VOICES by age - warm and emotional
-    "male_elderly": "JBFqnCBsd6RMkjVDRZzb",    # George - wise, warm elderly
-    "male_mature": "iP95p4xoKVk53GoZ742B",     # Chris - warm, conversational
-    "male_young": "cjVigY5qzO86Huf0OWal",      # Eric - friendly, emotional
+    # MALE VOICES by age - warm and emotional  
+    "male_elderly": "VR6AewLTigWG4xSOukaG",    # Arnold - deep, wise, grandfatherly
+    "male_mature": "991lF4hc0xxfec4Y6B0i",     # Henry - calm, thoughtful, dramatic
+    "male_young": "VCgLBmBjldJmfphyB8sZ",      # Liam - expressive, professional
     
     # Legacy mappings
-    "female_warm": "OYTbf65OHHFELVut7v2H",
-    "male_warm": "iP95p4xoKVk53GoZ742B",
-    "default_female": "OYTbf65OHHFELVut7v2H",
-    "default_male": "iP95p4xoKVk53GoZ742B"
+    "female_warm": "EXAVITQu4vr4xnSDxMaL",
+    "male_warm": "991lF4hc0xxfec4Y6B0i",
+    "default_female": "EXAVITQu4vr4xnSDxMaL",
+    "default_male": "991lF4hc0xxfec4Y6B0i"
 }
 
 # Create the main app
