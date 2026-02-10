@@ -50,11 +50,11 @@ ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', '')
 eleven_client = ElevenLabs(api_key=ELEVENLABS_API_KEY) if ELEVENLABS_API_KEY else None
 
 # ElevenLabs Voice IDs - Emotional, storytelling voices
-# Selected for warmth, emotion, and natural storytelling quality
+# Sage is a warm grandmother figure - gentle, patient, loving
 # Using highly expressive voices from the ElevenLabs voice library
 VOICE_IDS = {
-    # Sage - warm, kind narrator 
-    "sage": "EXAVITQu4vr4xnSDxMaL",  # Bella - warm, engaging storyteller
+    # Sage - warm grandmother voice (gentle, patient, loving elder)
+    "sage": "pFZP5JQG7iQjIQuC4Bku",  # Lily - mature, grandmotherly, warm, nurturing
     
     # FEMALE VOICES by age - prioritizing emotional range
     "female_elderly": "pFZP5JQG7iQjIQuC4Bku",  # Lily - mature, grandmotherly, warm
@@ -63,14 +63,55 @@ VOICE_IDS = {
     
     # MALE VOICES by age - warm and emotional  
     "male_elderly": "VR6AewLTigWG4xSOukaG",    # Arnold - deep, wise, grandfatherly
-    "male_mature": "991lF4hc0xxfec4Y6B0i",     # Henry - calm, thoughtful, dramatic
-    "male_young": "VCgLBmBjldJmfphyB8sZ",      # Liam - expressive, professional
+    "male_mature": "pNInz6obpgDQGcFmaJgB",     # Adam - calm, thoughtful, dramatic
+    "male_young": "ErXwobaYiN019PkySvjV",      # Antoni - expressive, warm
     
     # Legacy mappings
     "female_warm": "EXAVITQu4vr4xnSDxMaL",
-    "male_warm": "991lF4hc0xxfec4Y6B0i",
+    "male_warm": "pNInz6obpgDQGcFmaJgB",
     "default_female": "EXAVITQu4vr4xnSDxMaL",
-    "default_male": "991lF4hc0xxfec4Y6B0i"
+    "default_male": "pNInz6obpgDQGcFmaJgB"
+}
+
+# Supported Indian Languages (ElevenLabs multilingual v2 supports these)
+# Adding Konkani as well
+SUPPORTED_LANGUAGES = {
+    # English variants
+    "en": {"name": "English", "code": "en"},
+    "en-IN": {"name": "English (India)", "code": "en"},
+    
+    # Hindi & Hinglish
+    "hi": {"name": "Hindi", "code": "hi"},
+    "hi-Latn": {"name": "Hinglish", "code": "hi"},  # Hindi in Latin script
+    
+    # Major Indian Languages (11 additional)
+    "ta": {"name": "Tamil", "code": "ta"},
+    "te": {"name": "Telugu", "code": "te"},
+    "bn": {"name": "Bengali", "code": "bn"},
+    "mr": {"name": "Marathi", "code": "mr"},
+    "gu": {"name": "Gujarati", "code": "gu"},
+    "kn": {"name": "Kannada", "code": "kn"},
+    "ml": {"name": "Malayalam", "code": "ml"},
+    "pa": {"name": "Punjabi", "code": "pa"},
+    "or": {"name": "Odia", "code": "or"},
+    "as": {"name": "Assamese", "code": "as"},
+    "kok": {"name": "Konkani", "code": "kok"},
+    
+    # Additional supported languages
+    "ne": {"name": "Nepali", "code": "ne"},
+    "sd": {"name": "Sindhi", "code": "sd"},
+}
+
+# Emotional prefixes for warmer, more natural speech
+EMOTION_PREFIXES = {
+    "warm": "[Speaking warmly and gently] ",
+    "nostalgic": "[With fond nostalgia in the voice] ",
+    "loving": "[With deep love and care] ",
+    "proud": "[With pride and joy] ",
+    "sad": "[With gentle sadness] ",
+    "joyful": "[With happiness and excitement] ",
+    "wise": "[Speaking thoughtfully and wisely] ",
+    "encouraging": "[With warmth and encouragement] ",
 }
 
 # Create the main app
