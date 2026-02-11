@@ -1416,30 +1416,224 @@ async def get_available_voices():
 
 @api_router.get("/tts/languages")
 async def get_supported_languages():
-    """Get list of supported languages for TTS"""
+    """Get list of supported languages for TTS and STT"""
     return {
         "languages": [
-            {"code": code, "name": info["name"]} 
-            for code, info in SUPPORTED_LANGUAGES.items()
+            {"code": code, "name": info["name"], "native": info.get("native", info["name"])} 
+            for code, info in LANGUAGE_CODES.items()
         ],
         "indian_languages": [
-            {"code": "hi", "name": "Hindi"},
-            {"code": "hi-Latn", "name": "Hinglish (Hindi in English script)"},
-            {"code": "ta", "name": "Tamil"},
-            {"code": "te", "name": "Telugu"},
-            {"code": "bn", "name": "Bengali"},
-            {"code": "mr", "name": "Marathi"},
-            {"code": "gu", "name": "Gujarati"},
-            {"code": "kn", "name": "Kannada"},
-            {"code": "ml", "name": "Malayalam"},
-            {"code": "pa", "name": "Punjabi"},
-            {"code": "or", "name": "Odia"},
-            {"code": "as", "name": "Assamese"},
-            {"code": "kok", "name": "Konkani"},
-            {"code": "ne", "name": "Nepali"},
-            {"code": "sd", "name": "Sindhi"}
+            {"code": "hi", "name": "Hindi", "native": "हिंदी"},
+            {"code": "ta", "name": "Tamil", "native": "தமிழ்"},
+            {"code": "te", "name": "Telugu", "native": "తెలుగు"},
+            {"code": "bn", "name": "Bengali", "native": "বাংলা"},
+            {"code": "mr", "name": "Marathi", "native": "मराठी"},
+            {"code": "gu", "name": "Gujarati", "native": "ગુજરાતી"},
+            {"code": "kn", "name": "Kannada", "native": "ಕನ್ನಡ"},
+            {"code": "ml", "name": "Malayalam", "native": "മലയാളം"},
+            {"code": "pa", "name": "Punjabi", "native": "ਪੰਜਾਬੀ"},
+            {"code": "or", "name": "Odia", "native": "ଓଡ଼ିଆ"},
+            {"code": "as", "name": "Assamese", "native": "অসমীয়া"},
+            {"code": "kok", "name": "Konkani", "native": "कोंकणी"},
+            {"code": "ne", "name": "Nepali", "native": "नेपाली"},
+            {"code": "sd", "name": "Sindhi", "native": "سنڌي"}
         ]
     }
+
+# ==================== SPEECH-TO-TEXT ENDPOINTS ====================
+
+class STTRequest(BaseModel):
+    audio_data: str  # Base64 encoded audio
+    language: Optional[str] = None  # Language code or None for auto-detect
+    translate_to_english: bool = True  # Whether to also translate to English
+
+@api_router.post("/stt/transcribe")
+async def transcribe_audio(request: STTRequest):
+    """Transcribe audio to text using Whisper, with optional translation"""
+    if not whisper_client:
+        raise HTTPException(status_code=503, detail="Speech-to-text service not configured")
+    
+    try:
+        # Decode base64 audio
+        audio_bytes = base64.b64decode(request.audio_data)
+        
+        # Create a file-like object
+        audio_file = io.BytesIO(audio_bytes)
+        audio_file.name = "audio.webm"  # Whisper needs a filename
+        
+        # Transcribe with Whisper
+        transcription_params = {
+            "file": audio_file,
+            "model": "whisper-1",
+            "response_format": "verbose_json"
+        }
+        
+        # If language is specified, use it
+        if request.language and request.language in LANGUAGE_CODES:
+            transcription_params["language"] = LANGUAGE_CODES[request.language]["whisper"]
+        
+        response = await whisper_client.transcribe(**transcription_params)
+        
+        transcribed_text = response.text
+        detected_language = getattr(response, 'language', request.language or 'en')
+        
+        result = {
+            "text": transcribed_text,
+            "language": detected_language,
+            "language_name": LANGUAGE_CODES.get(detected_language, {}).get("name", detected_language)
+        }
+        
+        # Translate to English if requested and not already English
+        if request.translate_to_english and detected_language != "en" and transcribed_text:
+            translation = await translate_text(transcribed_text, detected_language, "en")
+            result["text_english"] = translation
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error transcribing audio: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
+
+# ==================== TRANSLATION ENDPOINTS ====================
+
+class TranslationRequest(BaseModel):
+    text: str
+    source_language: str = "auto"  # Language code or 'auto' for detection
+    target_language: str = "en"
+
+async def translate_text(text: str, source_lang: str, target_lang: str) -> str:
+    """Translate text using Gemini"""
+    if not translation_chat:
+        return text  # Return original if translation not available
+    
+    source_name = LANGUAGE_CODES.get(source_lang, {}).get("name", source_lang)
+    target_name = LANGUAGE_CODES.get(target_lang, {}).get("name", target_lang)
+    
+    prompt = f"""Translate the following text from {source_name} to {target_name}. 
+Only provide the translation, nothing else. Preserve the emotional tone and cultural context.
+
+Text to translate:
+{text}"""
+    
+    try:
+        response = await translation_chat.send_message(UserMessage(content=prompt))
+        return response.content.strip()
+    except Exception as e:
+        logger.error(f"Translation error: {str(e)}")
+        return text  # Return original on error
+
+@api_router.post("/translate")
+async def translate_endpoint(request: TranslationRequest):
+    """Translate text between languages"""
+    if not translation_chat:
+        raise HTTPException(status_code=503, detail="Translation service not configured")
+    
+    try:
+        translated = await translate_text(
+            request.text, 
+            request.source_language, 
+            request.target_language
+        )
+        
+        return {
+            "original": request.text,
+            "translated": translated,
+            "source_language": request.source_language,
+            "target_language": request.target_language
+        }
+    except Exception as e:
+        logger.error(f"Translation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Translation failed: {str(e)}")
+
+@api_router.post("/memories/{memory_id}/translate")
+async def translate_memory(memory_id: str, target_language: str = "en", user: dict = Depends(get_current_user)):
+    """Translate a memory's narrative to the target language"""
+    memory = await db.memories.find_one({"id": memory_id, "vault_id": user["vault_id"]}, {"_id": 0})
+    if not memory:
+        raise HTTPException(status_code=404, detail="Memory not found")
+    
+    # Get the text to translate
+    narrative = memory.get("narrative_original") or memory.get("narrative", "")
+    title = memory.get("title_original") or memory.get("title", "")
+    source_lang = memory.get("original_language", "en")
+    
+    if source_lang == target_language:
+        return {"message": "Already in target language", "memory": memory}
+    
+    # Translate narrative and title
+    translated_narrative = await translate_text(narrative, source_lang, target_language)
+    translated_title = await translate_text(title, source_lang, target_language)
+    
+    # Update memory with translations
+    update_data = {}
+    if target_language == "en":
+        update_data["narrative_english"] = translated_narrative
+        update_data["title_english"] = translated_title
+    
+    if update_data:
+        update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.memories.update_one({"id": memory_id}, {"$set": update_data})
+    
+    return {
+        "translated_title": translated_title,
+        "translated_narrative": translated_narrative,
+        "source_language": source_lang,
+        "target_language": target_language
+    }
+
+# ==================== MULTILINGUAL SAGE VOICE INTERVIEW ====================
+
+class VoiceInterviewRequest(BaseModel):
+    message: str
+    session_id: Optional[str] = None
+    language: str = "en"  # User's preferred language
+
+@api_router.post("/voice-interview")
+async def voice_interview(request: VoiceInterviewRequest, user: dict = Depends(get_current_user)):
+    """Conduct a voice interview with Sage in the user's preferred language"""
+    if not translation_chat:
+        raise HTTPException(status_code=503, detail="AI service not configured")
+    
+    language_info = LANGUAGE_CODES.get(request.language, {"name": "English", "native": "English"})
+    
+    # System prompt for Sage as warm grandmother in the user's language
+    system_prompt = f"""You are Sage, a warm, loving grandmother helping preserve precious family memories. 
+You speak {language_info['name']} fluently and respond in {language_info['name']}.
+Your personality:
+- Gentle and patient, like talking to a beloved grandmother
+- Warm and encouraging, never rushing
+- Ask follow-up questions about emotions, smells, sounds, and small details
+- Help the storyteller remember and share sensory details
+- Express genuine interest and care
+
+Respond ONLY in {language_info['name']}. Be warm, conversational, and help draw out beautiful details from their stories."""
+
+    try:
+        # Create or continue conversation
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY, 
+            model="gemini-2.0-flash",
+            system_message=system_prompt
+        )
+        
+        response = await chat.send_message(UserMessage(content=request.message))
+        sage_response = response.content.strip()
+        
+        # Also provide English translation if not in English
+        english_response = None
+        if request.language != "en":
+            english_response = await translate_text(sage_response, request.language, "en")
+        
+        return {
+            "response": sage_response,
+            "response_english": english_response,
+            "language": request.language,
+            "session_id": request.session_id or str(uuid.uuid4())
+        }
+        
+    except Exception as e:
+        logger.error(f"Voice interview error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Interview failed: {str(e)}")
 
 # ==================== HEALTH CHECK ====================
 
