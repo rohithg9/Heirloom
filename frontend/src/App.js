@@ -17,6 +17,7 @@ import SettingsPage from './pages/SettingsPage';
 import DemoPage from './pages/DemoPage';
 import JoinInvitePage from './pages/JoinInvitePage';
 import SharedStoryPage from './pages/SharedStoryPage';
+import TryStoryPage from './pages/TryStoryPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
