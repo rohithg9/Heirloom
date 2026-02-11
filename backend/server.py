@@ -69,7 +69,15 @@ async def get_translation(text: str, source_lang: str, target_lang: str) -> str:
         ).with_model("gemini", "gemini-3-flash-preview")
         
         response = await chat.send_message(UserMessage(text=text))
-        return response.content.strip()
+        # Handle both string responses and object responses
+        if isinstance(response, str):
+            return response.strip()
+        elif hasattr(response, 'content'):
+            return response.content.strip()
+        elif hasattr(response, 'text'):
+            return response.text.strip()
+        else:
+            return str(response).strip()
     except Exception as e:
         logger.error(f"Translation error: {str(e)}")
         return text  # Return original on error
