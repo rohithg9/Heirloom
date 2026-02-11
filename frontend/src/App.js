@@ -48,6 +48,7 @@ const AppRoutes = () => {
       <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/demo" element={<DemoPage />} />
+      <Route path="/try-story" element={<TryStoryPage />} />
       <Route path="/join/:inviteToken" element={<JoinInvitePage />} />
       <Route path="/story/:shareToken" element={<SharedStoryPage />} />
       
