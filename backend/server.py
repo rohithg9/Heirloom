@@ -47,9 +47,34 @@ JWT_ALGORITHM = "HS256"
 # Emergent LLM Key
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 
+# Initialize Whisper STT client
+whisper_client = OpenAISpeechToText(api_key=EMERGENT_LLM_KEY) if EMERGENT_LLM_KEY else None
+
+# Initialize LLM Chat for translation
+translation_chat = LlmChat(api_key=EMERGENT_LLM_KEY, model="gemini-2.0-flash") if EMERGENT_LLM_KEY else None
+
 # ElevenLabs Configuration
 ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', '')
 eleven_client = ElevenLabs(api_key=ELEVENLABS_API_KEY) if ELEVENLABS_API_KEY else None
+
+# Language codes mapping for STT and TTS
+LANGUAGE_CODES = {
+    "en": {"name": "English", "whisper": "en", "native": "English"},
+    "hi": {"name": "Hindi", "whisper": "hi", "native": "हिंदी"},
+    "ta": {"name": "Tamil", "whisper": "ta", "native": "தமிழ்"},
+    "te": {"name": "Telugu", "whisper": "te", "native": "తెలుగు"},
+    "bn": {"name": "Bengali", "whisper": "bn", "native": "বাংলা"},
+    "mr": {"name": "Marathi", "whisper": "mr", "native": "मराठी"},
+    "gu": {"name": "Gujarati", "whisper": "gu", "native": "ગુજરાતી"},
+    "kn": {"name": "Kannada", "whisper": "kn", "native": "ಕನ್ನಡ"},
+    "ml": {"name": "Malayalam", "whisper": "ml", "native": "മലയാളം"},
+    "pa": {"name": "Punjabi", "whisper": "pa", "native": "ਪੰਜਾਬੀ"},
+    "or": {"name": "Odia", "whisper": "or", "native": "ଓଡ଼ିଆ"},
+    "as": {"name": "Assamese", "whisper": "as", "native": "অসমীয়া"},
+    "kok": {"name": "Konkani", "whisper": "kok", "native": "कोंकणी"},
+    "ne": {"name": "Nepali", "whisper": "ne", "native": "नेपाली"},
+    "sd": {"name": "Sindhi", "whisper": "sd", "native": "سنڌي"},
+}
 
 # ElevenLabs Voice IDs - Emotional, storytelling voices
 # Sage is a warm grandmother figure - gentle, patient, loving
