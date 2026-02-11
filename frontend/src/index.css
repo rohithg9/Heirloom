@@ -46,6 +46,20 @@
         font-feature-settings: 'liga' 1, 'calt' 1;
     }
     
+    /* Mobile safe areas for bottom navigation */
+    .safe-area-bottom {
+        padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+    
+    .pb-safe {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    }
+    
+    /* Ensure content doesn't hide behind bottom bars */
+    .min-h-screen-safe {
+        min-height: calc(100vh - env(safe-area-inset-bottom, 0px));
+    }
+    
     /* Typography */
     h1, h2, h3, h4 {
         @apply font-serif tracking-tight;
