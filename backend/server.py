@@ -105,28 +105,28 @@ LANGUAGE_CODES = {
     "sd": {"name": "Sindhi", "whisper": "sd", "native": "سنڌي"},
 }
 
-# ElevenLabs Voice IDs - Emotional, storytelling voices
-# Sage is a warm grandmother figure - gentle, patient, loving
-# Using highly expressive voices from the ElevenLabs voice library
+# ElevenLabs Voice IDs - Natural, warm, emotional storytelling voices
+# Focus on warmth, natural pauses, and grandmother-like gentleness
 VOICE_IDS = {
     # Sage - warm grandmother voice (gentle, patient, loving elder)
-    "sage": "pFZP5JQG7iQjIQuC4Bku",  # Lily - mature, grandmotherly, warm, nurturing
+    # Using Charlotte for warm, natural storytelling tone
+    "sage": "XB0fDUnXU5powFXDhCwa",  # Charlotte - warm, natural, storytelling
     
-    # FEMALE VOICES by age - prioritizing emotional range
-    "female_elderly": "pFZP5JQG7iQjIQuC4Bku",  # Lily - mature, grandmotherly, warm
-    "female_mature": "EXAVITQu4vr4xnSDxMaL",   # Bella - emotional, warm narrator
-    "female_young": "21m00Tcm4TlvDq8ikWAM",    # Rachel - clear, youthful, expressive
+    # FEMALE VOICES by age - prioritizing warmth and natural delivery
+    "female_elderly": "ThT5KcBeYPX3keUQqHPh",  # Dorothy - mature, warm, British grandmother
+    "female_mature": "XB0fDUnXU5powFXDhCwa",   # Charlotte - warm, natural storyteller
+    "female_young": "EXAVITQu4vr4xnSDxMaL",    # Bella - youthful, expressive
     
     # MALE VOICES by age - warm and emotional  
     "male_elderly": "VR6AewLTigWG4xSOukaG",    # Arnold - deep, wise, grandfatherly
-    "male_mature": "pNInz6obpgDQGcFmaJgB",     # Adam - calm, thoughtful, dramatic
+    "male_mature": "pNInz6obpgDQGcFmaJgB",     # Adam - calm, thoughtful
     "male_young": "ErXwobaYiN019PkySvjV",      # Antoni - expressive, warm
     
     # Legacy mappings
-    "female_warm": "EXAVITQu4vr4xnSDxMaL",
-    "male_warm": "pNInz6obpgDQGcFmaJgB",
-    "default_female": "EXAVITQu4vr4xnSDxMaL",
-    "default_male": "pNInz6obpgDQGcFmaJgB"
+    "female_warm": "XB0fDUnXU5powFXDhCwa",
+    "male_warm": "VR6AewLTigWG4xSOukaG",
+    "default_female": "XB0fDUnXU5powFXDhCwa",
+    "default_male": "VR6AewLTigWG4xSOukaG"
 }
 
 # Supported Indian Languages (ElevenLabs multilingual v2 supports these)
