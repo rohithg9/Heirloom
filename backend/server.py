@@ -1506,6 +1506,7 @@ class TranslationRequest(BaseModel):
 
 async def translate_text(text: str, source_lang: str, target_lang: str) -> str:
     """Translate text using Gemini"""
+    translation_chat = get_translation_chat()
     if not translation_chat:
         return text  # Return original if translation not available
     
@@ -1519,7 +1520,7 @@ Text to translate:
 {text}"""
     
     try:
-        response = await translation_chat.send_message(UserMessage(content=prompt))
+        response = await translation_chat.send_message(UserMessage(text=prompt))
         return response.content.strip()
     except Exception as e:
         logger.error(f"Translation error: {str(e)}")
