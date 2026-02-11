@@ -1552,6 +1552,86 @@ async def translate_endpoint(request: TranslationRequest):
         logger.error(f"Translation error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Translation failed: {str(e)}")
 
+# ==================== STORY ANALYSIS ENDPOINT ====================
+
+class StoryAnalysisRequest(BaseModel):
+    text: str
+
+@api_router.post("/ai/analyze-story")
+async def analyze_story(request: StoryAnalysisRequest):
+    """Analyze a story to extract emotions, key moments, time periods, people, and places"""
+    if not EMERGENT_LLM_KEY:
+        # Return basic analysis if no AI
+        return {
+            "emotions": ["nostalgia"],
+            "highlights": [],
+            "suggested_title": "My Story",
+            "time_period": "",
+            "people": [],
+            "places": [],
+            "sensory_cues": {}
+        }
+    
+    system_prompt = """You are an expert at analyzing personal stories and family memories.
+Analyze the given story and extract:
+1. emotions: List of 1-3 main emotions (e.g., love, nostalgia, joy, pride, sadness, gratitude)
+2. highlights: 2-3 key memorable phrases or moments from the story (exact quotes)
+3. suggested_title: A warm, evocative title for this story (max 8 words)
+4. time_period: When this happened (e.g., "1960s", "Summer 1985", "My childhood")
+5. people: Names or relationships mentioned (e.g., "grandmother", "Father", "Uncle Raj")
+6. places: Locations mentioned
+7. sensory_cues: Any sensory details like smells, sounds, tastes mentioned
+
+Return ONLY valid JSON, no markdown, no explanation."""
+
+    try:
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=str(uuid.uuid4()),
+            system_message=system_prompt
+        ).with_model("gemini", "gemini-3-flash-preview")
+        
+        response = await chat.send_message(UserMessage(text=f"Analyze this story:\n\n{request.text}"))
+        
+        # Parse response
+        response_text = response if isinstance(response, str) else str(response)
+        
+        # Try to extract JSON
+        import json
+        try:
+            # Clean up response
+            response_text = response_text.strip()
+            if response_text.startswith('```'):
+                response_text = response_text.split('```')[1]
+                if response_text.startswith('json'):
+                    response_text = response_text[4:]
+            
+            analysis = json.loads(response_text)
+            return analysis
+        except json.JSONDecodeError:
+            # Return basic analysis
+            return {
+                "emotions": ["nostalgia", "love"],
+                "highlights": [request.text[:100] + "..." if len(request.text) > 100 else request.text],
+                "suggested_title": "A Precious Memory",
+                "time_period": "",
+                "people": [],
+                "places": [],
+                "sensory_cues": {}
+            }
+            
+    except Exception as e:
+        logger.error(f"Story analysis error: {str(e)}")
+        return {
+            "emotions": ["nostalgia"],
+            "highlights": [],
+            "suggested_title": "My Story",
+            "time_period": "",
+            "people": [],
+            "places": [],
+            "sensory_cues": {}
+        }
+
 @api_router.post("/memories/{memory_id}/translate")
 async def translate_memory(memory_id: str, target_language: str = "en", user: dict = Depends(get_current_user)):
     """Translate a memory's narrative to the target language"""
