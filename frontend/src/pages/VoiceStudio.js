@@ -42,10 +42,24 @@ const VoiceStudio = () => {
   const [searchParams] = useSearchParams();
   const { api, user } = useAuth();
   
+  // Speech-to-text hook for Whisper transcription
+  const { 
+    isRecording: isWhisperRecording, 
+    isTranscribing, 
+    transcript: whisperTranscript,
+    transcriptEnglish,
+    detectedLanguage,
+    startRecording: startWhisperRecording,
+    stopRecording: stopWhisperRecording,
+    cancelRecording: cancelWhisperRecording,
+    reset: resetWhisper
+  } = useSpeechToText();
+  
   // Core state
   const [mode, setMode] = useState('welcome'); // welcome, recording, interview, review
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [transcriptOriginal, setTranscriptOriginal] = useState(''); // Original language
   const [editableTranscript, setEditableTranscript] = useState('');
   const [isEditingTranscript, setIsEditingTranscript] = useState(false);
   const [aiMessages, setAiMessages] = useState([]);
@@ -58,7 +72,8 @@ const VoiceStudio = () => {
   const [savedSessions, setSavedSessions] = useState([]);
   
   // Voice & Language settings
-  const [language, setLanguage] = useState(localStorage.getItem('heirloom_language') || 'en-US');
+  const [language, setLanguage] = useState(localStorage.getItem('heirloom_language') || 'en');
+  const [showOriginal, setShowOriginal] = useState(true); // Toggle for original/English
   const [voiceEnabled, setVoiceEnabled] = useState(localStorage.getItem('heirloom_voice') !== 'false');
   const [isSpeaking, setIsSpeaking] = useState(false);
   
@@ -85,6 +100,15 @@ const VoiceStudio = () => {
   useEffect(() => {
     localStorage.setItem('heirloom_voice', voiceEnabled.toString());
   }, [voiceEnabled]);
+  
+  // Update transcript when Whisper transcription completes
+  useEffect(() => {
+    if (whisperTranscript) {
+      setTranscriptOriginal(whisperTranscript);
+      setTranscript(transcriptEnglish || whisperTranscript);
+      setEditableTranscript(transcriptEnglish || whisperTranscript);
+    }
+  }, [whisperTranscript, transcriptEnglish]);
 
   // Initialize speech recognition
   useEffect(() => {
