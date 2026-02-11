@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Home, ArrowRight, Heart, Mic, BookOpen, Play, Sparkles } from 'lucide-react';
+import { Users, Home, ArrowRight, Heart, Mic, BookOpen, Play, Sparkles, Globe } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { SageAvatar, SageWelcomeModal } from '../components/SageCompanion';
 import { HeirloomLogo } from '../components/HeirloomLogo';
