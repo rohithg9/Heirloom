@@ -252,6 +252,92 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Try It Now - Voice Recording Demo */}
+      <section className="py-20 px-6 bg-gradient-to-br from-sage/10 to-amber-500/10">
+        <div className="max-w-4xl mx-auto">
+          <motion.div 
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <SageAvatar size="md" />
+              <h2 className="font-serif text-charcoal">Try Creating a Story</h2>
+            </div>
+            <p className="text-charcoal-muted text-lg max-w-2xl mx-auto">
+              Experience how easy it is to preserve your memories. Speak in your language — 
+              Hindi, Tamil, Telugu, or 12 other Indian languages — and see the magic happen.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="bg-white rounded-2xl shadow-xl p-8 md:p-10"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            {/* Language badges */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8">
+              {['हिंदी', 'தமிழ்', 'తెలుగు', 'বাংলা', 'मराठी', 'ગુજરાતી', 'English'].map((lang, i) => (
+                <span key={i} className="px-3 py-1 bg-sage/10 text-sage rounded-full text-sm">
+                  {lang}
+                </span>
+              ))}
+              <span className="px-3 py-1 bg-amber-500/10 text-amber-600 rounded-full text-sm">
+                +8 more
+              </span>
+            </div>
+
+            {/* How it works steps */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="text-center">
+                <div className="w-14 h-14 bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Mic className="w-7 h-7 text-sage" />
+                </div>
+                <h3 className="font-medium text-charcoal mb-1">1. Speak</h3>
+                <p className="text-sm text-charcoal-muted">
+                  Record your story in any Indian language
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-14 h-14 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Globe className="w-7 h-7 text-amber-600" />
+                </div>
+                <h3 className="font-medium text-charcoal mb-1">2. Translate</h3>
+                <p className="text-sm text-charcoal-muted">
+                  See instant transcription & English translation
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-14 h-14 bg-rose-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Heart className="w-7 h-7 text-rose-500" />
+                </div>
+                <h3 className="font-medium text-charcoal mb-1">3. Preserve</h3>
+                <p className="text-sm text-charcoal-muted">
+                  Save with photos & share with family
+                </p>
+              </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center">
+              <Button 
+                className="bg-gradient-to-r from-sage to-sage-dark hover:from-sage-dark hover:to-sage text-white text-lg px-8 py-5 rounded-xl shadow-lg"
+                onClick={() => navigate('/try-story')}
+                data-testid="try-story-btn"
+              >
+                <Mic className="w-5 h-5 mr-2" />
+                Start Recording a Test Story
+              </Button>
+              <p className="text-sm text-charcoal-muted mt-3">
+                No account needed — try it free
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-24 px-6 bg-ivory-200/50">
         <div className="max-w-6xl mx-auto">
