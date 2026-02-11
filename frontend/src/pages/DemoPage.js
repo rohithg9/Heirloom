@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, BookOpen, ArrowLeft, ArrowRight, Play, Pause,
   Volume2, VolumeX, Download, ChevronRight, MapPin, Calendar,
-  Sparkles, Home, Quote, Loader2, Mic, PlayCircle, StopCircle, Heart, Eye
+  Sparkles, Home, Quote, Loader2, Mic, PlayCircle, StopCircle, Heart, Eye, Globe, Languages
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { SageAvatar, SageBubble, SageFloatingButton } from '../components/SageCompanion';
@@ -21,6 +21,9 @@ const DemoPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialView = searchParams.get('view') || 'intro';
+  
+  // Language display state
+  const [showOriginalLanguage, setShowOriginalLanguage] = useState(false);
   
   // ElevenLabs TTS hook - with age-appropriate voice support
   const { 
