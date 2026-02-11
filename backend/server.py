@@ -234,8 +234,17 @@ class MemoryCard(BaseModel):
     author_id: str
     title: str
     narrative: str
+    # Multilingual support
+    original_language: str = "en"  # Language code (hi, ta, te, bn, etc.)
+    narrative_original: Optional[str] = None  # Original text in native language
+    narrative_english: Optional[str] = None  # English translation
+    title_original: Optional[str] = None
+    title_english: Optional[str] = None
+    # Audio
     audio_url: Optional[str] = None
     transcript: Optional[str] = None
+    transcript_original: Optional[str] = None  # Original transcript in native language
+    transcript_english: Optional[str] = None  # English translation of transcript
     time_period: Optional[str] = None
     life_stage: Optional[str] = None
     people_involved: List[str] = Field(default_factory=list)
