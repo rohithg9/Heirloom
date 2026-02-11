@@ -1372,9 +1372,9 @@ class TTSRequest(BaseModel):
     voice_type: str = "sage"  # sage, female_elderly, female_mature, female_young, male_elderly, male_mature, male_young
     language: str = "en"  # Language code from SUPPORTED_LANGUAGES
     emotion: Optional[str] = None  # warm, nostalgic, loving, proud, sad, joyful, wise, encouraging
-    stability: float = 0.35  # Lower = more natural variation (grandmother-like warmth)
-    similarity_boost: float = 0.8
-    style: float = 0.7  # Higher = more emotional delivery
+    stability: float = 0.5  # Balanced for natural variation
+    similarity_boost: float = 0.75  # Good voice consistency
+    style: float = 0.4  # Moderate emotional expression (not over-the-top)
 
 @api_router.post("/tts/generate")
 async def generate_tts(request: TTSRequest):
@@ -1386,20 +1386,15 @@ async def generate_tts(request: TTSRequest):
         # Select appropriate voice
         voice_id = VOICE_IDS.get(request.voice_type, VOICE_IDS["sage"])
         
-        # Add emotional prefix for warmer, more natural delivery
+        # For natural storytelling, we don't add prefixes - let the voice shine naturally
         text_to_speak = request.text
-        if request.emotion and request.emotion in EMOTION_PREFIXES:
-            text_to_speak = EMOTION_PREFIXES[request.emotion] + text_to_speak
-        elif request.voice_type == "sage":
-            # Default warm grandmother tone for Sage
-            text_to_speak = "[Speaking gently like a loving grandmother] " + text_to_speak
         
-        # Generate audio using ElevenLabs
+        # Generate audio using ElevenLabs with natural settings
         voice_settings = VoiceSettings(
             stability=request.stability,
             similarity_boost=request.similarity_boost,
             style=request.style,
-            use_speaker_boost=True
+            use_speaker_boost=False  # More natural without boost
         )
         
         audio_generator = eleven_client.text_to_speech.convert(
