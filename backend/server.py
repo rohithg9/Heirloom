@@ -50,11 +50,29 @@ EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 # Initialize Whisper STT client
 whisper_client = OpenAISpeechToText(api_key=EMERGENT_LLM_KEY) if EMERGENT_LLM_KEY else None
 
-# Initialize LLM Chat for translation (lazy initialization)
-def get_translation_chat():
-    if EMERGENT_LLM_KEY:
-        return LlmChat(api_key=EMERGENT_LLM_KEY).with_model("gemini", "gemini-3-flash-preview")
-    return None
+# Translation helper function
+async def get_translation(text: str, source_lang: str, target_lang: str) -> str:
+    """Translate text using Gemini"""
+    if not EMERGENT_LLM_KEY:
+        return text  # Return original if no API key
+    
+    source_name = LANGUAGE_CODES.get(source_lang, {}).get("name", source_lang)
+    target_name = LANGUAGE_CODES.get(target_lang, {}).get("name", target_lang)
+    
+    system_prompt = f"You are a professional translator. Translate text from {source_name} to {target_name}. Only provide the translation, nothing else. Preserve emotional tone and cultural context."
+    
+    try:
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=str(uuid.uuid4()),
+            system_message=system_prompt
+        ).with_model("gemini", "gemini-3-flash-preview")
+        
+        response = await chat.send_message(UserMessage(text=text))
+        return response.content.strip()
+    except Exception as e:
+        logger.error(f"Translation error: {str(e)}")
+        return text  # Return original on error
 
 # ElevenLabs Configuration
 ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', '')
