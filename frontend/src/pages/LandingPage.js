@@ -253,84 +253,76 @@ const LandingPage = () => {
       </section>
 
       {/* Try It Now - Voice Recording Demo */}
-      <section className="py-20 px-6 bg-gradient-to-br from-sage/10 to-amber-500/10">
+      <section className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-sage/10 to-amber-500/10">
         <div className="max-w-4xl mx-auto">
           <motion.div 
-            className="text-center mb-10"
+            className="text-center mb-6 md:mb-10"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <SageAvatar size="md" />
-              <h2 className="font-serif text-charcoal">Try Creating a Story</h2>
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <SageAvatar size="sm" />
+              <h2 className="font-serif text-charcoal text-2xl md:text-3xl">Try Creating a Story</h2>
             </div>
-            <p className="text-charcoal-muted text-lg max-w-2xl mx-auto">
-              Experience how easy it is to preserve your memories. Speak in your language — 
-              Hindi, Tamil, Telugu, or 12 other Indian languages — and see the magic happen.
+            <p className="text-charcoal-muted text-base md:text-lg max-w-xl mx-auto">
+              Speak in Hindi, Tamil, Telugu or 12 other Indian languages
             </p>
           </motion.div>
 
           <motion.div
-            className="bg-white rounded-2xl shadow-xl p-8 md:p-10"
+            className="bg-white rounded-2xl shadow-xl p-5 md:p-8"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            {/* Language badges */}
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {['हिंदी', 'தமிழ்', 'తెలుగు', 'বাংলা', 'मराठी', 'ગુજરાતી', 'English'].map((lang, i) => (
-                <span key={i} className="px-3 py-1 bg-sage/10 text-sage rounded-full text-sm">
+            {/* Language badges - compact on mobile */}
+            <div className="flex flex-wrap justify-center gap-2 mb-4 md:mb-6">
+              {['हिंदी', 'தமிழ்', 'తెలుగు', 'বাংলা', 'मराठी'].map((lang, i) => (
+                <span key={i} className="px-2 py-0.5 md:px-3 md:py-1 bg-sage/10 text-sage rounded-full text-xs md:text-sm">
                   {lang}
                 </span>
               ))}
-              <span className="px-3 py-1 bg-amber-500/10 text-amber-600 rounded-full text-sm">
-                +8 more
+              <span className="px-2 py-0.5 md:px-3 md:py-1 bg-amber-500/10 text-amber-600 rounded-full text-xs md:text-sm">
+                +10 more
               </span>
             </div>
 
-            {/* How it works steps */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="text-center">
-                <div className="w-14 h-14 bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Mic className="w-7 h-7 text-sage" />
+            {/* How it works - horizontal on mobile */}
+            <div className="flex justify-center gap-4 md:gap-8 mb-6 text-center">
+              <div>
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <Mic className="w-5 h-5 md:w-6 md:h-6 text-sage" />
                 </div>
-                <h3 className="font-medium text-charcoal mb-1">1. Speak</h3>
-                <p className="text-sm text-charcoal-muted">
-                  Record your story in any Indian language
-                </p>
+                <p className="text-xs md:text-sm text-charcoal font-medium">Speak</p>
               </div>
-              <div className="text-center">
-                <div className="w-14 h-14 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Globe className="w-7 h-7 text-amber-600" />
+              <div className="text-charcoal/30 self-center">→</div>
+              <div>
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <Globe className="w-5 h-5 md:w-6 md:h-6 text-amber-600" />
                 </div>
-                <h3 className="font-medium text-charcoal mb-1">2. Translate</h3>
-                <p className="text-sm text-charcoal-muted">
-                  See instant transcription & English translation
-                </p>
+                <p className="text-xs md:text-sm text-charcoal font-medium">Translate</p>
               </div>
-              <div className="text-center">
-                <div className="w-14 h-14 bg-rose-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Heart className="w-7 h-7 text-rose-500" />
+              <div className="text-charcoal/30 self-center">→</div>
+              <div>
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-rose-500/20 rounded-full flex items-center justify-center mx-auto mb-1">
+                  <Heart className="w-5 h-5 md:w-6 md:h-6 text-rose-500" />
                 </div>
-                <h3 className="font-medium text-charcoal mb-1">3. Preserve</h3>
-                <p className="text-sm text-charcoal-muted">
-                  Save with photos & share with family
-                </p>
+                <p className="text-xs md:text-sm text-charcoal font-medium">Preserve</p>
               </div>
             </div>
 
-            {/* CTA Button */}
+            {/* CTA Button - prominent */}
             <div className="text-center">
               <Button 
-                className="bg-gradient-to-r from-sage to-sage-dark hover:from-sage-dark hover:to-sage text-white text-lg px-8 py-5 rounded-xl shadow-lg"
+                className="w-full md:w-auto bg-gradient-to-r from-sage to-sage-dark hover:from-sage-dark hover:to-sage text-white text-base md:text-lg px-6 md:px-8 py-4 md:py-5 rounded-xl shadow-lg"
                 onClick={() => navigate('/try-story')}
                 data-testid="try-story-btn"
               >
                 <Mic className="w-5 h-5 mr-2" />
                 Start Recording a Test Story
               </Button>
-              <p className="text-sm text-charcoal-muted mt-3">
+              <p className="text-xs md:text-sm text-charcoal-muted mt-2">
                 No account needed — try it free
               </p>
             </div>
