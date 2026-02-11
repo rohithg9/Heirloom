@@ -50,8 +50,11 @@ EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 # Initialize Whisper STT client
 whisper_client = OpenAISpeechToText(api_key=EMERGENT_LLM_KEY) if EMERGENT_LLM_KEY else None
 
-# Initialize LLM Chat for translation
-translation_chat = LlmChat(api_key=EMERGENT_LLM_KEY, model="gemini-2.0-flash") if EMERGENT_LLM_KEY else None
+# Initialize LLM Chat for translation (lazy initialization)
+def get_translation_chat():
+    if EMERGENT_LLM_KEY:
+        return LlmChat(api_key=EMERGENT_LLM_KEY).with_model("gemini", "gemini-3-flash-preview")
+    return None
 
 # ElevenLabs Configuration
 ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', '')
