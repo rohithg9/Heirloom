@@ -14,16 +14,31 @@ const LandingPage = () => {
     return localStorage.getItem('heirloom_seen_sage') === 'true';
   });
 
-  // Show Sage welcome after a short delay for first-time visitors
+  // Show Sage welcome after user has scrolled a bit (not immediately)
   useEffect(() => {
     const seen = localStorage.getItem('heirloom_seen_sage');
     if (!seen) {
+      const handleScroll = () => {
+        if (window.scrollY > 400 && !showSageWelcome) {
+          setShowSageWelcome(true);
+          window.removeEventListener('scroll', handleScroll);
+        }
+      };
+      
+      // Also show after 8 seconds if user hasn't scrolled
       const timer = setTimeout(() => {
-        setShowSageWelcome(true);
-      }, 3000);
-      return () => clearTimeout(timer);
+        if (!showSageWelcome) {
+          setShowSageWelcome(true);
+        }
+      }, 8000);
+      
+      window.addEventListener('scroll', handleScroll);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('scroll', handleScroll);
+      };
     }
-  }, []);
+  }, [showSageWelcome]);
 
   const handleExploreDemo = () => {
     localStorage.setItem('heirloom_seen_sage', 'true');
