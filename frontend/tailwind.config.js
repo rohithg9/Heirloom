@@ -26,6 +26,11 @@ module.exports = {
                     light: '#5D5550',
                     muted: '#8C8580',
                 },
+                sage: {
+                    DEFAULT: '#6B8E7D',
+                    light: '#8AAA9C',
+                    dark: '#4A6B5A',
+                },
                 emerald: {
                     DEFAULT: '#2E5C55',
                     dark: '#244A44',
