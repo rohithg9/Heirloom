@@ -1529,8 +1529,7 @@ async def translate_text(text: str, source_lang: str, target_lang: str) -> str:
 @api_router.post("/translate")
 async def translate_endpoint(request: TranslationRequest):
     """Translate text between languages"""
-    translation_chat = get_translation_chat()
-    if not translation_chat:
+    if not EMERGENT_LLM_KEY:
         raise HTTPException(status_code=503, detail="Translation service not configured")
     
     try:
