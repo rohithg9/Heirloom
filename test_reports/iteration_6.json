@@ -1,0 +1,91 @@
+{
+  "summary": "Completed testing of Heirloom multilingual features: Translation API (English<->Hindi, English->Tamil), Languages API (15 Indian languages with native scripts), Voice Studio language selector, Invite System, Story Sharing, and TTS Generation. All backend tests passed (14/14 + 5 manual). All frontend flows verified via Playwright.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "passed_tests": [
+    "Backend: Health check - 200 OK",
+    "Backend: GET /api/tts/languages - Returns 15 languages (14 Indian + English) with native scripts",
+    "Backend: Hindi native script is हिंदी",
+    "Backend: Tamil native script is தமிழ்",
+    "Backend: All 14 Indian languages present (hi, ta, te, bn, mr, gu, kn, ml, pa, or, as, kok, ne, sd)",
+    "Backend: POST /api/translate English to Hindi - Working",
+    "Backend: POST /api/translate Hindi to English - Working",
+    "Backend: POST /api/translate English to Tamil - Working",
+    "Backend: Translation preserves source/target language codes",
+    "Backend: POST /api/invites/create requires auth - 401 returned",
+    "Backend: POST /api/invites/create with auth - Returns 6-digit code and share link",
+    "Backend: GET /api/invites/validate/{token} - Works without auth",
+    "Backend: POST /api/memories - Memory creation successful",
+    "Backend: POST /api/memories/{id}/share - Creates share token",
+    "Backend: GET /api/tts/voices - Returns Sage and family voices",
+    "Backend: POST /api/tts/generate (Sage voice) - Generates audio",
+    "Backend: POST /api/tts/generate (Hindi) - Generates Hindi audio",
+    "Frontend: Landing page loads correctly",
+    "Frontend: Auth page shows Sign In, Create Vault, Join Vault tabs",
+    "Frontend: Login flow works - redirects to dashboard",
+    "Frontend: Dashboard shows Invite Family, All Memories, Life Book, Settings cards",
+    "Frontend: Voice Studio accessible via Tell a Story card",
+    "Frontend: Voice Studio language selector visible with 15 languages",
+    "Frontend: Language dropdown shows all Indian languages with flags",
+    "Frontend: Language selection updates 'Speaking in:' text",
+    "Frontend: Voice toggle, Sessions button, Start conversation button present",
+    "Frontend: Invite Family modal opens correctly",
+    "Frontend: Pending invites displayed with 6-digit codes",
+    "Frontend: Recent Stories section shows created memories"
+  ],
+
+  "test_report_links": [
+    "/app/backend/tests/test_multilingual_features.py",
+    "/app/test_reports/pytest/pytest_multilingual.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "Translation API uses Gemini model (gemini-3-flash-preview) via emergentintegrations LLM",
+    "Languages API returns both 'languages' (all 15) and 'indian_languages' (14 without English) for flexibility",
+    "LanguageSelector component stores preference in localStorage",
+    "useSpeechToText hook prepared for Whisper STT with translate_to_english option",
+    "TTS uses ElevenLabs eleven_multilingual_v2 model for Indian language support"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_multilingual_features.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% (14/14 pytest tests passed)",
+    "frontend": "100% (All multilingual features working)"
+  },
+
+  "test_credentials": {
+    "family_name": "testfamily123",
+    "family_code": "test123",
+    "email": "test@example.com",
+    "password": "test123"
+  },
+
+  "seed_data_creation": "Test memories and invites created during testing. Invites: Mom (487525), Anonymous (676666), Test Multilingual Invitee (977846)",
+
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "Multilingual support verified: 1) Translation API works for English<->Hindi and other Indian languages using Gemini, 2) Languages API returns 15 languages with native scripts, 3) Voice Studio has working language selector in header that updates 'Speaking in:' text, 4) Invite system still working with pending invites display, 5) Story sharing still working. STT transcription requires actual audio input - not tested but hook is properly configured.",
+
+  "mocked_apis": {
+    "has_mocked_apis": false,
+    "details": [
+      "STT transcription requires real audio input - useSpeechToText hook tested structurally but not with actual audio"
+    ]
+  }
+}
