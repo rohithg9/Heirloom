@@ -15,29 +15,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
 import { Toaster, toast } from 'sonner';
 import { SageAvatar } from '../components/SageCompanion';
+import LanguageSelector, { TranslationToggle, BilingualText } from '../components/LanguageSelector';
+import useSpeechToText from '../hooks/useSpeechToText';
 
-// Language options
+// Indian language options with native scripts
 const LANGUAGES = [
-  { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
-  { code: 'en-GB', name: 'English (UK)', flag: '🇬🇧' },
-  { code: 'en-IN', name: 'English (India)', flag: '🇮🇳' },
-  { code: 'hi-IN', name: 'Hindi', flag: '🇮🇳' },
-  { code: 'es-ES', name: 'Spanish', flag: '🇪🇸' },
-  { code: 'fr-FR', name: 'French', flag: '🇫🇷' },
-  { code: 'de-DE', name: 'German', flag: '🇩🇪' },
-  { code: 'it-IT', name: 'Italian', flag: '🇮🇹' },
-  { code: 'pt-BR', name: 'Portuguese', flag: '🇧🇷' },
-  { code: 'zh-CN', name: 'Chinese (Mandarin)', flag: '🇨🇳' },
-  { code: 'ja-JP', name: 'Japanese', flag: '🇯🇵' },
-  { code: 'ko-KR', name: 'Korean', flag: '🇰🇷' },
-  { code: 'ar-SA', name: 'Arabic', flag: '🇸🇦' },
-  { code: 'ru-RU', name: 'Russian', flag: '🇷🇺' },
-  { code: 'bn-IN', name: 'Bengali', flag: '🇮🇳' },
-  { code: 'ta-IN', name: 'Tamil', flag: '🇮🇳' },
-  { code: 'te-IN', name: 'Telugu', flag: '🇮🇳' },
-  { code: 'mr-IN', name: 'Marathi', flag: '🇮🇳' },
-  { code: 'gu-IN', name: 'Gujarati', flag: '🇮🇳' },
-  { code: 'pa-IN', name: 'Punjabi', flag: '🇮🇳' },
+  { code: 'en', name: 'English', native: 'English', flag: '🇬🇧' },
+  { code: 'hi', name: 'Hindi', native: 'हिंदी', flag: '🇮🇳' },
+  { code: 'ta', name: 'Tamil', native: 'தமிழ்', flag: '🇮🇳' },
+  { code: 'te', name: 'Telugu', native: 'తెలుగు', flag: '🇮🇳' },
+  { code: 'bn', name: 'Bengali', native: 'বাংলা', flag: '🇮🇳' },
+  { code: 'mr', name: 'Marathi', native: 'मराठी', flag: '🇮🇳' },
+  { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી', flag: '🇮🇳' },
+  { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ', flag: '🇮🇳' },
+  { code: 'ml', name: 'Malayalam', native: 'മലയാളം', flag: '🇮🇳' },
+  { code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+  { code: 'or', name: 'Odia', native: 'ଓଡ଼ିଆ', flag: '🇮🇳' },
+  { code: 'as', name: 'Assamese', native: 'অসমীয়া', flag: '🇮🇳' },
+  { code: 'kok', name: 'Konkani', native: 'कोंकणी', flag: '🇮🇳' },
+  { code: 'ne', name: 'Nepali', native: 'नेपाली', flag: '🇳🇵' },
+  { code: 'sd', name: 'Sindhi', native: 'سنڌي', flag: '🇵🇰' },
 ];
 
 const VoiceStudio = () => {
