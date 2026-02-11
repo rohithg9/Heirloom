@@ -1524,25 +1524,7 @@ class TranslationRequest(BaseModel):
 
 async def translate_text(text: str, source_lang: str, target_lang: str) -> str:
     """Translate text using Gemini"""
-    translation_chat = get_translation_chat()
-    if not translation_chat:
-        return text  # Return original if translation not available
-    
-    source_name = LANGUAGE_CODES.get(source_lang, {}).get("name", source_lang)
-    target_name = LANGUAGE_CODES.get(target_lang, {}).get("name", target_lang)
-    
-    prompt = f"""Translate the following text from {source_name} to {target_name}. 
-Only provide the translation, nothing else. Preserve the emotional tone and cultural context.
-
-Text to translate:
-{text}"""
-    
-    try:
-        response = await translation_chat.send_message(UserMessage(text=prompt))
-        return response.content.strip()
-    except Exception as e:
-        logger.error(f"Translation error: {str(e)}")
-        return text  # Return original on error
+    return await get_translation(text, source_lang, target_lang)
 
 @api_router.post("/translate")
 async def translate_endpoint(request: TranslationRequest):
