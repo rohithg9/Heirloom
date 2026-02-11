@@ -18,7 +18,9 @@ import bcrypt
 import base64
 import shutil
 import io
+import asyncio
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+from emergentintegrations.llm.openai import OpenAISpeechToText
 from elevenlabs import ElevenLabs, VoiceSettings
 
 ROOT_DIR = Path(__file__).parent
