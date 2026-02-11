@@ -1596,7 +1596,7 @@ class VoiceInterviewRequest(BaseModel):
 @api_router.post("/voice-interview")
 async def voice_interview(request: VoiceInterviewRequest, user: dict = Depends(get_current_user)):
     """Conduct a voice interview with Sage in the user's preferred language"""
-    if not translation_chat:
+    if not EMERGENT_LLM_KEY:
         raise HTTPException(status_code=503, detail="AI service not configured")
     
     language_info = LANGUAGE_CODES.get(request.language, {"name": "English", "native": "English"})
@@ -1617,11 +1617,10 @@ Respond ONLY in {language_info['name']}. Be warm, conversational, and help draw 
         # Create or continue conversation
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY, 
-            model="gemini-2.0-flash",
             system_message=system_prompt
-        )
+        ).with_model("gemini", "gemini-3-flash-preview")
         
-        response = await chat.send_message(UserMessage(content=request.message))
+        response = await chat.send_message(UserMessage(text=request.message))
         sage_response = response.content.strip()
         
         # Also provide English translation if not in English
