@@ -49,8 +49,46 @@ Build a public SaaS product called "Heirloom" that allows families to privately 
 | **Family Invite System** | ✅ Implemented | P0 |
 | **Story Sharing Links** | ✅ Implemented | P1 |
 | **15 Indian Languages** | ✅ Implemented | P1 |
+| **Multilingual STT (Whisper)** | ✅ Implemented | P0 |
+| **Translation (Gemini)** | ✅ Implemented | P0 |
+| **Bilingual Story Storage** | ✅ Implemented | P0 |
+| **Sage Speaks in User's Language** | ✅ Implemented | P0 |
 
 ### What's Been Implemented
+
+**Date: Feb 11, 2026 (Update 12) - Full Multilingual Voice Interaction**
+
+#### New Features:
+1. **Speak in Indian Languages**
+   - OpenAI Whisper STT integration for transcribing audio in 15 Indian languages
+   - Auto-language detection
+   - Real-time transcription with translation
+
+2. **Translation API**
+   - Powered by Gemini (gemini-3-flash-preview)
+   - Bidirectional: Hindi↔English, Tamil↔English, etc.
+   - Preserves emotional tone and cultural context
+
+3. **Bilingual Story Storage**
+   - Stories saved in original language + English translation
+   - Fields: `narrative_original`, `narrative_english`, `original_language`
+   - Toggle button to switch between languages in UI
+
+4. **Sage Responds in User's Language**
+   - Sage speaks Hindi, Tamil, Telugu, etc. during voice interviews
+   - Warm grandmother tone maintained across languages
+   - English translation provided alongside native response
+
+5. **Language Selector UI**
+   - Dropdown with all 15 languages + native scripts
+   - Shows: हिंदी (Hindi), தமிழ் (Tamil), తెలుగు (Telugu), etc.
+   - Preference saved in localStorage
+
+#### New API Endpoints:
+- `POST /api/stt/transcribe` - Transcribe audio with Whisper
+- `POST /api/translate` - Translate text between languages
+- `POST /api/memories/{id}/translate` - Translate existing memory
+- `POST /api/voice-interview` - Sage interview in chosen language
 
 **Date: Feb 10, 2026 (Update 11) - Invite System, Story Sharing & Indian Languages**
 
